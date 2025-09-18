@@ -1,15 +1,23 @@
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './pages/Login.jsx'
+import './index.css'
 
+function Placeholder({ title }) {
+  return <div style={{ padding: 24, fontFamily: 'sans-serif' }}>{title}</div>;
+}
 
-import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App";
-import "./index.css";
-import { BrowserRouter } from "react-router-dom";
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/choose-role" element={<Placeholder title="Elegir rol (WIP)" />} />
+        <Route path="/onboarding/company" element={<Placeholder title="Onboarding Company" />} />
+        <Route path="/onboarding/user" element={<Placeholder title="Onboarding User" />} />
+      </Routes>
     </BrowserRouter>
-  </StrictMode>,
+  </React.StrictMode>,
 )
