@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { loginApi } from '../services/api';
-import { saveSession, getRememberedEmail } from '../store/auth';
+import { saveSession, getRememberedEmail } from '../auth/authContext';
 import { useNavigate } from 'react-router-dom';
 import './login.css'; // opcional (puedes meter estilos en index.css si prefieres)
 
