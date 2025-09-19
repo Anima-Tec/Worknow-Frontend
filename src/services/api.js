@@ -4,12 +4,13 @@ export async function loginApi({ email, password }) {
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password }),
+    credentials: 'include', // solo si usás cookies
   });
+
   if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.message || 'Error de login');
+    throw new Error('Credenciales inválidas');
   }
-  return res.json(); // { token, user }
+
+  return res.json();
 }
