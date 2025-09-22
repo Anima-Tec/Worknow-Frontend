@@ -3,6 +3,7 @@ import Login from "./pages/Login.jsx";
 import ChooseRole from "./pages/ChooseRole.jsx";
 import HomeCompany from "./pages/HomeCompany.jsx";
 import HomeUser from "./pages/HomeUser.jsx";
+import ContactCompany from './pages/ContactCompany';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Route path="/choose" element={<ChooseRole />} />
       <Route path="/home/company" element={<HomeCompany />} />
       <Route path="/home/user" element={<HomeUser />} />
+      <Route path="/contactcompany" element={<ContactCompany />} />
     </Routes>
   );
 }
