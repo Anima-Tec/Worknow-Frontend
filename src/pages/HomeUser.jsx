@@ -50,7 +50,7 @@ export default function HomeUser() {
       {/* 🔹 Hero con video */}
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
-          <source src="/assets/video-banner.mp4" type="video/mp4" />
+          <source src="/video-banner.mp4" type="video/mp4" />
           Tu navegador no soporta videos HTML5.
         </video>
       </section>
