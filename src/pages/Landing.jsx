@@ -37,7 +37,7 @@ export default function Landing() {
   return (
     <div className="landing">
       {/* 🌟 HERO */}
-      <section className="hero">
+      <section className="landing-hero">
         <div className="hero-content">
           <h1>
             Conecta <span>tu talento</span> con oportunidades reales

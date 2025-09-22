@@ -1,5 +1,5 @@
 import React from 'react';
-import "./homeCompany.css";
+import "./HomeCompany.css";
 import { AiOutlineHome } from "react-icons/ai";
 import { IoIosContacts, IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
