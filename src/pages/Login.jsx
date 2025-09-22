@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { loginApi } from '../services/api';
 import { saveSession, getRememberedEmail } from '../auth/authContext';
 import { useNavigate } from 'react-router-dom';
-import './login.css';
+import './Login.css';
 import { IoEyeOutline } from 'react-icons/io5';
 import { FaRegEyeSlash } from 'react-icons/fa';
 

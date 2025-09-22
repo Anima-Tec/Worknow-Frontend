@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import ChooseRole from "./pages/ChooseRole.jsx";
 import HomeCompany from "./pages/HomeCompany.jsx";
