@@ -1,0 +1,128 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden; /* evita scroll lateral */
+}
+
+/* Footer general */
+.footer {
+  width: 100%; /* no usar 100vw para evitar scroll lateral */
+  background: #1E1B4B; /* fondo oscuro tech */
+  padding: 60px 40px 30px;
+  color: #fff;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Contenedor */
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 50px;
+}
+
+/* Título Worknow */
+.footer-title {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #8b5cf6, #6366f1, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: gradientShift 6s ease infinite;
+  margin: 0 0 16px 0;
+}
+
+.footer-title span {
+  color: #a78bfa; /* resalta "now" */
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.footer-brand p {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.95;
+  max-width: 320px;
+}
+
+/* Links */
+.footer-links {
+  display: flex;
+  gap: 80px;
+  flex: 2 1 500px;
+  flex-wrap: wrap;
+}
+
+.footer-links h4 {
+  margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #a78bfa;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links ul li {
+  margin-bottom: 10px;
+}
+
+.footer-links ul li a {
+  color: #E0E7FF;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.footer-links ul li a:hover {
+  color: #fff;
+  text-shadow: 0 0 8px #8b5cf6;
+}
+
+/* Parte inferior */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 40px;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-bottom p {
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 0;
+}
+
+/* Redes sociales */
+.socials a {
+  margin-left: 14px;
+  color: #fff;
+  font-size: 20px;
+  transition: transform 0.2s, color 0.2s, text-shadow 0.3s;
+}
+
+.socials a:hover {
+  color: #a78bfa;
+  transform: scale(1.2);
+  text-shadow: 0 0 10px #8b5cf6;
+}

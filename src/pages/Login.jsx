@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { loginApi } from '../services/api';
 import { saveSession, getRememberedEmail } from '../auth/authContext';
 import { useNavigate } from 'react-router-dom';
-import './login.css';
+import './Login.css';
 import { IoEyeOutline } from 'react-icons/io5';
 import { FaRegEyeSlash } from 'react-icons/fa';
 
@@ -27,8 +27,6 @@ export default function Login() {
     try {
       const data = await loginApi({ email, password });
       saveSession(data, { rememberEmail });
-
-      // 👉 después de login exitoso, redirige a elegir rol
       navigate('/choose');
     } catch (error) {
       setErr(error.message);
@@ -93,7 +91,12 @@ export default function Login() {
           {loading ? 'Ingresando...' : 'Iniciar sesión'}
         </button>
 
-        <div className="muted">¿Olvidaste la contraseña? (próximamente)</div>
+        {/* Link de recuperación */}
+        <div className="formFooter">
+          <a href="#" className="forgotLink">
+            ¿Olvidaste la contraseña?
+          </a>
+        </div>
       </form>
     </div>
   );
