@@ -42,38 +42,41 @@ export default function Login() {
           <h1>
             work<span className="brand">now</span>
           </h1>
-          <p>Inicie sesión con su cuenta</p>
+          <p className="subtitle">Inicie sesión con su cuenta</p>
         </div>
 
-        <label className="label">Correo</label>
-        <input
-          type="email"
-          className="input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="email@worknow.com"
-          required
-        />
-
-        <label className="label">Contraseña</label>
-        <div className="passwordRow">
+        <div className="field">
+          <label className="label">Correo</label>
           <input
-            type={showPass ? 'text' : 'password'}
-            className="input noBorder"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="email"
+            className="input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="email@worknow.com"
             required
-            minLength={6}
           />
-          <button
-            type="button"
-            className="toggleBtn"
-            onClick={() => setShowPass((s) => !s)}
-            aria-label="Mostrar contraseña"
-            title={showPass ? 'Ocultar' : 'Mostrar'}
-          >
-            {showPass ? <IoEyeOutline /> : <FaRegEyeSlash />}
-          </button>
+        </div>
+
+        <div className="field">
+          <label className="label">Contraseña</label>
+          <div className="passwordInput">
+            <input
+              type={showPass ? 'text' : 'password'}
+              className="input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+            />
+            <span
+              className="iconEye"
+              onClick={() => setShowPass((s) => !s)}
+              role="button"
+              aria-label="Mostrar u ocultar contraseña"
+            >
+              {showPass ? <IoEyeOutline /> : <FaRegEyeSlash />}
+            </span>
+          </div>
         </div>
 
         <label className="checkbox">
@@ -91,7 +94,6 @@ export default function Login() {
           {loading ? 'Ingresando...' : 'Iniciar sesión'}
         </button>
 
-        {/* Link de recuperación */}
         <div className="formFooter">
           <a href="#" className="forgotLink">
             ¿Olvidaste la contraseña?

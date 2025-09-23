@@ -9,7 +9,6 @@ export default function HomeUser() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // filtros
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
   const [area, setArea] = useState("");
@@ -47,7 +46,6 @@ export default function HomeUser() {
 
   return (
     <div className="home-user">
-      {/* 🔹 Hero con video */}
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
           <source src="/video-banner.mp4" type="video/mp4" />
@@ -55,7 +53,6 @@ export default function HomeUser() {
         </video>
       </section>
 
-      {/* 🔹 Barra de búsqueda */}
       <div className="search-box">
         <div className="filter">
           <label>Buscar</label>
@@ -102,7 +99,6 @@ export default function HomeUser() {
         </button>
       </div>
 
-      {/* 🔹 Trabajos */}
       <section className="featured">
         <div className="header">
           <h3>Featured job</h3>
@@ -127,7 +123,6 @@ export default function HomeUser() {
         </div>
       </section>
 
-      {/* 🔹 Proyectos */}
       <section className="featured">
         <div className="header">
           <h3>Featured project</h3>
