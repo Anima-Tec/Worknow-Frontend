@@ -6,18 +6,12 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        {/* Marca y descripción */}
         <div className="footer-brand">
           <h1 className="footer-title">
             work<span>now</span>
           </h1>
-          <p>
-            La primera plataforma que conecta tu talento con empresas, proyectos y empleos reales,
-            potenciando tu huella digital.
-          </p>
+          <p>Conectamos empresas con el talento ideal y a usuarios con oportunidades reales, potenciando juntos el futuro laboral.</p>
         </div>
-
-        {/* Secciones */}
         <div className="footer-links">
           <div>
             <h4>Acerca de:</h4>
@@ -46,7 +40,6 @@ export default function Footer() {
               <li><span className="disabled-link">Guía de uso</span></li>
               <li><span className="disabled-link">Preguntas frecuentes</span></li>
               <li><span className="disabled-link">Chatbot</span></li>
-              <li><span className="disabled-link">Blog</span></li>
             </ul>
           </div>
 
@@ -55,15 +48,12 @@ export default function Footer() {
             <ul>
               <li><span className="disabled-link">contacto@worknow.com</span></li>
               <li><span className="disabled-link">Soporte técnico</span></li>
-              <li><span className="disabled-link">Carreras</span></li>
             </ul>
           </div>
         </div>
       </div>
-
-      {/* Línea inferior */}
       <div className="footer-bottom">
-        <p>2025 © Worknow. Todos los derechos reservados.</p>
+        <p>2025 © Worknow.</p>
         <div className="socials">
           <a href="#"><FaFacebookF /></a>
           <a href="#"><FaInstagram /></a>
