@@ -1,0 +1,150 @@
+.rolePage {
+  height: 100vh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Header */
+.chooseHeader {
+  text-align: center;
+  margin-bottom: 50px;
+  max-width: 600px;
+}
+
+.chooseHeader h1 {
+  font-size: 38px;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(90deg, #8b5cf6, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.chooseHeader p {
+  margin-top: 12px;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+/* Layout */
+.roles {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Cards */
+.roleCard {
+  flex: 1;
+  min-width: 280px;
+  max-width: 320px;
+  border-radius: 18px;
+  padding: 32px 24px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.roleCard::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -40%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(139,92,246,0.15), transparent 60%);
+  z-index: 0;
+}
+
+.roleCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(139, 92, 246, 0.25);
+}
+
+.roleCard * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Íconos */
+.icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #8b5cf6;
+}
+
+.companyCard .icon {
+  color: #fff;
+}
+
+/* Usuario */
+.userCard {
+  border: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+/* Empresa */
+.companyCard {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff;
+}
+
+/* Títulos y textos */
+.roleCard h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.roleCard p {
+  font-size: 15px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: inherit;
+}
+
+/* Botones */
+.btnPrimary, .btnLight {
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Botón usuario */
+.btnPrimary {
+  background: linear-gradient(90deg, #8b5cf6, #6366f1);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+}
+
+.btnPrimary:hover {
+  transform: scale(1.07);
+  box-shadow: 0 6px 18px rgba(139,92,246,0.4);
+}
+
+/* Botón empresa */
+.btnLight {
+  background: #fff;
+  color: #8b5cf6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btnLight:hover {
+  background: #f9fafb;
+  transform: scale(1.07);
+}

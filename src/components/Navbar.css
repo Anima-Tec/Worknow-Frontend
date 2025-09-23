@@ -1,0 +1,12 @@
+/* src/components/Navbar.css */
+.nav{ background:#fff; position:sticky; top:0; z-index:50; border-bottom:1px solid #f1f1ff; }
+.nav__inner{ display:flex; justify-content:space-between; align-items:center; height:60px; }
+.brand img{ width:34px; cursor:pointer; }
+.nav__actions{ display:flex; gap:10px; }
+.link{ background:transparent; border:none; color:#6b7280; cursor:pointer; font-weight:600; }
+.link:hover{ color:#8b5cf6; }
+.smallPrimary{
+  background:linear-gradient(90deg, #8b5cf6, #6366f1); color:#fff;
+  border:none; border-radius:999px; padding:8px 14px; font-weight:700; cursor:pointer;
+}
+.smallPrimary:hover{ filter:brightness(1.05); }
