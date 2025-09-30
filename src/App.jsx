@@ -7,6 +7,7 @@ import Landing from "./pages/Landing.jsx";
 import { useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import ContactCompany from "./pages/ContactCompany";
+import JobForm from "./pages/JobForm"; 
 
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/home/company" element={<HomeCompany />} />
       <Route path="/home/user" element={<HomeUser />} />
       <Route path="/contactcompany" element={<ContactCompany />} />
+      <Route path="/jobs/form" element={<JobForm />} />
     </Routes>
   );
 }
