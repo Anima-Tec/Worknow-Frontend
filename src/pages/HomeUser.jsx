@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { searchJobs, searchProjects } from "../services/api";
 import CardTrabajo from "../components/CardTrabajo";
 import CardProyecto from "../components/CardProyecto";
+import { AiOutlineHome } from "react-icons/ai";
+import { IoIosContacts, IoIosNotifications } from "react-icons/io";
+import { CgProfile } from "react-icons/cg";
 import "./HomeUser.css";
+import { Link } from "react-router-dom";
 
 export default function HomeUser() {
   const [jobs, setJobs] = useState([]);
@@ -46,6 +50,31 @@ export default function HomeUser() {
 
   return (
     <div className="home-user">
+      <header className="header">
+              <h1 className="h1">
+                work<span>now</span>
+              </h1>
+              <nav className="nav">
+                <ul>
+               <li className="nav-item" onClick={() => window.location.reload()}>
+              <AiOutlineHome />
+              <span>Home</span>
+              </li>
+                <li className="nav-item" onClick={() => window.location.href = '/ContactUser'}>
+                <IoIosContacts />
+                <span>Contacto</span>
+                </li>
+                <li className="nav-item" onClick={() => {}}>
+                  <IoIosNotifications />
+                  <span>Notificaciones</span>
+                    </li>
+                  <li className="nav-item" onClick={() => window.location.href = '/PerfilUser'}>
+                    <CgProfile />
+                    <span>Perfil</span>
+                  </li>
+                </ul>
+              </nav>
+            </header>
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
           <source src="/video-banner.mp4" type="video/mp4" />
