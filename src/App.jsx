@@ -9,7 +9,7 @@ import Footer from "./components/Footer";
 import ContactCompany from "./pages/ContactCompany";
 import ContactUser from "./pages/contactUser.jsx";
 import PerfilUser from "./pages/perfilUser.jsx";
-
+import JobForm from "./pages/JobForm"; 
 
 
 export default function App() {
@@ -24,8 +24,8 @@ export default function App() {
       <Route path="/Contactcompany" element={<ContactCompany />} />
       <Route path="/ContactUser" element={<ContactUser />} />
       <Route path="/PerfilUser" element={<PerfilUser />} />
-
-
+      <Route path="/contactcompany" element={<ContactCompany />} />
+      <Route path="/jobs/form" element={<JobForm />} />
     </Routes>
   );
 }
