@@ -7,8 +7,8 @@ import Landing from "./pages/Landing.jsx";
 import { useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import ContactCompany from "./pages/ContactCompany";
-import ContactUser from "./pages/contactUser.jsx";
-import PerfilUser from "./pages/perfilUser.jsx";
+import ContactUser from "./pages/ContactUser";
+import PerfilUser from "./pages/PerfilUser";
 import JobForm from "./pages/JobForm"; 
 
 
