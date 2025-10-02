@@ -12,7 +12,8 @@ import JobForm from "./JobForm.jsx";
 import { getJobs } from "../services/api";
 
 export default function HomeCompany() {
-  const [showForm, setShowForm] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [showJobForm, setShowJobForm] = useState(false);
   const [projects, setProjects] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [jobs, setJobs] = useState([]);
@@ -61,9 +62,7 @@ export default function HomeCompany() {
               <IoIosContacts />
               <span>Contacto</span>
             </li>
-
-                 <li className="nav-item" onClick={() => {}}>
-
+            <li className="nav-item" onClick={() => {}}>
               <IoIosNotifications />
               <span>Notificaciones</span>
             </li>
@@ -89,8 +88,7 @@ export default function HomeCompany() {
             Accedé a talento independiente que se adapta a las necesidades de tu
             empresa.
           </p>
-
-          <button className="primaryBtn" onClick={() => setShowForm(true)}>
+          <button className="primaryBtn" onClick={() => setShowProjectForm(true)}>
             Publicar Proyecto
           </button>
         </div>
@@ -101,36 +99,43 @@ export default function HomeCompany() {
             Busca el perfil ideal y suma profesionales comprometidos a largo
             plazo.
           </p>
-          <button className="primaryBtn">Publicar trabajo</button>
-        </div>
-      </div>
-
-          <button className="primaryBtn">Publicar Proyecto</button>
-        </div>
-        <div className="card2">
-          <h2>Publicar puesto de Trabajo</h2>
-          <p>
-            Busca el perfil ideal y suma profesionales comprometidos a largo
-            plazo.
-          </p>
-          <button className="primaryBtn" onClick={() => setShowForm(true)}>
+          <button className="primaryBtn" onClick={() => setShowJobForm(true)}>
             Publicar trabajo
           </button>
         </div>
       </div>
 
-      {/* Modal con formulario */}
-      {showForm && (
+      {/* Modal formulario de Trabajo */}
+      {showJobForm && (
         <div className="modal">
           <div className="modal-content">
             <button
               className="close-btn"
-              onClick={() => setShowForm(false)}
+              onClick={() => setShowJobForm(false)}
               style={{ float: "right" }}
             >
               ✖
             </button>
             <JobForm />
+          </div>
+        </div>
+      )}
+
+      {/* Modal formulario de Proyecto */}
+      {showProjectForm && (
+        <div className="modal">
+          <div className="modal-content">
+            <button
+              className="close-btn"
+              onClick={() => setShowProjectForm(false)}
+              style={{ float: "right" }}
+            >
+              ✖
+            </button>
+            <ProjectForm
+              onClose={() => setShowProjectForm(false)}
+              onProjectCreated={handleProjectCreated}
+            />
           </div>
         </div>
       )}
@@ -192,15 +197,6 @@ export default function HomeCompany() {
           )}
         </div>
       </section>
-
-
-      {showForm && (
-        <ProjectForm
-          onClose={() => setShowForm(false)}
-          onProjectCreated={handleProjectCreated}
-        />
-      )}
-
     </div>
   );
 }
