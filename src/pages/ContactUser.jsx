@@ -1,4 +1,4 @@
-function ContactCompany() {
+function ContactUser() {
   return (
     <div>
       <h2>Página de Contacto</h2>
@@ -6,4 +6,4 @@ function ContactCompany() {
   );
 }
 
-export default ContactCompany;
+export default ContactUser;

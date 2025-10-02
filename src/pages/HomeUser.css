@@ -3,8 +3,14 @@
   padding: 0;
   margin: 0;
 }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: white;
+}
 
-/* 🔹 Hero con video */
 .hero {
   position: relative;
   width: 100%;
@@ -18,7 +24,6 @@
   object-fit: cover; 
 }
 
-/* 🔹 Caja de búsqueda */
 .search-box {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -37,8 +42,6 @@
   position: relative;
   z-index: 5;
 }
-
-
 
 .filter {
   display: flex;
@@ -82,7 +85,6 @@
   background: #084298;
 }
 
-/* 🔹 Featured Sections */
 .featured {
   margin: 3rem auto;
   padding: 0 2rem;
@@ -113,7 +115,6 @@
   justify-content: center;
 }
 
-/* 🔹 Mensajes */
 .loading {
   text-align: center;
   font-size: 1.2rem;
@@ -129,7 +130,6 @@
   text-align: center;
 }
 
-/* 🔹 Responsive */
 @media (max-width: 768px) {
   .search-box {
     flex-direction: column;

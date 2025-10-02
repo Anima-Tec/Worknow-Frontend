@@ -10,7 +10,6 @@
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Header */
 .chooseHeader {
   text-align: center;
   margin-bottom: 50px;
@@ -32,7 +31,6 @@
   color: #6b7280;
 }
 
-/* Layout */
 .roles {
   display: flex;
   gap: 32px;
@@ -40,7 +38,6 @@
   justify-content: center;
 }
 
-/* Cards */
 .roleCard {
   flex: 1;
   min-width: 280px;
@@ -77,7 +74,6 @@
   z-index: 1;
 }
 
-/* Íconos */
 .icon {
   font-size: 48px;
   margin-bottom: 16px;
@@ -88,19 +84,16 @@
   color: #fff;
 }
 
-/* Usuario */
 .userCard {
   border: 1px solid #e5e7eb;
   color: #111827;
 }
 
-/* Empresa */
 .companyCard {
   background: linear-gradient(135deg, #8b5cf6, #6366f1);
   color: #fff;
 }
 
-/* Títulos y textos */
 .roleCard h2 {
   margin: 0 0 12px;
   font-size: 20px;
@@ -114,7 +107,6 @@
   color: inherit;
 }
 
-/* Botones */
 .btnPrimary, .btnLight {
   border: none;
   border-radius: 9999px;
@@ -125,7 +117,6 @@
   transition: all 0.25s ease;
 }
 
-/* Botón usuario */
 .btnPrimary {
   background: linear-gradient(90deg, #8b5cf6, #6366f1);
   color: #fff;
@@ -137,7 +128,6 @@
   box-shadow: 0 6px 18px rgba(139,92,246,0.4);
 }
 
-/* Botón empresa */
 .btnLight {
   background: #fff;
   color: #8b5cf6;

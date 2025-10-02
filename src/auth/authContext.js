@@ -1,5 +1,5 @@
 export function saveSession({ token, user }, { rememberEmail }) {
-  if (token) localStorage.setItem('token', token); // MVP
+  if (token) localStorage.setItem('token', token); 
   localStorage.setItem('user', JSON.stringify(user));
   if (rememberEmail) localStorage.setItem('rememberEmail', user.email);
   else localStorage.removeItem('rememberEmail');
