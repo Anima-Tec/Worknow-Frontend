@@ -1,26 +1,114 @@
-.card {
+.project-card {
   background: #fff;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  flex: 1;
-  min-width: 250px;
+  border-radius: 16px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-width: 260px;
   max-width: 300px;
-  text-align: center;
-  transition: transform 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card:hover {
+.project-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
-.card button {
-  margin-top: 1rem;
+/* header */
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   background: #6c47ff;
-  color: white;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.project-type {
+  background: #f3e8ff;
+  color: #6c47ff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* contenido */
+.project-title {
+  font-size: 1.05rem;
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+  color: #222;
+}
+
+.project-description {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.project-details {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.project-details strong {
+  color: #6c47ff;
+}
+
+/* botones */
+.project-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.primary-btn {
+  flex: 1;
+  background: #6c47ff;
+  color: #fff;
   border: none;
-  padding: 0.6rem 1.2rem;
+  padding: 0.6rem;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 0.9rem;
   font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.primary-btn:hover {
+  background: #5636d9;
+}
+
+.secondary-btn {
+  flex: 1;
+  background: #fff;
+  color: #6c47ff;
+  border: 2px solid #6c47ff;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+  background: #f3e8ff;
 }
