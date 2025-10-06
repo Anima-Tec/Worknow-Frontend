@@ -146,5 +146,19 @@
   max-height: 90vh;
   overflow-y: auto;
 }
+/* ------------------------------
+   Layout de cards de trabajos
+--------------------------------*/
+.jobs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px; /* espacio entre cards */
+  padding: 1rem 0;
+}
+
+.job-postings h2 {
+  margin-bottom: 1rem;
+}
+
 
 
