@@ -68,8 +68,8 @@
 /* ---------- PLACEHOLDERS ---------- */
 .jobform input::placeholder,
 .jobform textarea::placeholder {
-  color: #9ca3af; /* gris suave */
-  opacity: 1; /* visibilidad consistente */
+  color: #9ca3af;
+  opacity: 1;
 }
 
 /* ---------- SELECT PLACEHOLDER ---------- */
@@ -127,17 +127,15 @@
 
 /* ---------- PREVIEW ---------- */
 .preview {
-  background: #ffffff;
+  background: transparent;
   border-radius: 20px;
-  padding: 1.8rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  height: fit-content;
-  border: 1px solid #f3f4f6;
-  transition: all 0.3s ease;
-}
-
-.preview:hover {
-  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.08);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  top: -20px; /* 🔼 Subida visual para igualar la altura de la vista previa de proyectos */
 }
 
 .preview h3 {
@@ -147,6 +145,26 @@
   color: #4c1d95;
   border-bottom: 2px solid rgba(124, 58, 237, 0.1);
   padding-bottom: 0.4rem;
+  align-self: flex-start;
+  width: 100%;
+  text-align: left;
+}
+
+/* ---------- CARD EN VISTA PREVIA ---------- */
+.preview .card-trabajo {
+  margin-top: 0.2rem;
+  width: 100%;
+  max-width: 300px; /* igual que la card de proyecto */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f3f4f6;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.preview .card-trabajo:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -156,10 +174,12 @@
   }
 
   .preview {
-    order: -1;
+    margin-top: 2rem;
+    align-items: center;
+    top: 0;
   }
+}
 
-  .jobform {
-    padding: 2rem;
-  }
+.jobform {
+  padding: 2rem;
 }
