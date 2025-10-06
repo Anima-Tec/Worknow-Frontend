@@ -7,7 +7,7 @@ import ContactCompany from "./ContactCompany";
 import { Link, useLocation } from "react-router-dom";
 import ProjectForm from "./ProjectForm";
 import CardProyecto from "../components/CardProyecto";
-import CardTrabajo from "../components/CardTrabajo.jsx"; 
+import CardTrabajo from "../components/CardTrabajo.jsx";
 import JobForm from "./JobForm.jsx";
 import { getJobs } from "../services/api";
 
@@ -167,27 +167,31 @@ export default function HomeCompany() {
       )}
 
       {/* 🔹 Listado de trabajos */}
-      <section className="job-postings">
-        <h2>Puestos de Trabajo publicados</h2>
-        <div className="jobs">
-          {jobs.length === 0 ? (
-            <p>No hay trabajos publicados aún.</p>
-          ) : (
-            jobs.map((job) => (
-              <div key={job.id} className="job-card">
-                <p>
-                  <strong>{job.title}</strong>
-                </p>
-                <p>{job.companyName}</p>
-                <p>
-                  {job.location} · {job.salaryRange}
-                </p>
-                <p>{job.modality}</p>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
+<section className="job-postings">
+  <h2>Puestos de Trabajo publicados</h2>
+  <div className="jobs">
+    {jobs.length === 0 ? (
+      <p>No hay trabajos publicados aún.</p>
+    ) : (
+      jobs.map((job) => (
+        <CardTrabajo
+          key={job.id}
+          title={job.title}
+          company={job.companyName}
+          area={job.area}
+          jobType={job.jobType}
+          contractType={job.contractType}
+          modality={job.modality}
+          location={job.location}
+          salary={job.salaryRange}
+          description={job.description}
+          projectUrl={job.projectUrl} // si existe un proyecto asociado
+        />
+      ))
+    )}
+  </div>
+</section>
+
 
       {/* 🔹 Listado de proyectos */}
       <section className="freelancer-postings">

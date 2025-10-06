@@ -140,10 +140,16 @@ export default function HomeUser() {
             jobs.map((job) => (
               <CardTrabajo
                 key={job.id}
-                image={job.image}
-                title={job.title}
-                location={job.location}
-                salary={job.salary}
+          title={job.title}
+          company={job.companyName}
+          area={job.area}
+          jobType={job.jobType}
+          contractType={job.contractType}
+          modality={job.modality}
+          location={job.location}
+          salary={job.salaryRange}
+          description={job.description}
+          projectUrl={job.projectUrl} // si existe un proyecto asociado
               />
             ))
           ) : (
@@ -163,10 +169,14 @@ export default function HomeUser() {
           ) : projects.length > 0 ? (
             projects.map((project) => (
               <CardProyecto
-                key={project.id}
-                title={project.title}
-                type={project.type}
-                category={project.category}
+                key={p.id}
+                title={p.title}
+                description={p.description}
+                skills={p.skills}
+                duration={p.duration}
+                modality={p.modality}
+                remuneration={p.remuneration}
+                company={p.company?.email}
               />
             ))
           ) : (
