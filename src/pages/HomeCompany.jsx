@@ -4,10 +4,9 @@ import { AiOutlineHome } from "react-icons/ai";
 import { IoIosContacts, IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import ContactCompany from "./ContactCompany";
-import { Link } from "react-router-dom";
-import ProjectForm from "./ProjectForm"; 
+import { Link, useLocation } from "react-router-dom";
+import ProjectForm from "./ProjectForm";
 import CardProyecto from "../components/CardProyecto";
-import { useLocation } from "react-router-dom";
 import JobForm from "./JobForm.jsx";
 import { getJobs } from "../services/api";
 
@@ -19,6 +18,7 @@ export default function HomeCompany() {
   const [jobs, setJobs] = useState([]);
   const location = useLocation();
 
+  // 🔹 Cargar proyectos
   useEffect(() => {
     fetch("http://localhost:3000/api/projects")
       .then((res) => res.json())
@@ -27,8 +27,10 @@ export default function HomeCompany() {
   }, []);
 
   const handleProjectCreated = (newProject) => {
-    setProjects([newProject, ...projects]); 
+    setProjects([newProject, ...projects]);
   };
+
+  // 🔹 Mostrar modal de éxito si viene de JobForm con navigate()
   useEffect(() => {
     if (location.state?.jobCreated) {
       setShowSuccess(true);
@@ -36,12 +38,19 @@ export default function HomeCompany() {
     }
   }, [location.state]);
 
-  // Cargar trabajos al montar
+  // 🔹 Cargar trabajos al montar
   useEffect(() => {
     getJobs()
       .then(setJobs)
       .catch((err) => console.error("Error cargando trabajos:", err));
   }, []);
+
+  // ✅ AGREGADO: Cuando se crea un nuevo trabajo, se agrega a la lista directamente
+  const handleJobCreated = (newJob) => {
+    setJobs((prev) => [newJob, ...prev]);
+    setShowJobForm(false);
+    setShowSuccess(true);
+  };
 
   return (
     <div>
@@ -88,7 +97,10 @@ export default function HomeCompany() {
             Accedé a talento independiente que se adapta a las necesidades de tu
             empresa.
           </p>
-          <button className="primaryBtn" onClick={() => setShowProjectForm(true)}>
+          <button
+            className="primaryBtn"
+            onClick={() => setShowProjectForm(true)}
+          >
             Publicar Proyecto
           </button>
         </div>
@@ -116,7 +128,8 @@ export default function HomeCompany() {
             >
               ✖
             </button>
-            <JobForm />
+            {/* 👇 Pasamos la función handleJobCreated */}
+            <JobForm onJobCreated={handleJobCreated} />
           </div>
         </div>
       )}
@@ -145,15 +158,14 @@ export default function HomeCompany() {
           <div className="modal-content">
             ✅ Trabajo subido con éxito
             <br />
-            <button
-              className="primaryBtn"
-              onClick={() => setShowSuccess(false)}
-            >
+            <button className="primaryBtn" onClick={() => setShowSuccess(false)}>
               Cerrar
             </button>
           </div>
         </div>
       )}
+
+      {/* 🔹 Listado de trabajos */}
       <section className="job-postings">
         <h2>Puestos de Trabajo publicados</h2>
         <div className="jobs">
@@ -176,6 +188,7 @@ export default function HomeCompany() {
         </div>
       </section>
 
+      {/* 🔹 Listado de proyectos */}
       <section className="freelancer-postings">
         <h2>Proyectos publicados</h2>
         <div className="freelancer-jobs">

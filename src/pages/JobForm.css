@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 3rem;
-  margin: 2rem auto;
+  margin: 2.5rem auto;
   max-width: 1200px;
   font-family: "Inter", system-ui, sans-serif;
   color: #111827;
@@ -12,37 +12,48 @@
 .jobform {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  gap: 1.4rem;
+  background: #ffffff;
+  padding: 2.5rem 3rem;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f3f4f6;
+  transition: all 0.3s ease;
+}
+
+.jobform:hover {
+  box-shadow: 0 14px 36px rgba(124, 58, 237, 0.08);
 }
 
 .jobform h2 {
   font-size: 2rem;
   font-weight: 700;
+  color: #4c1d95;
   margin-bottom: 0.5rem;
-  color: #111827;
+  text-align: left;
+  letter-spacing: -0.5px;
 }
 
+/* ---------- LABELS ---------- */
 .jobform label {
-  font-weight: 500;
-  margin-bottom: 0.4rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
   display: block;
   color: #374151;
+  font-size: 0.95rem;
 }
 
+/* ---------- INPUTS, SELECTS, TEXTAREAS ---------- */
 .jobform input,
 .jobform select,
 .jobform textarea {
   width: 100%;
-  padding: 0.9rem 1rem;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
   font-size: 1rem;
-  transition: all 0.2s ease-in-out;
-  background: #fff;
+  transition: all 0.25s ease;
+  background: #f9fafb;
 }
 
 .jobform input:focus,
@@ -50,49 +61,105 @@
 .jobform textarea:focus {
   outline: none;
   border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+  background: #fff;
 }
 
+/* ---------- PLACEHOLDERS ---------- */
+.jobform input::placeholder,
+.jobform textarea::placeholder {
+  color: #9ca3af; /* gris suave */
+  opacity: 1; /* visibilidad consistente */
+}
+
+/* ---------- SELECT PLACEHOLDER ---------- */
+.jobform select {
+  color: #111827;
+}
+
+.jobform select:invalid,
+.jobform select option[value=""] {
+  color: #9ca3af;
+}
+
+.jobform select:not(:invalid) {
+  color: #111827;
+}
+
+/* ---------- TEXTAREA ---------- */
 .jobform textarea {
   min-height: 140px;
   resize: vertical;
 }
 
+/* ---------- ROWS ---------- */
 .jobform .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.2rem;
+  gap: 1.5rem;
 }
 
+/* ---------- BUTTON ---------- */
 .btn-publicar {
   background: linear-gradient(90deg, #7c3aed, #9333ea);
-  color: #fff;
+  color: #ffffff;
   border: none;
-  padding: 0.9rem 2rem;
+  padding: 1rem 2.5rem;
   border-radius: 9999px;
   cursor: pointer;
   font-weight: 600;
   font-size: 1rem;
   align-self: flex-start;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.2);
 }
 
 .btn-publicar:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   background: linear-gradient(90deg, #6d28d9, #7c3aed);
+  box-shadow: 0 8px 22px rgba(109, 40, 217, 0.25);
 }
 
+.btn-publicar:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(109, 40, 217, 0.2);
+}
+
+/* ---------- PREVIEW ---------- */
 .preview {
-  background: #fff;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.8rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   height: fit-content;
+  border: 1px solid #f3f4f6;
+  transition: all 0.3s ease;
+}
+
+.preview:hover {
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.08);
 }
 
 .preview h3 {
   font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #111827;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #4c1d95;
+  border-bottom: 2px solid rgba(124, 58, 237, 0.1);
+  padding-bottom: 0.4rem;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .jobform-container {
+    grid-template-columns: 1fr;
+  }
+
+  .preview {
+    order: -1;
+  }
+
+  .jobform {
+    padding: 2rem;
+  }
 }

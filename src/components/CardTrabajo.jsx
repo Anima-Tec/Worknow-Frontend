@@ -10,6 +10,7 @@ export default function CardTrabajo({
   location,
   salary,
   description,
+  projectUrl,
 }) {
   return (
     <div className="job-card">
@@ -38,6 +39,14 @@ export default function CardTrabajo({
         <button className="btn-outline">View details</button>
         <button className="btn-primary">Apply now</button>
       </div>
+
+      {projectUrl && (
+  <p className="extra">
+    🔗 <a href={projectUrl} target="_blank" rel="noopener noreferrer">
+      Ver proyecto asociado
+    </a>
+  </p>
+)}
     </div>
   );
 }

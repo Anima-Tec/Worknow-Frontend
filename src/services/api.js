@@ -41,9 +41,17 @@ export async function createJob(jobData) {
   return res.json();
 }
 export async function getJobs() {
-  const res = await fetch(`${API_BASE}/jobs`);
-  if (!res.ok) {
-    throw new Error("Error obteniendo trabajos");
+  try {
+    const res = await fetch(`${API_BASE}/jobs`);
+    if (!res.ok) {
+      console.error("❌ Error al obtener trabajos:", res.status, res.statusText);
+      return [];
+    }
+    const data = await res.json();
+    console.log("✅ Trabajos obtenidos:", data);
+    return data;
+  } catch (error) {
+    console.error("🚨 Error de conexión con el backend:", error);
+    return [];
   }
-  return res.json();
 }

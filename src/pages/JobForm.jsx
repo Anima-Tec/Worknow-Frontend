@@ -12,6 +12,7 @@ export default function JobForm() {
     area: "",
     jobType: "",
     contractType: "",
+    projectUrl: "", // 👈 nuevo campo agregado
     modality: "",
     location: "",
     salaryRange: "",
@@ -66,6 +67,15 @@ export default function JobForm() {
           value={form.companyWebsite}
           onChange={handleChange}
           required
+        />
+
+         {/* 🆕 Nuevo campo URL del proyecto */}
+        <label>URL del proyecto asociado</label>
+        <input
+          name="projectUrl"
+          placeholder="https://worknow.com/proyecto/123"
+          value={form.projectUrl}
+          onChange={handleChange}
         />
 
         <div className="form-row">
@@ -172,6 +182,7 @@ export default function JobForm() {
         </button>
       </form>
 
+      {/* -------- PREVIEW -------- */}
       <div className="preview">
         <h3>Vista previa de la publicación</h3>
         <CardTrabajo
@@ -184,6 +195,7 @@ export default function JobForm() {
           location={form.location || "Ubicación"}
           salary={form.salaryRange || "Salario"}
           description={form.description || "Descripción..."}
+          projectUrl={form.projectUrl} // 👈 mostrado también en Card
         />
       </div>
     </div>
