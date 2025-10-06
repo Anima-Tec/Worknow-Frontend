@@ -1,124 +1,151 @@
-.job-card {
+.card-trabajo {
   background: #fff;
   border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  max-width: 380px;
-  font-family: "Inter", sans-serif;
+  padding: 1.2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-width: 260px;
+  max-width: 300px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.job-card-header {
-  background: linear-gradient(90deg, #1e1b4b, #312e81);
-  color: #fff;
-  padding: 1rem;
-  position: relative;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-align: center;
+.card-trabajo:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
 }
 
-.job-logo {
-  width: 42px;
-  height: 42px;
+/* HEADER */
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #fff;
-  color: #6c47ff;
-  font-weight: 700;
+  background: #6c47ff;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  bottom: -21px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.job-card-body {
-  padding: 2.5rem 1.5rem 1rem;
-  text-align: center;
-}
-
-.job-card-body h4 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-  color: #111827;
-}
-
-.job-card-body .company {
-  font-size: 0.95rem;
-  color: #6b7280;
-  margin-bottom: 0.75rem;
-}
-
-.job-meta {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+  font-weight: bold;
   font-size: 0.9rem;
-  margin-bottom: 0.5rem;
 }
 
 .job-type {
-  background: #f0e9ff;
+  background: #f3e8ff;
   color: #6c47ff;
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  font-weight: 600;
   font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  text-transform: capitalize;
 }
 
-.salary {
-  color: #6b7280;
+/* CONTENIDO */
+.job-title {
+  font-size: 1.05rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  color: #222;
 }
 
-.extra {
-  font-size: 0.85rem;
-  color: #4b5563;
-  margin: 0.25rem 0;
-}
 
-.desc {
-  margin-top: 0.5rem;
+.job-company {
   font-size: 0.9rem;
-  color: #374151;
+  color: #555;
+  margin-bottom: 0.4rem;
 }
 
-.job-card-footer {
-  display: flex;
-  justify-content: space-around;
-  padding: 1rem;
-  border-top: 1px solid #f3f4f6;
+
+/* INFO */
+.job-summary {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  color: #444;
+  list-style: none;
+  padding: 0;
 }
 
-.btn-outline {
-  border: 2px solid #6c47ff;
-  background: #fff;
+.job-summary strong {
   color: #6c47ff;
-  padding: 0.5rem 1.2rem;
-  border-radius: 9999px;
+}
+
+/* LINK */
+.project-link {
+  font-size: 0.8rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
+  color: #6c47ff;
+  text-decoration: none;
+  margin-bottom: 1rem;
+  transition: color 0.2s ease;
 }
 
-.btn-outline:hover {
-  background: #f3f0ff;
+.project-link:hover {
+  color: #5636d9;
+  text-decoration: underline;
 }
 
-.btn-primary {
+/* BOTONES */
+.job-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.primary-btn {
+  flex: 1;
   background: #6c47ff;
   color: #fff;
-  padding: 0.5rem 1.2rem;
   border: none;
-  border-radius: 9999px;
-  font-weight: 600;
+  padding: 0.6rem;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: background 0.3s ease;
 }
 
-.btn-primary:hover {
-  background: #5530d8;
+.primary-btn:hover {
+  background: #5636d9;
+}
+
+.secondary-btn {
+  flex: 1;
+  background: #fff;
+  color: #6c47ff;
+  border: 2px solid #6c47ff;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+  background: #f3e8ff;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .card-trabajo {
+    max-width: 100%;
+  }
+
+  .job-actions {
+    flex-direction: column;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+  }
 }

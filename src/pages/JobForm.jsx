@@ -184,7 +184,7 @@ export default function JobForm() {
 
       {/* -------- PREVIEW -------- */}
       <div className="preview">
-        <h3>Vista previa de la publicación</h3>
+        <h3>Vista previa</h3>
         <CardTrabajo
           title={form.title || "Título del puesto"}
           company={form.companyName || "Empresa"}

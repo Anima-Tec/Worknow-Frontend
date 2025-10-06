@@ -7,6 +7,7 @@ import ContactCompany from "./ContactCompany";
 import { Link, useLocation } from "react-router-dom";
 import ProjectForm from "./ProjectForm";
 import CardProyecto from "../components/CardProyecto";
+import CardTrabajo from "../components/CardTrabajo.jsx"; 
 import JobForm from "./JobForm.jsx";
 import { getJobs } from "../services/api";
 
