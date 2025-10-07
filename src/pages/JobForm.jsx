@@ -12,7 +12,7 @@ export default function JobForm() {
     area: "",
     jobType: "",
     contractType: "",
-    projectUrl: "", // 👈 nuevo campo agregado
+    projectUrl: "",
     modality: "",
     location: "",
     salaryRange: "",
@@ -47,7 +47,7 @@ export default function JobForm() {
         </div>
       )}
 
-      {/* -------- FORM -------- */}
+      {/* -------- FORMULARIO -------- */}
       <form className="jobform" onSubmit={handleSubmit}>
         <h2>Publicar Trabajo</h2>
 
@@ -69,7 +69,6 @@ export default function JobForm() {
           required
         />
 
-         {/* 🆕 Nuevo campo URL del proyecto */}
         <label>URL del proyecto asociado</label>
         <input
           name="projectUrl"
@@ -182,7 +181,7 @@ export default function JobForm() {
         </button>
       </form>
 
-      {/* -------- PREVIEW -------- */}
+      {/* -------- VISTA PREVIA -------- */}
       <div className="preview">
         <h3>Vista previa</h3>
         <CardTrabajo
@@ -195,7 +194,8 @@ export default function JobForm() {
           location={form.location || "Ubicación"}
           salary={form.salaryRange || "Salario"}
           description={form.description || "Descripción..."}
-          projectUrl={form.projectUrl} // 👈 mostrado también en Card
+          projectUrl={form.projectUrl}
+          isPreview={true} // 👈 activa el modo compacto
         />
       </div>
     </div>
