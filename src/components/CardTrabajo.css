@@ -15,7 +15,7 @@
 
 /* ---------------- HEADER CON BANNER ---------------- */
 .job-banner {
-  background: linear-gradient(135deg, #303666 0%, #2d3250 100%);
+  background: linear-gradient(135deg, #5663c5 0%, #6c63ff 100%);
   padding: 0.8rem 1rem 1.6rem 1rem;
   position: relative;
   color: #fff;
@@ -51,30 +51,29 @@
 
 /* ---------------- CONTENIDO ---------------- */
 .job-content {
-  padding: 2rem 1rem 1rem 1rem; /* 🔹 un poco menos de padding arriba */
+  padding: 2rem 1rem 1rem 1rem;
 }
 
 /* ---------------- TITULO + TIPO DE TRABAJO ---------------- */
 .job-header-column {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.2rem; /* 🔹 menos espacio general */
+  margin-bottom: 0.2rem;
 }
 
 .job-title {
   font-size: 1rem;
   font-weight: 700;
   color: #3b0ca3;
-  margin-bottom: 0.1rem; /* 🔹 más pegado al tipo */
+  margin-bottom: 0.1rem;
   line-height: 1.05;
 }
 
-/* Contenedor que alinea el tipo a la derecha */
 .job-type-container {
   display: flex;
   justify-content: flex-end;
-  margin-top: 0rem; /* 🔹 quita espacio extra */
-  margin-bottom: 0.2rem; /* 🔹 menos espacio antes de empresa */
+  margin-top: 0rem;
+  margin-bottom: 0.2rem;
 }
 
 /* ---------- ETIQUETA BASE DE TIPO DE TRABAJO ---------- */
@@ -102,25 +101,19 @@
   border-color: #86efac;
 }
 
-.job-type.freelance {
-  background: #e0f2fe;
-  color: #0369a1;
-  border-color: #7dd3fc;
-}
-
 /* ---------------- EMPRESA ---------------- */
 .job-company {
   font-size: 0.82rem;
   color: #6b7280;
   font-weight: 500;
-  margin-top: 0rem; /* 🔹 sube el texto de empresa */
+  margin-top: 0rem;
   margin-bottom: 0.3rem;
 }
 
 /* ---------------- INFO ---------------- */
 .job-summary {
   display: grid;
-  gap: 0.25rem; /* 🔹 menos separación entre líneas */
+  gap: 0.25rem;
   font-size: 0.8rem;
   margin-bottom: 0.9rem;
   list-style: none;

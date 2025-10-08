@@ -12,18 +12,20 @@ export default function CardTrabajo({
   projectUrl,
   isPreview = false,
 }) {
-  // 🔹 Normalizamos el texto (quita espacios y lo pasa a minúsculas)
   const normalizedType = jobType?.toLowerCase().trim();
 
-  // 🔹 Determina la clase de color según el tipo
   const jobTypeClass =
     normalizedType === "full-time"
       ? "full-time"
       : normalizedType === "part-time"
       ? "part-time"
-      : normalizedType === "freelance"
-      ? "freelance"
       : "";
+
+  // 🔹 Función que agrega el signo de peso si hay salario
+  const formatSalary = (value) => {
+    if (!value) return "A convenir";
+    return `$${value}`;
+  };
 
   return (
     <div className={`card-trabajo ${isPreview ? "preview-mode" : ""}`}>
@@ -38,9 +40,9 @@ export default function CardTrabajo({
         <div className="job-header-column">
           <h3 className="job-title">{title || "Título del puesto"}</h3>
           <div className="job-type-container">
-            <span className={`job-type ${jobTypeClass}`}>
-              {jobType || "Freelance"}
-            </span>
+            {jobType && (
+              <span className={`job-type ${jobTypeClass}`}>{jobType}</span>
+            )}
           </div>
         </div>
 
@@ -49,7 +51,7 @@ export default function CardTrabajo({
         {/* ---------- INFO RESUMEN ---------- */}
         <ul className="job-summary">
           <li>
-            <strong>Salario:</strong> {salary || "A convenir"}
+            <strong>Salario:</strong> {formatSalary(salary)}
           </li>
           <li>
             <strong>Contrato:</strong> {contractType || "Contrato"}
