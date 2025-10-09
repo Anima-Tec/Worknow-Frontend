@@ -10,6 +10,7 @@ import ContactCompany from "./pages/ContactCompany";
 import ContactUser from "./pages/ContactUser";
 import PerfilUser from "./pages/PerfilUser";
 import JobForm from "./pages/JobForm"; 
+import PerfilCompany from "./pages/PerfilCompany";
 
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
       <Route path="/PerfilUser" element={<PerfilUser />} />
       <Route path="/contactcompany" element={<ContactCompany />} />
       <Route path="/jobs/form" element={<JobForm />} />
+      <Route path="/perfilcompany" element={<PerfilCompany />} />
     </Routes>
   );
 }
