@@ -8,10 +8,7 @@ export async function loginApi({ email, password }) {
     credentials: "include",
   });
 
-  if (!res.ok) {
-    throw new Error("Credenciales inválidas");
-  }
-
+  if (!res.ok) throw new Error("Credenciales inválidas");
   return res.json();
 }
 
@@ -28,30 +25,37 @@ export async function searchProjects(filters) {
 }
 
 export async function createJob(jobData) {
+  const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/jobs`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(jobData),
   });
 
-  if (!res.ok) {
-    throw new Error("Error al crear trabajo");
-  }
-
+  if (!res.ok) throw new Error("Error al crear trabajo");
   return res.json();
 }
+
+export async function createProject(projectData) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/projects`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(projectData),
+  });
+
+  if (!res.ok) throw new Error("Error al crear proyecto");
+  return res.json();
+}
+
 export async function getJobs() {
-  try {
-    const res = await fetch(`${API_BASE}/jobs`);
-    if (!res.ok) {
-      console.error("❌ Error al obtener trabajos:", res.status, res.statusText);
-      return [];
-    }
-    const data = await res.json();
-    console.log("✅ Trabajos obtenidos:", data);
-    return data;
-  } catch (error) {
-    console.error("🚨 Error de conexión con el backend:", error);
-    return [];
-  }
+  const res = await fetch(`${API_BASE}/jobs`);
+  if (!res.ok) throw new Error("Error obteniendo trabajos");
+  return res.json();
 }

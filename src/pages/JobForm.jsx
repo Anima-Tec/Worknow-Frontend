@@ -12,7 +12,7 @@ export default function JobForm() {
     area: "",
     jobType: "",
     contractType: "",
-    projectUrl: "", // 👈 nuevo campo agregado
+    projectUrl: "",
     modality: "",
     location: "",
     salaryRange: "",
@@ -22,8 +22,18 @@ export default function JobForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // 🔹 handleChange con validación numérica para el campo salarial
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "salaryRange") {
+      // Solo permite dígitos (0–9)
+      if (/^\d*$/.test(value)) {
+        setForm({ ...form, [name]: value });
+      }
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -47,7 +57,7 @@ export default function JobForm() {
         </div>
       )}
 
-      {/* -------- FORM -------- */}
+      {/* -------- FORMULARIO -------- */}
       <form className="jobform" onSubmit={handleSubmit}>
         <h2>Publicar Trabajo</h2>
 
@@ -69,7 +79,6 @@ export default function JobForm() {
           required
         />
 
-         {/* 🆕 Nuevo campo URL del proyecto */}
         <label>URL del proyecto asociado</label>
         <input
           name="projectUrl"
@@ -113,9 +122,10 @@ export default function JobForm() {
               <option value="">Selecciona un tipo</option>
               <option value="FULL-TIME">Full-time</option>
               <option value="PART-TIME">Part-time</option>
-              <option value="FREELANCE">Freelance</option>
+              {/* Freelance eliminado 👋 */}
             </select>
           </div>
+
           <div>
             <label>Tipo de contrato *</label>
             <select
@@ -162,7 +172,7 @@ export default function JobForm() {
         <label>Rango salarial *</label>
         <input
           name="salaryRange"
-          placeholder="Ej. $15.000 - $32.000"
+          placeholder="Ej: $30000"
           value={form.salaryRange}
           onChange={handleChange}
           required
@@ -182,7 +192,7 @@ export default function JobForm() {
         </button>
       </form>
 
-      {/* -------- PREVIEW -------- */}
+      {/* -------- VISTA PREVIA -------- */}
       <div className="preview">
         <h3>Vista previa</h3>
         <CardTrabajo
@@ -195,7 +205,8 @@ export default function JobForm() {
           location={form.location || "Ubicación"}
           salary={form.salaryRange || "Salario"}
           description={form.description || "Descripción..."}
-          projectUrl={form.projectUrl} // 👈 mostrado también en Card
+          projectUrl={form.projectUrl}
+          isPreview={true}
         />
       </div>
     </div>
