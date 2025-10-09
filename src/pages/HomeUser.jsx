@@ -51,37 +51,30 @@ export default function HomeUser() {
   return (
     <div className="home-user">
       <header className="header">
-        <h1 className="h1">
-          work<span>now</span>
-        </h1>
-        <nav className="nav">
-          <ul>
-            <li className="nav-item" onClick={() => window.location.reload()}>
+              <h1 className="h1">
+                work<span>now</span>
+              </h1>
+              <nav className="nav">
+                <ul>
+               <li className="nav-item" onClick={() => window.location.reload()}>
               <AiOutlineHome />
               <span>Home</span>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => (window.location.href = "/ContactUser")}
-            >
-              <IoIosContacts />
-              <span>Contacto</span>
-            </li>
-            <li className="nav-item" onClick={() => {}}>
-              <IoIosNotifications />
-              <span>Notificaciones</span>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => (window.location.href = "/PerfilUser")}
-            >
-              <CgProfile />
-              <span>Perfil</span>
-            </li>
-          </ul>
-        </nav>
-      </header>
-
+              </li>
+                <li className="nav-item" onClick={() => window.location.href = '/ContactUser'}>
+                <IoIosContacts />
+                <span>Contacto</span>
+                </li>
+                <li className="nav-item" onClick={() => {}}>
+                  <IoIosNotifications />
+                  <span>Notificaciones</span>
+                    </li>
+                  <li className="nav-item" onClick={() => window.location.href = '/PerfilUser'}>
+                    <CgProfile />
+                    <span>Perfil</span>
+                  </li>
+                </ul>
+              </nav>
+            </header>
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
           <source src="/video-banner.mp4" type="video/mp4" />
@@ -135,10 +128,9 @@ export default function HomeUser() {
         </button>
       </div>
 
-      {/* 💼 Trabajos */}
       <section className="featured">
         <div className="header">
-          <h3>Featured jobs</h3>
+          <h3>Featured job</h3>
           <a href="#">View all →</a>
         </div>
         <div className="cards">
@@ -148,49 +140,47 @@ export default function HomeUser() {
             jobs.map((job) => (
               <CardTrabajo
                 key={job.id}
-                title={job.title}
-                company={job.companyName}
-                area={job.area}
-                jobType={job.jobType}
-                contractType={job.contractType}
-                modality={job.modality}
-                location={job.location}
-                salary={job.salaryRange}
-                description={job.description}
-                projectUrl={job.projectUrl}
+          title={job.title}
+          company={job.companyName}
+          area={job.area}
+          jobType={job.jobType}
+          contractType={job.contractType}
+          modality={job.modality}
+          location={job.location}
+          salary={job.salaryRange}
+          description={job.description}
+          projectUrl={job.projectUrl} // si existe un proyecto asociado
               />
             ))
           ) : (
-            <p className="no-data">No hay trabajos por ahora</p>
+            <p className="no-data">No hay trabajos destacados por ahora</p>
           )}
         </div>
       </section>
 
-      {/* 💡 Proyectos */}
       <section className="featured">
         <div className="header">
-          <h3>Featured projects</h3>
+          <h3>Featured project</h3>
           <a href="#">View all →</a>
         </div>
-
         <div className="cards">
           {loading ? (
             <p className="loading">Cargando...</p>
           ) : projects.length > 0 ? (
             projects.map((project) => (
               <CardProyecto
-                key={project.id}
-                title={project.title}
-                description={project.description}
-                skills={project.skills}
-                duration={project.duration}
-                modality={project.modality}
-                remuneration={project.remuneration}
-                company={project.companyName || "Empresa"}
+                key={p.id}
+                title={p.title}
+                description={p.description}
+                skills={p.skills}
+                duration={p.duration}
+                modality={p.modality}
+                remuneration={p.remuneration}
+                company={p.company?.email}
               />
             ))
           ) : (
-            <p className="no-data">No hay proyectos publicados por ahora</p>
+            <p className="no-data">No hay proyectos destacados por ahora</p>
           )}
         </div>
       </section>
