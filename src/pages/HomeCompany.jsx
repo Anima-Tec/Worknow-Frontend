@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./HomeCompany.css";
 import { AiOutlineHome } from "react-icons/ai";
 import { IoIosContacts, IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
+import { useLocation } from "react-router-dom";
 import { getJobs } from "../services/api";
 import ProjectForm from "./ProjectForm";
 import JobForm from "./JobForm.jsx";
 import CardProyecto from "../components/CardProyecto";
 import CardTrabajo from "../components/CardTrabajo.jsx";
-import { useLocation } from "react-router-dom";
 
 export default function HomeCompany() {
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -18,30 +18,43 @@ export default function HomeCompany() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const location = useLocation();
-  const scrollRef = useRef(null);
 
-  // Obtener proyectos
+  // 🔹 Obtener proyectos del backend
   useEffect(() => {
     fetch("http://localhost:3000/api/projects")
       .then((res) => res.json())
       .then((data) => setProjects(data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Error cargando proyectos:", err));
   }, []);
 
-  // Obtener trabajos
+  // 🔹 Obtener trabajos del backend
   useEffect(() => {
     getJobs()
       .then(setJobs)
       .catch((err) => console.error("Error cargando trabajos:", err));
   }, []);
 
-  // Modal de éxito
+  // 🔹 Mostrar modal de éxito si viene de JobForm con navigate()
   useEffect(() => {
     if (location.state?.jobCreated) {
       setShowSuccess(true);
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
+
+  // 🔹 Manejar proyecto creado
+  const handleProjectCreated = (newProject) => {
+    setProjects((prev) => [newProject, ...prev]);
+    setShowProjectForm(false);
+    setShowSuccess(true);
+  };
+
+  // 🔹 Manejar trabajo creado
+  const handleJobCreated = (newJob) => {
+    setJobs((prev) => [newJob, ...prev]);
+    setShowJobForm(false);
+    setShowSuccess(true);
+  };
 
   return (
     <div>
@@ -88,8 +101,7 @@ export default function HomeCompany() {
         <div className="card1">
           <h2>Publicar proyecto Freelance</h2>
           <p>
-            Accedé a talento independiente que se adapta a las necesidades de tu
-            empresa.
+            Accedé a talento independiente que se adapta a las necesidades de tu empresa.
           </p>
           <button
             className="primaryBtn"
@@ -102,8 +114,7 @@ export default function HomeCompany() {
         <div className="card2">
           <h2>Publicar puesto de Trabajo</h2>
           <p>
-            Busca el perfil ideal y suma profesionales comprometidos a largo
-            plazo.
+            Busca el perfil ideal y suma profesionales comprometidos a largo plazo.
           </p>
           <button className="primaryBtn" onClick={() => setShowJobForm(true)}>
             Publicar trabajo
@@ -115,10 +126,14 @@ export default function HomeCompany() {
       {showJobForm && (
         <div className="modal">
           <div className="modal-content">
-            <button className="close-btn" onClick={() => setShowJobForm(false)}>
+            <button
+              className="close-btn"
+              onClick={() => setShowJobForm(false)}
+              style={{ float: "right" }}
+            >
               ✖
             </button>
-            <JobForm />
+            <JobForm onJobCreated={handleJobCreated} />
           </div>
         </div>
       )}
@@ -129,10 +144,14 @@ export default function HomeCompany() {
             <button
               className="close-btn"
               onClick={() => setShowProjectForm(false)}
+              style={{ float: "right" }}
             >
               ✖
             </button>
-            <ProjectForm />
+            <ProjectForm
+              onClose={() => setShowProjectForm(false)}
+              onProjectCreated={handleProjectCreated}
+            />
           </div>
         </div>
       )}
@@ -140,7 +159,7 @@ export default function HomeCompany() {
       {showSuccess && (
         <div className="modal">
           <div className="modal-content">
-            ✅ Trabajo subido con éxito
+            ✅ Publicación realizada con éxito
             <br />
             <button className="primaryBtn" onClick={() => setShowSuccess(false)}>
               Cerrar
@@ -149,11 +168,11 @@ export default function HomeCompany() {
         </div>
       )}
 
-      {/* ---------- CARRUSEL INFINITO / LISTA ---------- */}
+      {/* ---------- PROYECTOS PUBLICADOS (CARRUSEL BOOTSTRAP) ---------- */}
       <section className="freelancer-postings">
         <div className="section-header">
           <h2>Proyectos publicados</h2>
-          {!showAllProjects && projects.length > 4 && (
+          {!showAllProjects && projects.length > 3 && (
             <button
               className="view-more-btn"
               onClick={() => setShowAllProjects(true)}
@@ -164,24 +183,53 @@ export default function HomeCompany() {
         </div>
 
         {!showAllProjects ? (
-          <div className="carousel-loop violet-mode">
-            <div className="carousel-track" ref={scrollRef}>
-              {[...projects, ...projects].map((p, i) => (
-                <CardProyecto
-                  key={`${p.id}-${i}`}
-                  title={p.title}
-                  description={p.description}
-                  skills={p.skills}
-                  duration={p.duration}
-                  modality={p.modality}
-                  remuneration={p.remuneration}
-                  company={p.company?.email}
-                />
+          <div
+            id="carouselProjects"
+            className="carousel slide"
+            data-bs-ride="carousel"
+          >
+            <div className="carousel-inner">
+              {projects.map((p, index) => (
+                <div
+                  className={`carousel-item ${index === 0 ? "active" : ""}`}
+                  key={p.id}
+                >
+                  <div className="carousel-card-wrapper">
+                    <CardProyecto
+                      title={p.title}
+                      description={p.description}
+                      skills={p.skills}
+                      duration={p.duration}
+                      modality={p.modality}
+                      remuneration={p.remuneration}
+                      company={p.company?.email}
+                    />
+                  </div>
+                </div>
               ))}
             </div>
+
+            <button
+              className="carousel-control-prev"
+              type="button"
+              data-bs-target="#carouselProjects"
+              data-bs-slide="prev"
+            >
+              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Anterior</span>
+            </button>
+            <button
+              className="carousel-control-next"
+              type="button"
+              data-bs-target="#carouselProjects"
+              data-bs-slide="next"
+            >
+              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Siguiente</span>
+            </button>
           </div>
         ) : (
-          <div className="freelancer-list neutral-mode">
+          <div className="freelancer-list">
             {projects.map((p) => (
               <CardProyecto
                 key={p.id}
