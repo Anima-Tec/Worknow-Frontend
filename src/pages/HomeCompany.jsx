@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./HomeCompany.css";
 import { AiOutlineHome } from "react-icons/ai";
 import { IoIosContacts, IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
-import ContactCompany from "./ContactCompany";
-import { Link, useLocation } from "react-router-dom";
+import { getJobs } from "../services/api";
 import ProjectForm from "./ProjectForm";
+import JobForm from "./JobForm.jsx";
 import CardProyecto from "../components/CardProyecto";
 import CardTrabajo from "../components/CardTrabajo.jsx";
-import JobForm from "./JobForm.jsx";
-import { getJobs } from "../services/api";
+import { useLocation } from "react-router-dom";
 
 export default function HomeCompany() {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
   const [projects, setProjects] = useState([]);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [jobs, setJobs] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showAllProjects, setShowAllProjects] = useState(false);
   const location = useLocation();
+  const scrollRef = useRef(null);
 
-  // 🔹 Cargar proyectos
+  // Obtener proyectos
   useEffect(() => {
     fetch("http://localhost:3000/api/projects")
       .then((res) => res.json())
@@ -27,11 +28,14 @@ export default function HomeCompany() {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleProjectCreated = (newProject) => {
-    setProjects([newProject, ...projects]);
-  };
+  // Obtener trabajos
+  useEffect(() => {
+    getJobs()
+      .then(setJobs)
+      .catch((err) => console.error("Error cargando trabajos:", err));
+  }, []);
 
-  // 🔹 Mostrar modal de éxito si viene de JobForm con navigate()
+  // Modal de éxito
   useEffect(() => {
     if (location.state?.jobCreated) {
       setShowSuccess(true);
@@ -39,22 +43,9 @@ export default function HomeCompany() {
     }
   }, [location.state]);
 
-  // 🔹 Cargar trabajos al montar
-  useEffect(() => {
-    getJobs()
-      .then(setJobs)
-      .catch((err) => console.error("Error cargando trabajos:", err));
-  }, []);
-
-  // ✅ AGREGADO: Cuando se crea un nuevo trabajo, se agrega a la lista directamente
-  const handleJobCreated = (newJob) => {
-    setJobs((prev) => [newJob, ...prev]);
-    setShowJobForm(false);
-    setShowSuccess(true);
-  };
-
   return (
     <div>
+      {/* ---------- HEADER ---------- */}
       <header className="header">
         <h1 className="h1">
           work<span>now</span>
@@ -72,7 +63,7 @@ export default function HomeCompany() {
               <IoIosContacts />
               <span>Contacto</span>
             </li>
-            <li className="nav-item" onClick={() => {}}>
+            <li className="nav-item">
               <IoIosNotifications />
               <span>Notificaciones</span>
             </li>
@@ -87,10 +78,12 @@ export default function HomeCompany() {
         </nav>
       </header>
 
+      {/* ---------- VIDEO ---------- */}
       <div className="video-container">
         <video src="/EMPRESA.mp4" autoPlay loop muted />
       </div>
 
+      {/* ---------- SECCIÓN PUBLICAR ---------- */}
       <div className="cards-container">
         <div className="card1">
           <h2>Publicar proyecto Freelance</h2>
@@ -118,38 +111,28 @@ export default function HomeCompany() {
         </div>
       </div>
 
-      {/* Modal formulario de Trabajo */}
+      {/* ---------- MODALES ---------- */}
       {showJobForm && (
         <div className="modal">
           <div className="modal-content">
-            <button
-              className="close-btn"
-              onClick={() => setShowJobForm(false)}
-              style={{ float: "right" }}
-            >
+            <button className="close-btn" onClick={() => setShowJobForm(false)}>
               ✖
             </button>
-            {/* 👇 Pasamos la función handleJobCreated */}
-            <JobForm onJobCreated={handleJobCreated} />
+            <JobForm />
           </div>
         </div>
       )}
 
-      {/* Modal formulario de Proyecto */}
       {showProjectForm && (
         <div className="modal">
           <div className="modal-content">
             <button
               className="close-btn"
               onClick={() => setShowProjectForm(false)}
-              style={{ float: "right" }}
             >
               ✖
             </button>
-            <ProjectForm
-              onClose={() => setShowProjectForm(false)}
-              onProjectCreated={handleProjectCreated}
-            />
+            <ProjectForm />
           </div>
         </div>
       )}
@@ -166,41 +149,40 @@ export default function HomeCompany() {
         </div>
       )}
 
-      {/* 🔹 Listado de trabajos */}
-<section className="job-postings">
-  <h2>Puestos de Trabajo publicados</h2>
-  <div className="jobs">
-    {jobs.length === 0 ? (
-      <p>No hay trabajos publicados aún.</p>
-    ) : (
-      jobs.map((job) => (
-        <CardTrabajo
-          key={job.id}
-          title={job.title}
-          company={job.companyName}
-          area={job.area}
-          jobType={job.jobType}
-          contractType={job.contractType}
-          modality={job.modality}
-          location={job.location}
-          salary={job.salaryRange}
-          description={job.description}
-          projectUrl={job.projectUrl} // si existe un proyecto asociado
-        />
-      ))
-    )}
-  </div>
-</section>
-
-
-      {/* 🔹 Listado de proyectos */}
+      {/* ---------- CARRUSEL INFINITO / LISTA ---------- */}
       <section className="freelancer-postings">
-        <h2>Proyectos publicados</h2>
-        <div className="freelancer-jobs">
-          {projects.length === 0 ? (
-            <p>No hay proyectos publicados todavía.</p>
-          ) : (
-            projects.map((p) => (
+        <div className="section-header">
+          <h2>Proyectos publicados</h2>
+          {!showAllProjects && projects.length > 4 && (
+            <button
+              className="view-more-btn"
+              onClick={() => setShowAllProjects(true)}
+            >
+              Ver todo →
+            </button>
+          )}
+        </div>
+
+        {!showAllProjects ? (
+          <div className="carousel-loop violet-mode">
+            <div className="carousel-track" ref={scrollRef}>
+              {[...projects, ...projects].map((p, i) => (
+                <CardProyecto
+                  key={`${p.id}-${i}`}
+                  title={p.title}
+                  description={p.description}
+                  skills={p.skills}
+                  duration={p.duration}
+                  modality={p.modality}
+                  remuneration={p.remuneration}
+                  company={p.company?.email}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="freelancer-list neutral-mode">
+            {projects.map((p) => (
               <CardProyecto
                 key={p.id}
                 title={p.title}
@@ -210,6 +192,38 @@ export default function HomeCompany() {
                 modality={p.modality}
                 remuneration={p.remuneration}
                 company={p.company?.email}
+              />
+            ))}
+            <button
+              className="view-more-btn back-btn"
+              onClick={() => setShowAllProjects(false)}
+            >
+              ← Volver
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* ---------- TRABAJOS PUBLICADOS ---------- */}
+      <section className="job-postings">
+        <h2>Puestos de Trabajo publicados</h2>
+        <div className="jobs">
+          {jobs.length === 0 ? (
+            <p>No hay trabajos publicados aún.</p>
+          ) : (
+            jobs.map((job) => (
+              <CardTrabajo
+                key={job.id}
+                title={job.title}
+                company={job.companyName}
+                area={job.area}
+                jobType={job.jobType}
+                contractType={job.contractType}
+                modality={job.modality}
+                location={job.location}
+                salary={job.salaryRange}
+                description={job.description}
+                projectUrl={job.projectUrl}
               />
             ))
           )}
