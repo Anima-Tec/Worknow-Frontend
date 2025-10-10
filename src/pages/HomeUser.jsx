@@ -177,18 +177,19 @@ export default function HomeUser() {
           {loading ? (
             <p className="loading">Cargando...</p>
           ) : projects.length > 0 ? (
-            projects.map((project) => (
-              <CardProyecto
-                key={project.id}
-                title={project.title}
-                description={project.description}
-                skills={project.skills}
-                duration={project.duration}
-                modality={project.modality}
-                remuneration={project.remuneration}
-                company={project.companyName || "Empresa"}
-              />
-            ))
+           projects.map((project) => (
+            <CardProyecto
+              key={project.id}
+              id={project.id} 
+              title={project.title}
+              description={project.description}
+              skills={project.skills}
+              duration={project.duration}
+              modality={project.modality}
+              remuneration={project.remuneration}
+              company={project.companyName || "Empresa"}
+            />
+          ))
           ) : (
             <p className="no-data">No hay proyectos publicados por ahora</p>
           )}
