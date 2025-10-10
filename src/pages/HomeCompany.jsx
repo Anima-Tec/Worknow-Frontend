@@ -9,6 +9,7 @@ import ProjectForm from "./ProjectForm";
 import JobForm from "./JobForm.jsx";
 import CardProyecto from "../components/CardProyecto";
 import CardTrabajo from "../components/CardTrabajo.jsx";
+import Footer from "../components/Footer";
 
 export default function HomeCompany() {
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -70,8 +71,7 @@ export default function HomeCompany() {
               <span>Home</span>
             </li>
             <li
-              className="nav-item"
-              onClick={() => (window.location.href = "/contactcompany")}
+              className="nav-item"onClick={() => (window.location.href = "/contactcompany")}
             >
               <IoIosContacts />
               <span>Contacto</span>
@@ -277,6 +277,7 @@ export default function HomeCompany() {
           )}
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

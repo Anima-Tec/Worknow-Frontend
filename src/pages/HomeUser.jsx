@@ -9,6 +9,7 @@ import "./HomeUser.css";
 import { Link } from "react-router-dom";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import Footer from "../components/Footer";
 
 export default function HomeUser() {
   const [jobs, setJobs] = useState([]);
@@ -65,13 +66,6 @@ export default function HomeUser() {
             <li className="nav-item" onClick={() => window.location.reload()}>
               <AiOutlineHome />
               <span>Home</span>
-            </li>
-            <li
-              className="nav-item"
-              onClick={() => (window.location.href = "/ContactUser")}
-            >
-              <IoIosContacts />
-              <span>Contacto</span>
             </li>
             <li className="nav-item" onClick={() => {}}>
               <IoIosNotifications />
@@ -282,7 +276,7 @@ export default function HomeUser() {
   )}
 </section>
 
-
+<Footer />
 
     </div>
   );

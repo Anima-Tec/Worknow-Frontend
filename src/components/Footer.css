@@ -126,3 +126,31 @@ html, body {
   transform: scale(1.2);
   text-shadow: 0 0 10px #8b5cf6;
 }
+/* Links Inicio y Quiénes somos en fila y a la derecha */
+.footer-links > div > ul {
+  display: flex ;           /* pone los items en fila */
+  gap: 40px;               /* separación entre Inicio y Quiénes somos */
+  list-style: none;        /* quita los bullets */
+  padding: 0;
+  margin: 0;
+  justify-content: flex-end; /* mueve los links hacia la derecha */
+  left: 200px;    /* ajusta la posición derecha */
+  position: relative;       /* necesario para que right funcione */
+}
+
+.footer-links > div > ul li {
+  margin: 0;               /* elimina márgenes por defecto */
+}
+
+.footer-links > div > ul li a,
+.footer-links > div > ul li span {
+  color: #E0E7FF;
+  font-size: 14px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.footer-links > div > ul li a:hover {
+  color: #fff;
+  text-shadow: 0 0 8px #8b5cf6;
+}

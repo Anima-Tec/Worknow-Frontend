@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import CardTrabajo from "../components/CardTrabajo";
 import CardProyecto from "../components/CardProyecto";
 import { getJobs } from "../services/api";
+import Footer from "../components/Footer";
 
 function PerfilCompany() {
   const navigate = useNavigate();
@@ -184,6 +185,7 @@ function PerfilCompany() {
           </section>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
