@@ -9,25 +9,30 @@ import Footer from "./components/Footer";
 import ContactCompany from "./pages/ContactCompany";
 import ContactUser from "./pages/ContactUser";
 import PerfilUser from "./pages/PerfilUser";
-import JobForm from "./pages/JobForm"; 
 import PerfilCompany from "./pages/PerfilCompany";
-
+import JobForm from "./pages/JobForm";
+import RegisterUser from "./pages/RegisterUser.jsx";
+import RegisterCompany from "./pages/RegisterCompany.jsx";
 
 export default function App() {
   return (
     <Routes>
-       <Route path="/landing" element={<Landing />} />
+      {/* Páginas públicas */}
+      <Route path="/landing" element={<Landing />} />
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/choose" element={<ChooseRole />} />
+      <Route path="/register/user" element={<RegisterUser />} />
+      <Route path="/register/company" element={<RegisterCompany />} />
+
+      {/* Páginas privadas */}
       <Route path="/home/company" element={<HomeCompany />} />
       <Route path="/home/user" element={<HomeUser />} />
-      <Route path="/Contactcompany" element={<ContactCompany />} />
-      <Route path="/ContactUser" element={<ContactUser />} />
-      <Route path="/PerfilUser" element={<PerfilUser />} />
       <Route path="/contactcompany" element={<ContactCompany />} />
-      <Route path="/jobs/form" element={<JobForm />} />
+      <Route path="/contactuser" element={<ContactUser />} />
+      <Route path="/perfiluser" element={<PerfilUser />} />
       <Route path="/perfilcompany" element={<PerfilCompany />} />
+      <Route path="/jobs/form" element={<JobForm />} />
     </Routes>
   );
 }
