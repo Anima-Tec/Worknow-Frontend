@@ -7,6 +7,10 @@ import Landing from "./pages/Landing.jsx";
 import { useLocation } from "react-router-dom";
 import Footer from "./components/Footer";
 import ContactCompany from "./pages/ContactCompany";
+import ContactUser from "./pages/ContactUser";
+import PerfilUser from "./pages/PerfilUser";
+import JobForm from "./pages/JobForm"; 
+import PerfilCompany from "./pages/PerfilCompany";
 
 
 export default function App() {
@@ -18,7 +22,12 @@ export default function App() {
       <Route path="/choose" element={<ChooseRole />} />
       <Route path="/home/company" element={<HomeCompany />} />
       <Route path="/home/user" element={<HomeUser />} />
+      <Route path="/Contactcompany" element={<ContactCompany />} />
+      <Route path="/ContactUser" element={<ContactUser />} />
+      <Route path="/PerfilUser" element={<PerfilUser />} />
       <Route path="/contactcompany" element={<ContactCompany />} />
+      <Route path="/jobs/form" element={<JobForm />} />
+      <Route path="/perfilcompany" element={<PerfilCompany />} />
     </Routes>
   );
 }

@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { searchJobs, searchProjects } from "../services/api";
 import CardTrabajo from "../components/CardTrabajo";
 import CardProyecto from "../components/CardProyecto";
+import { AiOutlineHome } from "react-icons/ai";
+import { IoIosContacts, IoIosNotifications } from "react-icons/io";
+import { CgProfile } from "react-icons/cg";
 import "./HomeUser.css";
+import { Link } from "react-router-dom";
 
 export default function HomeUser() {
   const [jobs, setJobs] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // filtros
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
   const [area, setArea] = useState("");
@@ -47,7 +50,38 @@ export default function HomeUser() {
 
   return (
     <div className="home-user">
-      {/* 🔹 Hero con video */}
+      <header className="header">
+        <h1 className="h1">
+          work<span>now</span>
+        </h1>
+        <nav className="nav">
+          <ul>
+            <li className="nav-item" onClick={() => window.location.reload()}>
+              <AiOutlineHome />
+              <span>Home</span>
+            </li>
+            <li
+              className="nav-item"
+              onClick={() => (window.location.href = "/ContactUser")}
+            >
+              <IoIosContacts />
+              <span>Contacto</span>
+            </li>
+            <li className="nav-item" onClick={() => {}}>
+              <IoIosNotifications />
+              <span>Notificaciones</span>
+            </li>
+            <li
+              className="nav-item"
+              onClick={() => (window.location.href = "/PerfilUser")}
+            >
+              <CgProfile />
+              <span>Perfil</span>
+            </li>
+          </ul>
+        </nav>
+      </header>
+
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
           <source src="/video-banner.mp4" type="video/mp4" />
@@ -55,7 +89,6 @@ export default function HomeUser() {
         </video>
       </section>
 
-      {/* 🔹 Barra de búsqueda */}
       <div className="search-box">
         <div className="filter">
           <label>Buscar</label>
@@ -102,10 +135,10 @@ export default function HomeUser() {
         </button>
       </div>
 
-      {/* 🔹 Trabajos */}
+      {/* 💼 Trabajos */}
       <section className="featured">
         <div className="header">
-          <h3>Featured job</h3>
+          <h3>Featured jobs</h3>
           <a href="#">View all →</a>
         </div>
         <div className="cards">
@@ -115,24 +148,31 @@ export default function HomeUser() {
             jobs.map((job) => (
               <CardTrabajo
                 key={job.id}
-                image={job.image}
                 title={job.title}
+                company={job.companyName}
+                area={job.area}
+                jobType={job.jobType}
+                contractType={job.contractType}
+                modality={job.modality}
                 location={job.location}
-                salary={job.salary}
+                salary={job.salaryRange}
+                description={job.description}
+                projectUrl={job.projectUrl}
               />
             ))
           ) : (
-            <p className="no-data">No hay trabajos destacados por ahora</p>
+            <p className="no-data">No hay trabajos por ahora</p>
           )}
         </div>
       </section>
 
-      {/* 🔹 Proyectos */}
+      {/* 💡 Proyectos */}
       <section className="featured">
         <div className="header">
-          <h3>Featured project</h3>
+          <h3>Featured projects</h3>
           <a href="#">View all →</a>
         </div>
+
         <div className="cards">
           {loading ? (
             <p className="loading">Cargando...</p>
@@ -141,12 +181,16 @@ export default function HomeUser() {
               <CardProyecto
                 key={project.id}
                 title={project.title}
-                type={project.type}
-                category={project.category}
+                description={project.description}
+                skills={project.skills}
+                duration={project.duration}
+                modality={project.modality}
+                remuneration={project.remuneration}
+                company={project.companyName || "Empresa"}
               />
             ))
           ) : (
-            <p className="no-data">No hay proyectos destacados por ahora</p>
+            <p className="no-data">No hay proyectos publicados por ahora</p>
           )}
         </div>
       </section>
