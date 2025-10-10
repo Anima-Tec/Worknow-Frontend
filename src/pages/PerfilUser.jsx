@@ -1,5 +1,12 @@
+import Footer from "../components/Footer";
 import React, { useState, useEffect } from 'react';
 import './PerfilUser.css';
+
+function PerfilUser() {
+  return (
+    <div>
+      <h2>Perfil del Usuario</h2>
+      <Footer />
 
 const PerfilUser = () => {
   const [isEditing, setIsEditing] = useState(false);
