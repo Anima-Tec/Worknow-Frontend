@@ -36,7 +36,6 @@ export default function Landing() {
 
   return (
     <div className="landing">
-      {/* 🌟 HERO */}
       <section className="landing-hero">
         <div className="hero-content">
           <h1>
@@ -59,8 +58,6 @@ export default function Landing() {
           <img src="/hero-illustration.svg" alt="WorkNow Hero" />
         </div>
       </section>
-
-      {/* 🌟 Cómo funciona */}
       <section className="how">
         <h2>
           Cómo funciona <span>WorkNow</span>
@@ -85,8 +82,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
-      {/* 🌟 Banner Intermedio */}
       <section className="banner violet-banner">
         <h2>Impulsa tu carrera con WorkNow</h2>
         <p>Un puente entre talento y empresas reales.</p>
@@ -94,8 +89,6 @@ export default function Landing() {
           Crear mi cuenta
         </button>
       </section>
-
-      {/* 🌟 Métricas */}
       <section className="metrics">
         <h2>
           Nuestro <span>impacto</span>
@@ -116,7 +109,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 🌟 Testimonios */}
       <section className="testimonials">
         <h2>
           Historias que <span>inspiran</span>
@@ -138,7 +130,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 🌟 Banner Final */}
       <section className="banner final-banner">
         <h2>¿Listo para crear tu huella digital?</h2>
         <p>Empieza hoy mismo y conecta con el futuro laboral.</p>

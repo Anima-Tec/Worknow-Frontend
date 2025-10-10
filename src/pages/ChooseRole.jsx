@@ -17,7 +17,6 @@ export default function ChooseRole() {
       </div>
 
       <div className="roles">
-        {/* Usuario */}
         <div className="roleCard userCard">
           <FaUser size={48} className="icon userIcon" />
           <h2>Usuario</h2>
@@ -29,7 +28,6 @@ export default function ChooseRole() {
           </button>
         </div>
 
-        {/* Empresa */}
         <div className="roleCard companyCard">
           <FaBuilding size={48} className="icon companyIcon" />
           <h2>Empresa</h2>

@@ -1,9 +1,11 @@
+/* ---------- HEADER ---------- */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
   background-color: white;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .h1 {
@@ -14,9 +16,10 @@
 }
 
 .h1 span {
-  color: #4f46e5; 
+  color: #4f46e5;
 }
 
+/* ---------- NAV ---------- */
 .nav ul {
   list-style: none;
   display: flex;
@@ -34,10 +37,6 @@
   font-size: 14px;
 }
 
-.nav li svg {
-  font-size: 24px;
-  margin-bottom: 5px;
-}
 .nav-item {
   display: flex;
   flex-direction: column;
@@ -46,11 +45,12 @@
   color: #333;
   font-size: 14px;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .nav-item:hover {
   transform: scale(1.05);
+  color: #6d28d9;
 }
 
 .nav-item svg {
@@ -58,42 +58,33 @@
   margin-bottom: 5px;
 }
 
+/* ---------- VIDEO ---------- */
 .video-container {
   position: relative;
   width: 100%;
   height: 80vh;
   overflow: hidden;
 }
+
 .video-container video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* ---------- CARDS DE PUBLICACIÓN ---------- */
 .cards-container {
-    margin-top: 40px;
+  margin-top: 40px;
   display: flex;
   gap: 30px;
-    justify-content: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
-.card1 {
-    min-width: 580px;
-  max-width: 720px;
-  border-radius: 18px;
-  padding: 32px 24px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s, box-shadow 0.3s;
-  position: relative;
-  overflow: hidden;
-  
-}
+
+.card1,
 .card2 {
-       min-width: 580px;
+  min-width: 580px;
   max-width: 720px;
-  min-height: 200px;
   border-radius: 18px;
   padding: 32px 24px;
   text-align: center;
@@ -105,8 +96,14 @@
   overflow: hidden;
 }
 
+.card1:hover,
+.card2:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
 .primaryBtn {
-  background-color: #760dd1;
+  background-color: #6d28d9;
   color: white;
   border: none;
   padding: 10px 5px;
@@ -121,7 +118,7 @@
 }
 
 .primaryBtn:hover {
-  background-color: #7c18b5;
+  background-color: #5b21b6;
   transform: scale(1.03);
 }
 
@@ -129,4 +126,198 @@
   transform: scale(0.98);
 }
 
+/* ---------- MODAL ---------- */
+.modal {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
 
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  min-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ---------- JOB POSTINGS ---------- */
+.jobs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 1rem 0;
+}
+
+.job-postings {
+  margin-top: 60px;
+  padding: 0 40px;
+}
+
+.job-postings h2 {
+  margin-bottom: 1rem;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+/* ---------- CARRUSEL DE PROYECTOS ---------- */
+.freelancer-postings {
+  margin-top: 80px;
+  text-align: center;
+  padding: 0 40px;
+}
+
+.freelancer-postings h2 {
+  color: #4f46e5;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Carrusel */
+.carousel {
+  margin-top: 20px;
+}
+
+.carousel-card-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #6d28d9;
+  border-radius: 50%;
+  padding: 10px;
+  filter: invert(1);
+}
+
+/* Botones “Ver todo” y “Volver” */
+.view-more-btn,
+.back-btn {
+  background-color: #6d28d9;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.view-more-btn:hover,
+.back-btn:hover {
+  background-color: #5b21b6;
+}
+
+/* ---------- LISTA DE PROYECTOS ---------- */
+.freelancer-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 30px;
+}
+
+/* ---------- CARD PROYECTO ---------- */
+.card-proyecto {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 280px;
+  transition: transform 0.3s;
+}
+
+.card-proyecto:hover {
+  transform: translateY(-5px);
+}
+
+.project-banner {
+  background: linear-gradient(90deg, #6d28d9, #8b5cf6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+}
+
+.logo-circle {
+  background-color: white;
+  color: #6d28d9;
+  font-weight: bold;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.project-content {
+  padding: 16px;
+  color: #222;
+  text-align: left;
+}
+
+.project-title {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.project-description {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.project-info p {
+  margin: 3px 0;
+  font-size: 14px;
+}
+
+.project-skills {
+  margin-top: 8px;
+}
+
+.skill-tag {
+  background-color: #ede9fe;
+  color: #6d28d9;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin: 3px;
+  display: inline-block;
+}
+
+.project-company {
+  font-size: 13px;
+  margin-top: 10px;
+  color: #555;
+}

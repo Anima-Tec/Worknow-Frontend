@@ -1,32 +1,195 @@
-.card {
+/* ---------------- CARD BASE ---------------- */
+.card-trabajo {
   background: #fff;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  flex: 1;
-  min-width: 250px;
-  max-width: 300px;
+  border-radius: 14px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  font-family: "Inter", "Poppins", "Segoe UI", sans-serif;
+  transform: none;
+}
+
+/* ---------------- HEADER CON BANNER ---------------- */
+.job-banner {
+  background: linear-gradient(135deg, #5663c5 0%, #6c63ff 100%);
+  padding: 0.8rem 1rem 1.6rem 1rem;
+  position: relative;
+  color: #fff;
   text-align: center;
-  transition: transform 0.2s ease-in-out;
 }
 
-.card:hover {
-  transform: translateY(-5px);
+.banner-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.3px;
 }
 
-.card img {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 0.8rem;
+/* ---------------- LOGO CIRCULAR ---------------- */
+.logo-circle {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #4d39b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  font-size: 1.4rem;
+  color: #fff;
+  font-weight: 700;
+  z-index: 3;
 }
 
-.card button {
-  margin-top: 1rem;
-  background: #6c47ff;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
+/* ---------------- CONTENIDO ---------------- */
+.job-content {
+  padding: 2rem 1rem 1rem 1rem;
+}
+
+/* ---------------- TITULO + TIPO DE TRABAJO ---------------- */
+.job-header-column {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.2rem;
+}
+
+.job-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3b0ca3;
+  margin-bottom: 0.1rem;
+  line-height: 1.05;
+}
+
+.job-type-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0rem;
+  margin-bottom: 0.2rem;
+}
+
+/* ---------- ETIQUETA BASE DE TIPO DE TRABAJO ---------- */
+.job-type {
+  font-size: 0.63rem;
   font-weight: bold;
+  padding: 0.12rem 0.4rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* ---------- VARIANTES SEGÚN TIPO ---------- */
+.job-type.full-time {
+  background: #f3e8ff;
+  color: #6c47ff;
+  border-color: #e9d5ff;
+}
+
+.job-type.part-time {
+  background: #d1fae5;
+  color: #059669;
+  border-color: #86efac;
+}
+
+/* ---------------- EMPRESA ---------------- */
+.job-company {
+  font-size: 0.82rem;
+  color: #6b7280;
+  font-weight: 500;
+  margin-top: 0rem;
+  margin-bottom: 0.3rem;
+}
+
+/* ---------------- INFO ---------------- */
+.job-summary {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.9rem;
+  list-style: none;
+  padding: 0;
+  color: #3b3b3b;
+  line-height: 1.25;
+}
+
+.job-summary strong {
+  color: #7c3aed;
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+}
+
+.job-summary li {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ---------------- LINK OPCIONAL ---------------- */
+.project-link {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: #6c47ff;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  text-decoration: none;
+}
+
+.project-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------------- BOTONES ---------------- */
+.job-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.primary-btn,
+.secondary-btn {
+  flex: 1;
+  border-radius: 8px;
+  padding: 0.45rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.primary-btn {
+  background: #760dd1;
+  color: #fff;
+  border: none;
+}
+
+.primary-btn:hover {
+  background: #7c18b5;
+}
+
+.secondary-btn {
+  background: #fff;
+  color: #760dd1;
+  border: 2px solid #7c18b5;
+}
+
+.secondary-btn:hover {
+  background: #f3e8ff;
+}
+
+/* ---------------- MODO PREVIEW ---------------- */
+.card-trabajo.preview-mode {
+  width: 240px;
+  margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
