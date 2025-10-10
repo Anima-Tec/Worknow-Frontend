@@ -1,0 +1,97 @@
+.applications-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.applications-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 30px;
+  width: 85%;
+  max-width: 1000px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-header h2 {
+  font-size: 1.8rem;
+  color: #4f46e5;
+}
+
+.close-btn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.applications-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.applications-table th,
+.applications-table td {
+  border-bottom: 1px solid #eee;
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.applications-table th {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.status.aceptado {
+  color: green;
+  font-weight: bold;
+}
+
+.status.rechazado {
+  color: red;
+  font-weight: bold;
+}
+
+.status.en-revisión {
+  color: orange;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.icon {
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.icon:hover {
+  transform: scale(1.2);
+}
+
+.icon.accept {
+  color: green;
+}
+
+.icon.reject {
+  color: red;
+}
+
+.icon.review {
+  color: orange;
+}
