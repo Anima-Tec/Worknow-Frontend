@@ -11,6 +11,8 @@ import CardProyecto from "../components/CardProyecto";
 import CardTrabajo from "../components/CardTrabajo.jsx";
 import ApplicationsModal from "../components/ApplicationsModal";
 import Footer from "../components/Footer";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 
 export default function HomeCompany() {
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -22,6 +24,8 @@ export default function HomeCompany() {
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
   const location = useLocation();
+  const [showAllJobs, setShowAllJobs] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // 🔹 Obtener proyectos del backend
   useEffect(() => {
@@ -105,13 +109,6 @@ export default function HomeCompany() {
             <li className="nav-item" onClick={() => window.location.reload()}>
               <AiOutlineHome />
               <span>Home</span>
-            </li>
-
-            <li
-              className="nav-item"onClick={() => (window.location.href = "/contactcompany")}
-            >
-              <IoIosContacts />
-              <span>Contacto</span>
             </li>
 
             {/* ✅ Botón de postulados funcional */}
@@ -221,54 +218,101 @@ export default function HomeCompany() {
       )}
 
       {/* ---------- PROYECTOS ---------- */}
-      <section className="freelancer-postings">
-        <div className="section-header">
-          <h2>Proyectos publicados</h2>
-          {!showAllProjects && projects.length > 3 && (
-            <button className="view-more-btn" onClick={() => setShowAllProjects(true)}>
-              Ver todo →
-            </button>
-          )}
-        </div>
-
-        {!showAllProjects ? (
-          <div id="carouselProjects" className="carousel slide" data-bs-ride="carousel">
-            <div className="carousel-inner">
-              {projects.map((p, index) => (
-                <div
-                  className={`carousel-item ${index === 0 ? "active" : ""}`}
-                  key={p.id}
+       {/* 💡 PROYECTOS */}
+            <section className="featured">
+              <div className="header">
+                <h3>Featured projects</h3>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAllProjects(!showAllProjects);
+                  }}
                 >
-                  <div className="carousel-card-wrapper">
-                    <CardProyecto {...p} company={p.company?.email} />
+                  {showAllProjects ? "Ver menos ↑" : "View all →"}
+                </a>
+              </div>
+      
+              {loading ? (
+                <p className="loading">Cargando...</p>
+              ) : projects.length > 0 ? (
+                showAllProjects ? (
+                  <div className="cards">
+                    {projects.map((p) => (
+                      <CardProyecto key={p.id} {...p} />
+                    ))}
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="freelancer-list">
-            {projects.map((p) => (
-              <CardProyecto key={p.id} {...p} company={p.company?.email} />
-            ))}
-            <button className="view-more-btn back-btn" onClick={() => setShowAllProjects(false)}>
-              ← Volver
-            </button>
-          </div>
-        )}
-      </section>
+                ) : (
+                  <Carousel
+                    responsive={{
+                      desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                      tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                      mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+                    }}
+                    infinite
+                    autoPlay={false}
+                    keyBoardControl
+                    containerClass="carousel-container"
+                    itemClass="carousel-card"
+                    removeArrowOnDeviceType={["mobile"]}
+                  >
+                    {projects.map((p) => (
+                      <CardProyecto key={p.id} {...p} />
+                    ))}
+                  </Carousel>
+                )
+              ) : (
+                <p className="no-data">No hay proyectos publicados por ahora</p>
+              )}
+            </section>
 
-      {/* ---------- TRABAJOS ---------- */}
-      <section className="job-postings">
-        <h2>Puestos de Trabajo publicados</h2>
-        <div className="jobs">
-          {jobs.length === 0 ? (
-            <p>No hay trabajos publicados aún.</p>
-          ) : (
-            jobs.map((job) => <CardTrabajo key={job.id} {...job} />)
-          )}
-        </div>
-      </section>
+      {/* 💼 TRABAJOS */}
+            <section className="featured">
+              <div className="header">
+                <h3>Featured jobs</h3>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAllJobs(!showAllJobs);
+                  }}
+                >
+                  {showAllJobs ? "Ver menos ↑" : "View all →"}
+                </a>
+              </div>
+      
+              {loading ? (
+                <p className="loading">Cargando...</p>
+              ) : jobs.length > 0 ? (
+                showAllJobs ? (
+                  <div className="cards">
+                    {jobs.map((job) => (
+                      <CardTrabajo key={job.id} {...job} />
+                    ))}
+                  </div>
+                ) : (
+                  <Carousel
+                    responsive={{
+                      desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                      tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                      mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+                    }}
+                    infinite
+                    autoPlay={false}
+                    keyBoardControl
+                    containerClass="carousel-container"
+                    itemClass="carousel-card"
+                    removeArrowOnDeviceType={["mobile"]}
+                  >
+                    {jobs.map((job) => (
+                      <CardTrabajo key={job.id} {...job} />
+                    ))}
+                  </Carousel>
+                )
+              ) : (
+                <p className="no-data">No hay trabajos por ahora</p>
+              )}
+            </section>
       <Footer />
     </div>
   );
