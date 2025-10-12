@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 const PerfilUser = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [userData, setUserData] = useState({
     nombre: "",
@@ -38,20 +39,55 @@ const PerfilUser = () => {
           },
         });
 
-        if (!res.ok) throw new Error("Error al obtener perfil");
+        if (!res.ok) {
+          if (res.status === 401) {
+            alert("Sesión expirada. Por favor, iniciá sesión nuevamente.");
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+            return;
+          }
+          throw new Error("Error al obtener perfil");
+        }
 
         const data = await res.json();
 
+        // ✅ La fecha ya viene en formato YYYY-MM-DD desde el backend
+        // Solo validar que exista y sea válida
         if (data.fechaNacimiento) {
-          data.fechaNacimiento = data.fechaNacimiento.split("T")[0];
+          // Si viene como objeto Date, convertir
+          if (typeof data.fechaNacimiento === 'object') {
+            data.fechaNacimiento = new Date(data.fechaNacimiento).toISOString().split('T')[0];
+          }
+          // Si viene con T (ISO string), extraer solo la fecha
+          else if (data.fechaNacimiento.includes('T')) {
+            data.fechaNacimiento = data.fechaNacimiento.split('T')[0];
+          }
         }
 
-        setUserData(data);
-        setEditData(data);
-        console.log("Perfil cargado:", data);
+        // ✅ Asegurar que campos vacíos sean strings y no null
+        const sanitizedData = {
+          nombre: data.nombre || "",
+          apellido: data.apellido || "",
+          email: data.email || "",
+          telefono: data.telefono || "",
+          fechaNacimiento: data.fechaNacimiento || "",
+          ciudad: data.ciudad || "",
+          profesion: data.profesion || "",
+          biografia: data.biografia || "",
+          experiencia: data.experiencia || "",
+          educacion: data.educacion || "",
+          habilidades: data.habilidades || "",
+        };
+
+        setUserData(sanitizedData);
+        setEditData(sanitizedData);
+        setLoading(false);
+        console.log("✅ Perfil cargado correctamente:", sanitizedData);
       } catch (error) {
-        console.error("Error al cargar el perfil:", error);
-        alert("No se pudo cargar tu perfil. Ver consola.");
+        console.error("❌ Error al cargar el perfil:", error);
+        alert("No se pudo cargar tu perfil. Revisá tu conexión e intentá nuevamente.");
+        setLoading(false);
       }
     };
 
@@ -80,25 +116,63 @@ const PerfilUser = () => {
         return;
       }
 
+      // ✅ Preparar datos para enviar (sin email, password, role)
+      const dataToSend = {
+        nombre: editData.nombre,
+        apellido: editData.apellido,
+        telefono: editData.telefono,
+        fechaNacimiento: editData.fechaNacimiento,
+        ciudad: editData.ciudad,
+        profesion: editData.profesion,
+        biografia: editData.biografia,
+        experiencia: editData.experiencia,
+        educacion: editData.educacion,
+        habilidades: editData.habilidades,
+      };
+
+      console.log("📤 Enviando datos de actualización:", dataToSend);
+
       const res = await fetch("http://localhost:3000/api/auth/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(editData),
+        body: JSON.stringify(dataToSend),
       });
 
-      if (!res.ok) throw new Error("Error al actualizar perfil");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error al actualizar perfil");
+      }
 
-      const data = await res.json();
-      setUserData(editData);
+      const responseData = await res.json();
+      console.log("✅ Respuesta del servidor:", responseData);
+
+      // ✅ Actualizar el estado local con los datos actualizados
+      if (responseData.updated) {
+        // Asegurar formato de fecha
+        if (responseData.updated.fechaNacimiento) {
+          if (typeof responseData.updated.fechaNacimiento === 'object') {
+            responseData.updated.fechaNacimiento = new Date(responseData.updated.fechaNacimiento)
+              .toISOString()
+              .split('T')[0];
+          } else if (responseData.updated.fechaNacimiento.includes('T')) {
+            responseData.updated.fechaNacimiento = responseData.updated.fechaNacimiento.split('T')[0];
+          }
+        }
+        
+        setUserData(responseData.updated);
+        setEditData(responseData.updated);
+      } else {
+        setUserData(editData);
+      }
+
       setIsEditing(false);
-      alert("Perfil actualizado correctamente ✅");
-      console.log("Perfil actualizado:", data);
+      alert("✅ Perfil actualizado correctamente");
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error al actualizar el perfil ❌");
+      console.error("❌ Error al actualizar perfil:", error);
+      alert(`❌ Error: ${error.message}`);
     }
   };
 
@@ -106,6 +180,18 @@ const PerfilUser = () => {
     setEditData({ ...userData });
     setIsEditing(false);
   };
+
+  if (loading) {
+    return (
+      <div className="perfil-container">
+        <div className="perfil-wrapper">
+          <div style={{ textAlign: 'center', padding: '50px' }}>
+            <p>Cargando perfil...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="perfil-container">
@@ -150,18 +236,20 @@ const PerfilUser = () => {
               {/* Info básica */}
               <div className="perfil-basic-info">
                 <h1 className="perfil-name">
-                  {editData.nombre} {editData.apellido}
+                  {userData.nombre && userData.apellido 
+                    ? `${userData.nombre} ${userData.apellido}` 
+                    : "Usuario"}
                 </h1>
-                <p className="perfil-profession">{editData.profesion}</p>
+                <p className="perfil-profession">{userData.profesion || "Profesión no especificada"}</p>
                 <div className="perfil-contact-info">
                   <div className="perfil-contact-item">
-                    📍 <span>{editData.ciudad}</span>
+                    📍 <span>{userData.ciudad || "Ciudad no especificada"}</span>
                   </div>
                   <div className="perfil-contact-item">
-                    📧 <span>{editData.email}</span>
+                    📧 <span>{userData.email || "Email no especificado"}</span>
                   </div>
                   <div className="perfil-contact-item">
-                    📞 <span>{editData.telefono}</span>
+                    📞 <span>{userData.telefono || "Teléfono no especificado"}</span>
                   </div>
                 </div>
               </div>
@@ -203,7 +291,9 @@ const PerfilUser = () => {
                       className="perfil-input"
                     />
                   ) : (
-                    <p className="perfil-info-value">{editData.fechaNacimiento}</p>
+                    <p className="perfil-info-value">
+                      {userData.fechaNacimiento || "No especificada"}
+                    </p>
                   )}
                 </div>
                 <div className="perfil-info-item">
@@ -215,9 +305,10 @@ const PerfilUser = () => {
                       value={editData.ciudad}
                       onChange={handleEditChange}
                       className="perfil-input"
+                      placeholder="Ingresá tu ciudad"
                     />
                   ) : (
-                    <p className="perfil-info-value">{editData.ciudad}</p>
+                    <p className="perfil-info-value">{userData.ciudad || "No especificada"}</p>
                   )}
                 </div>
                 <div className="perfil-info-item">
@@ -229,9 +320,10 @@ const PerfilUser = () => {
                       value={editData.telefono}
                       onChange={handleEditChange}
                       className="perfil-input"
+                      placeholder="Ingresá tu teléfono"
                     />
                   ) : (
-                    <p className="perfil-info-value">{editData.telefono}</p>
+                    <p className="perfil-info-value">{userData.telefono || "No especificado"}</p>
                   )}
                 </div>
               </div>
@@ -251,8 +343,8 @@ const PerfilUser = () => {
                 />
               ) : (
                 <div className="perfil-skills-container">
-                  {editData.habilidades ? (
-                    editData.habilidades.split(",").map((skill, index) => (
+                  {userData.habilidades ? (
+                    userData.habilidades.split(",").map((skill, index) => (
                       <span key={index} className="perfil-skill-tag">
                         {skill.trim()}
                       </span>
@@ -281,7 +373,7 @@ const PerfilUser = () => {
                 />
               ) : (
                 <p className="perfil-text">
-                  {editData.biografia || "Agrega una descripción sobre ti y tu experiencia profesional."}
+                  {userData.biografia || "Agrega una descripción sobre ti y tu experiencia profesional."}
                 </p>
               )}
             </div>
@@ -300,7 +392,7 @@ const PerfilUser = () => {
                 />
               ) : (
                 <p className="perfil-text-multiline">
-                  {editData.experiencia || "Agrega tu experiencia laboral."}
+                  {userData.experiencia || "Agrega tu experiencia laboral."}
                 </p>
               )}
             </div>
@@ -319,7 +411,7 @@ const PerfilUser = () => {
                 />
               ) : (
                 <p className="perfil-text-multiline">
-                  {editData.educacion || "Agrega tu formación académica."}
+                  {userData.educacion || "Agrega tu formación académica."}
                 </p>
               )}
             </div>
