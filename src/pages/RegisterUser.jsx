@@ -59,42 +59,53 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  const userData = {
-    email: formData.email,
-    password: formData.password,
-    role: "USER"
-  };
+    // ✅ La fecha del input type="date" ya viene en formato YYYY-MM-DD
+    // No necesitamos convertirla
+    const userData = {
+      nombre: formData.nombre.trim(),
+      apellido: formData.apellido.trim(),
+      email: formData.email.trim().toLowerCase(),
+      telefono: formData.telefono.trim(),
+      fechaNacimiento: formData.fechaNacimiento, // Ya está en formato YYYY-MM-DD
+      ciudad: formData.ciudad.trim(),
+      profesion: formData.profesion.trim(),
+      password: formData.password,
+    };
 
-  try {
-    const res = await fetch("http://localhost:3000/api/auth/register/user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(userData)
-    });
+    try {
+      const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
-    const data = await res.json();
+      console.log("📤 Enviando datos de registro:", userData);
 
-    if (res.ok) {
-      alert("✅ Registro exitoso! Usuario guardado en base de datos");
-      console.log("Usuario creado:", data);
-      // Redirigir al login o perfil
-      window.location.href = "/login";
-    } else {
-      alert(data.message || "❌ Error al registrar usuario");
-      console.error("Error del backend:", data);
+      // ✅ Endpoint correcto: /auth/register/user
+      const res = await fetch(`${API_BASE}/auth/register/user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log("✅ Usuario creado exitosamente:", data);
+        alert("✅ Registro exitoso! Ahora podés iniciar sesión.");
+        window.location.href = "/login";
+      } else {
+        console.error("❌ Error del backend:", data);
+        alert(data.message || "❌ Error al registrar usuario. Revisá los datos e intentá nuevamente.");
+      }
+    } catch (error) {
+      console.error("❌ Error de conexión:", error);
+      alert("❌ No se pudo conectar con el servidor. Verificá que el backend esté corriendo en el puerto 3000.");
     }
-  } catch (error) {
-    console.error("Error al conectar con el backend:", error);
-    alert("❌ No se pudo conectar con el backend. Ver consola.");
-  }
-};
+  };
 
   return (
     <div className="register-container">
@@ -230,7 +241,7 @@ const Register = () => {
                   {errors.telefono && <p className="register-error-text">{errors.telefono}</p>}
                 </div>
 
-                {/* Fecha de Nacimiento */}
+                {/* Fecha de nacimiento */}
                 <div className="register-form-group">
                   <label className="register-label">Fecha de Nacimiento</label>
                   <div className="register-input-wrapper">
@@ -267,7 +278,7 @@ const Register = () => {
                       value={formData.ciudad}
                       onChange={handleChange}
                       placeholder="Montevideo"
-                      className={`register-input ${errors.ciudad ? 'register-input-error' : ''}`}
+                      className={`register-input ${errors.ciudad ? 'register-input-error' : ''}`} 
                     />
                   </div>
                   {errors.ciudad && <p className="register-error-text">{errors.ciudad}</p>}
