@@ -179,15 +179,22 @@ export default function HomeCompany() {
       )}
 
       {showProjectForm && (
-        <div className="modal">
-          <div className="modal-content">
-            <button className="close-btn" onClick={() => setShowProjectForm(false)}>
-              ✖
-            </button>
-            <ProjectForm onProjectCreated={() => setShowSuccess(true)} />
-          </div>
-        </div>
-      )}
+  <div className="modal">
+    <div className="modal-content">
+      <button className="close-btn" onClick={() => setShowProjectForm(false)}>
+        ✖
+      </button>
+      <ProjectForm
+        onClose={() => setShowProjectForm(false)} // ✅ Agregado
+        onProjectCreated={(newProject) => {
+          setProjects((prev) => [newProject, ...prev]); // opcional: actualiza lista
+          setShowSuccess(true);
+        }}
+      />
+    </div>
+  </div>
+)}
+
 
       {showSuccess && (
         <div className="modal">
