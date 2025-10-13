@@ -62,7 +62,7 @@ const RegisterCompany = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async  (e) => {
     e.preventDefault();
     
     if (validateForm()) {
@@ -81,29 +81,24 @@ const RegisterCompany = () => {
         tipoUsuario: 'empresa' // Identificador para el backend
       };
       
-      console.log('Datos de empresa a enviar al backend:', companyData);
-      
-      // Ejemplo de cómo harías la petición al backend:
-      /*
-      fetch('http://tu-backend-url/api/register/empresa', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(companyData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-        // Redirigir al login
-        window.location.href = '/login';
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-      */
-      
-      alert('Registro de empresa exitoso! (Conecta con tu backend)');
+     try {
+  const res = await fetch("http://localhost:3000/api/auth/register/company", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(companyData),
+});
+
+  if (!res.ok) throw new Error("Error al registrar empresa");
+  const data = await res.json();
+  alert("✅ Registro de empresa exitoso!");
+
+  // opcional: guardar token o redirigir
+  localStorage.setItem("token", data.token);
+  window.location.href = "/home/company";
+} catch (error) {
+  console.error(error);
+  alert("❌ Error al registrar empresa");
+}
     }
   };
 

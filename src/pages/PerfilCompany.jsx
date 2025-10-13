@@ -5,7 +5,7 @@ import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
 import CardTrabajo from "../components/CardTrabajo";
 import CardProyecto from "../components/CardProyecto";
-import { getJobs } from "../services/api";
+import { getJobs, getProfile, updateProfile } from "../services/api";
 import Footer from "../components/Footer";
 
 function PerfilCompany() {
@@ -13,9 +13,10 @@ function PerfilCompany() {
   const [projects, setProjects] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [logoImage, setLogoImage] = useState(null);
 
-  // 🔹 DATOS DE LA EMPRESA (se llenarán desde el backend)
+  // Datos de la empresa desde el backend
   const [companyData, setCompanyData] = useState({
     nombreEmpresa: '',
     rut: '',
@@ -32,86 +33,105 @@ function PerfilCompany() {
     descripcion: '',
     mision: '',
     vision: '',
-    // Redes sociales
     twitter: '',
     facebook: '',
     linkedin: '',
-    // Beneficios
-    beneficios: []
+    logoUrl: ''
   });
 
   const [editData, setEditData] = useState({ ...companyData });
 
-  // 🔹 CARGAR DATOS DE LA EMPRESA DESDE EL BACKEND
+  // Cargar datos de la empresa desde el backend
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
-    if (token) {
-      fetch('http://localhost:3000/api/empresa/perfil', {
-        headers: {
-          'Authorization': `Bearer ${token}`
+    const loadCompanyData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          console.warn('⚠️ No hay token, redirigiendo al login');
+          navigate('/login');
+          return;
         }
-      })
-      .then(res => res.json())
-      .then(data => {
+
+        setLoading(true);
+        const data = await getProfile();
+        
+        console.log('📦 Datos de empresa recibidos:', data);
+
         setCompanyData(data);
         setEditData(data);
+        
         if (data.logoUrl) {
           setLogoImage(data.logoUrl);
         }
-      })
-      .catch(err => console.error('Error cargando perfil de empresa:', err));
-    } else {
-      // DATOS DE EJEMPLO (eliminar cuando conectes el backend)
-      const ejemploEmpresa = {
-        nombreEmpresa: 'WorkNow',
-        rut: '12.345.678-9',
-        email: 'contacto@worknow.com',
-        telefono: '+598 2XXX XXXX',
-        direccion: 'Av. Principal 1234',
-        ciudad: 'Montevideo',
-        sector: 'Tecnología / Software',
-        sitioWeb: 'https://WorkNow.com',
-        tamano: '201-500',
-        fundada: 'Junio 01, 2025',
-        empleados: '200+',
-        ubicaciones: '1 país',
-        descripcion: 'WorkNow es una plataforma creada para conectar talento con oportunidades en tiempo real. Nuestro objetivo es simplificar la forma en que las personas acceden a trabajos y las empresas encuentran a los colaboradores que necesitan.',
-        mision: 'Queremos transformar el acceso al trabajo, construyendo herramientas que hagan más simple, rápida y transparente la conexión con el empleo.',
-        vision: 'Creemos que el futuro del empleo está en procesos ágiles y sin burocracia, con soluciones digitales integradas y ecosistemas inclusivos.',
-        twitter: 'https://twitter.com/WorkNow',
-        facebook: 'https://facebook.com/WorkNow',
-        linkedin: 'https://linkedin.com/company/WorkNow',
-        beneficios: [
-          { titulo: 'Salud Integral', descripcion: 'Cobertura de salud completa y programas de bienestar físico y mental. Tu salud es prioridad.' },
-          { titulo: 'Vacaciones Flexibles', descripcion: 'Tiempo libre ilimitado para descansar y disfrutar de lo que más te gusta.' },
-          { titulo: 'Aprendizaje y Crecimiento', descripcion: 'Acceso a cursos, talleres y conferencias para seguir creciendo profesionalmente.' },
-          { titulo: 'Encuentros de Equipo', descripcion: 'Reuniones y actividades que fortalecen el trabajo en equipo y la planificación a futuro.' },
-          { titulo: 'Trabajo Remoto', descripcion: 'Flexibilidad para trabajar desde donde quieras, con equipos en todo el mundo.' },
-          { titulo: 'Bonos de Productividad', descripcion: 'Reconocimientos y premios por los logros y el desempeño excepcional.' }
-        ]
-      };
-      setCompanyData(ejemploEmpresa);
-      setEditData(ejemploEmpresa);
-    }
-  }, []);
 
-  // 🔹 CARGAR PROYECTOS
+        setLoading(false);
+      } catch (error) {
+        console.error('❌ Error cargando perfil de empresa:', error);
+        setLoading(false);
+        // Si el token es inválido, redirigir al login
+        if (error.message.includes('autenticación')) {
+          navigate('/login');
+        }
+      }
+    };
+
+    loadCompanyData();
+  }, [navigate]);
+
+  // Cargar proyectos - CORREGIDO CON MANEJO DE ERRORES
   useEffect(() => {
-    fetch("http://localhost:3000/api/projects")
-      .then((res) => res.json())
-      .then((data) => setProjects(data))
-      .catch((err) => console.error(err));
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/projects");
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // ✅ Asegúrate de que sea un array
+        if (Array.isArray(data)) {
+          setProjects(data);
+        } else {
+          console.warn("Los proyectos no son un array, estableciendo array vacío");
+          setProjects([]);
+        }
+        
+      } catch (error) {
+        console.error("❌ Error cargando proyectos:", error);
+        setProjects([]); // ✅ Array vacío como fallback
+      }
+    };
+
+    fetchProjects();
   }, []);
 
-  // 🔹 CARGAR TRABAJOS
+  // Cargar trabajos - CORREGIDO CON MANEJO DE ERRORES
   useEffect(() => {
-    getJobs()
-      .then(setJobs)
-      .catch((err) => console.error("Error cargando trabajos:", err));
+    const fetchJobs = async () => {
+      try {
+        const jobsData = await getJobs();
+        
+        // ✅ Validar que sea array
+        if (Array.isArray(jobsData)) {
+          setJobs(jobsData);
+        } else {
+          console.warn("Jobs no es array, estableciendo array vacío");
+          setJobs([]);
+        }
+        
+      } catch (err) {
+        console.error("❌ Error cargando trabajos:", err);
+        setJobs([]); // ✅ Array vacío como fallback
+      }
+    };
+
+    fetchJobs();
   }, []);
 
-  // 🔹 MANEJAR CAMBIOS EN INPUTS
+  // Manejar cambios en inputs
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditData(prev => ({
@@ -120,74 +140,78 @@ function PerfilCompany() {
     }));
   };
 
-  // 🔹 GUARDAR CAMBIOS EN EL BACKEND
-  const handleSaveProfile = () => {
-    const token = localStorage.getItem('token');
-    
-    fetch('http://localhost:3000/api/empresa/perfil', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(editData)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Perfil actualizado:', data);
+  // Guardar cambios en el backend
+  const handleSaveProfile = async () => {
+    try {
+      setLoading(true);
+      
+      console.log('📤 Actualizando perfil con:', editData);
+
+      const response = await updateProfile(editData);
+      
+      console.log('✅ Perfil actualizado:', response);
+
       setCompanyData(editData);
       setIsEditing(false);
-      alert('Perfil actualizado correctamente');
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error al actualizar el perfil');
-    });
+      alert('✅ Perfil actualizado correctamente');
+    } catch (error) {
+      console.error('❌ Error:', error);
+      alert('Error al actualizar el perfil: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 🔹 CANCELAR EDICIÓN
+  // Cancelar edición
   const handleCancel = () => {
     setEditData({ ...companyData });
     setIsEditing(false);
   };
 
-  // 🔹 SUBIR LOGO
+  // Subir logo
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validar tamaño
+      if (file.size > 2 * 1024 * 1024) {
+        alert('El logo debe pesar menos de 2MB');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogoImage(reader.result);
+        setEditData(prev => ({
+          ...prev,
+          logoUrl: reader.result
+        }));
       };
       reader.readAsDataURL(file);
-
-      // Subir al backend
-      const token = localStorage.getItem('token');
-      const formData = new FormData();
-      formData.append('logo', file);
-
-      fetch('http://localhost:3000/api/empresa/logo', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => console.log('Logo subido:', data))
-      .catch(error => console.error('Error subiendo logo:', error));
     }
   };
 
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh' 
+      }}>
+        <p>Cargando perfil...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="perfil-company">
-      {/* 🔹 HEADER */}
+      {/* HEADER */}
       <header className="header">
         <div className="header-left">
           <h1 className="logo">
             work<span>now</span>
           </h1>
-          <p className="link">{editData.sitioWeb || 'https://WorkNow.com'}</p>
+          <p className="link">{companyData.sitioWeb || 'https://WorkNow.com'}</p>
         </div>
         <nav className="nav">
           <ul>
@@ -203,7 +227,7 @@ function PerfilCompany() {
         </nav>
       </header>
 
-      {/* 🔹 CONTENIDO PRINCIPAL */}
+      {/* CONTENIDO PRINCIPAL */}
       <main className="main-content">
         {/* BOTÓN EDITAR PERFIL */}
         <div className="edit-profile-section">
@@ -217,7 +241,9 @@ function PerfilCompany() {
             </button>
           ) : (
             <div className="edit-actions">
-              <button onClick={handleSaveProfile} className="save-btn">Guardar Cambios</button>
+              <button onClick={handleSaveProfile} className="save-btn" disabled={loading}>
+                {loading ? 'Guardando...' : 'Guardar Cambios'}
+              </button>
               <button onClick={handleCancel} className="cancel-btn">Cancelar</button>
             </div>
           )}
@@ -249,7 +275,7 @@ function PerfilCompany() {
                   </label>
                 )}
               </div>
-              <h2 className="company-name-title">{editData.nombreEmpresa || 'Nombre de la Empresa'}</h2>
+              <h2 className="company-name-title">{companyData.nombreEmpresa || 'Nombre de la Empresa'}</h2>
             </section>
 
             {/* PERFIL DE LA EMPRESA */}
@@ -261,69 +287,141 @@ function PerfilCompany() {
                     <label>Descripción</label>
                     <textarea
                       name="descripcion"
-                      value={editData.descripcion}
+                      value={editData.descripcion || ''}
                       onChange={handleEditChange}
                       rows="4"
                       className="edit-textarea"
+                      placeholder="Describe tu empresa..."
                     />
                   </div>
                   <div className="edit-field">
                     <label>Misión</label>
                     <textarea
                       name="mision"
-                      value={editData.mision}
+                      value={editData.mision || ''}
                       onChange={handleEditChange}
                       rows="3"
                       className="edit-textarea"
+                      placeholder="¿Cuál es la misión de tu empresa?"
                     />
                   </div>
                   <div className="edit-field">
                     <label>Visión</label>
                     <textarea
                       name="vision"
-                      value={editData.vision}
+                      value={editData.vision || ''}
                       onChange={handleEditChange}
                       rows="3"
                       className="edit-textarea"
+                      placeholder="¿Cuál es la visión de tu empresa?"
                     />
                   </div>
                 </>
               ) : (
                 <>
-                  <p>{companyData.descripcion}</p>
-                  <p>{companyData.mision}</p>
-                  <p>{companyData.vision}</p>
+                  <p>{companyData.descripcion || 'Sin descripción'}</p>
+                  {companyData.mision && <p><strong>Misión:</strong> {companyData.mision}</p>}
+                  {companyData.vision && <p><strong>Visión:</strong> {companyData.vision}</p>}
                 </>
               )}
             </section>
 
             {/* INFORMACIÓN DE LA EMPRESA */}
             <section className="company-info">
+              <h3>Información</h3>
               {isEditing ? (
                 <>
                   <div className="edit-field-inline">
                     <label>Fundada:</label>
-                    <input type="text" name="fundada" value={editData.fundada} onChange={handleEditChange} />
+                    <input 
+                      type="text" 
+                      name="fundada" 
+                      value={editData.fundada || ''} 
+                      onChange={handleEditChange}
+                      placeholder="Ej: 2020"
+                    />
                   </div>
                   <div className="edit-field-inline">
                     <label>Empleados:</label>
-                    <input type="text" name="empleados" value={editData.empleados} onChange={handleEditChange} />
+                    <input 
+                      type="text" 
+                      name="empleados" 
+                      value={editData.empleados || ''} 
+                      onChange={handleEditChange}
+                      placeholder="Ej: 50-100"
+                    />
                   </div>
                   <div className="edit-field-inline">
                     <label>Ubicaciones:</label>
-                    <input type="text" name="ubicaciones" value={editData.ubicaciones} onChange={handleEditChange} />
+                    <input 
+                      type="text" 
+                      name="ubicaciones" 
+                      value={editData.ubicaciones || ''} 
+                      onChange={handleEditChange}
+                      placeholder="Ej: Montevideo, UY"
+                    />
                   </div>
                   <div className="edit-field-inline">
-                    <label>Industria:</label>
-                    <input type="text" name="sector" value={editData.sector} onChange={handleEditChange} />
+                    <label>Sector:</label>
+                    <input 
+                      type="text" 
+                      name="sector" 
+                      value={editData.sector || ''} 
+                      onChange={handleEditChange}
+                      placeholder="Ej: Tecnología"
+                    />
+                  </div>
+                  <div className="edit-field-inline">
+                    <label>Ciudad:</label>
+                    <input 
+                      type="text" 
+                      name="ciudad" 
+                      value={editData.ciudad || ''} 
+                      onChange={handleEditChange}
+                      placeholder="Ej: Montevideo"
+                    />
+                  </div>
+                  <div className="edit-field-inline">
+                    <label>Dirección:</label>
+                    <input 
+                      type="text" 
+                      name="direccion" 
+                      value={editData.direccion || ''} 
+                      onChange={handleEditChange}
+                      placeholder="Ej: Av. 18 de Julio 1234"
+                    />
+                  </div>
+                  <div className="edit-field-inline">
+                    <label>Teléfono:</label>
+                    <input 
+                      type="text" 
+                      name="telefono" 
+                      value={editData.telefono || ''} 
+                      onChange={handleEditChange}
+                      placeholder="Ej: +598 99 123 456"
+                    />
+                  </div>
+                  <div className="edit-field-inline">
+                    <label>Sitio Web:</label>
+                    <input 
+                      type="url" 
+                      name="sitioWeb" 
+                      value={editData.sitioWeb || ''} 
+                      onChange={handleEditChange}
+                      placeholder="https://ejemplo.com"
+                    />
                   </div>
                 </>
               ) : (
                 <>
-                  <p><strong>Fundada:</strong> {companyData.fundada}</p>
-                  <p><strong>Empleados:</strong> {companyData.empleados}</p>
-                  <p><strong>Ubicación:</strong> {companyData.ubicaciones}</p>
-                  <p><strong>Industria:</strong> {companyData.sector}</p>
+                  {companyData.fundada && <p><strong>Fundada:</strong> {companyData.fundada}</p>}
+                  {companyData.empleados && <p><strong>Empleados:</strong> {companyData.empleados}</p>}
+                  {companyData.ubicaciones && <p><strong>Ubicación:</strong> {companyData.ubicaciones}</p>}
+                  {companyData.sector && <p><strong>Sector:</strong> {companyData.sector}</p>}
+                  {companyData.ciudad && <p><strong>Ciudad:</strong> {companyData.ciudad}</p>}
+                  {companyData.direccion && <p><strong>Dirección:</strong> {companyData.direccion}</p>}
+                  {companyData.telefono && <p><strong>Teléfono:</strong> {companyData.telefono}</p>}
+                  {companyData.tamano && <p><strong>Tamaño:</strong> {companyData.tamano} empleados</p>}
                 </>
               )}
             </section>
@@ -333,24 +431,52 @@ function PerfilCompany() {
               <h3>Contactos</h3>
               {isEditing ? (
                 <div className="edit-contacts">
-                  <input type="url" name="twitter" value={editData.twitter} onChange={handleEditChange} placeholder="Twitter URL" />
-                  <input type="url" name="facebook" value={editData.facebook} onChange={handleEditChange} placeholder="Facebook URL" />
-                  <input type="url" name="linkedin" value={editData.linkedin} onChange={handleEditChange} placeholder="LinkedIn URL" />
-                  <input type="email" name="email" value={editData.email} onChange={handleEditChange} placeholder="Email" />
+                  <input 
+                    type="url" 
+                    name="twitter" 
+                    value={editData.twitter || ''} 
+                    onChange={handleEditChange} 
+                    placeholder="Twitter URL" 
+                  />
+                  <input 
+                    type="url" 
+                    name="facebook" 
+                    value={editData.facebook || ''} 
+                    onChange={handleEditChange} 
+                    placeholder="Facebook URL" 
+                  />
+                  <input 
+                    type="url" 
+                    name="linkedin" 
+                    value={editData.linkedin || ''} 
+                    onChange={handleEditChange} 
+                    placeholder="LinkedIn URL" 
+                  />
                 </div>
               ) : (
                 <ul>
-                  {companyData.twitter && <li><a href={companyData.twitter} target="_blank" rel="noreferrer">Twitter</a></li>}
-                  {companyData.facebook && <li><a href={companyData.facebook} target="_blank" rel="noreferrer">Facebook</a></li>}
-                  {companyData.linkedin && <li><a href={companyData.linkedin} target="_blank" rel="noreferrer">LinkedIn</a></li>}
-                  {companyData.email && <li><a href={`mailto:${companyData.email}`}>{companyData.email}</a></li>}
+                  {companyData.twitter && (
+                    <li><a href={companyData.twitter} target="_blank" rel="noreferrer">Twitter</a></li>
+                  )}
+                  {companyData.facebook && (
+                    <li><a href={companyData.facebook} target="_blank" rel="noreferrer">Facebook</a></li>
+                  )}
+                  {companyData.linkedin && (
+                    <li><a href={companyData.linkedin} target="_blank" rel="noreferrer">LinkedIn</a></li>
+                  )}
+                  {companyData.email && (
+                    <li><a href={`mailto:${companyData.email}`}>{companyData.email}</a></li>
+                  )}
+                  {!companyData.twitter && !companyData.facebook && !companyData.linkedin && (
+                    <p style={{ color: '#999' }}>No hay redes sociales configuradas</p>
+                  )}
                 </ul>
               )}
             </section>
 
             {/* FOTOS */}
             <section className="photos-section">
-              <h3>Working at {companyData.nombreEmpresa || 'WorkNow'}</h3>
+              <h3>Trabajando en {companyData.nombreEmpresa || 'WorkNow'}</h3>
               <div className="photo-grid">
                 <img src="/images/work1.jpg" alt="Oficina 1" />
                 <img src="/images/work2.jpg" alt="Oficina 2" />
@@ -363,33 +489,24 @@ function PerfilCompany() {
           <div className="right-column">
             <section className="benefits-section">
               <h3>Beneficios</h3>
-              {companyData.beneficios && companyData.beneficios.length > 0 ? (
-                companyData.beneficios.map((beneficio, index) => (
-                  <div key={index} className="benefit-card">
-                    <h4>{beneficio.titulo}</h4>
-                    <p>{beneficio.descripcion}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No hay beneficios registrados</p>
-              )}
+              <p style={{ color: '#666', fontSize: '14px' }}>
+                Agrega información sobre los beneficios que ofrece tu empresa a los empleados.
+              </p>
             </section>
           </div>
         </div>
 
-        {/* 🔹 SECCIONES TRABAJOS Y PROYECTOS */}
+        {/* SECCIONES TRABAJOS Y PROYECTOS - CORREGIDAS */}
         <div className="job-and-projects">
           <section className="job-postings">
             <h2>Puestos de Trabajo publicados</h2>
             <div className="carousel-container">
-              {jobs.length === 0 ? (
-                <p>No hay trabajos publicados aún.</p>
-              ) : (
+              {Array.isArray(jobs) && jobs.length > 0 ? (
                 jobs.map((job) => (
                   <CardTrabajo
-                    key={job.id}
-                    title={job.title}
-                    company={job.companyName}
+                    key={job.id || job.title}
+                    title={job.title || "Sin título"}
+                    company={job.companyName || "Empresa no disponible"}
                     area={job.area}
                     jobType={job.jobType}
                     contractType={job.contractType}
@@ -400,6 +517,8 @@ function PerfilCompany() {
                     projectUrl={job.projectUrl}
                   />
                 ))
+              ) : (
+                <p>No hay trabajos publicados aún.</p>
               )}
             </div>
           </section>
@@ -407,21 +526,21 @@ function PerfilCompany() {
           <section className="freelancer-postings">
             <h2>Proyectos publicados</h2>
             <div className="carousel-container">
-              {projects.length === 0 ? (
-                <p>No hay proyectos publicados todavía.</p>
-              ) : (
+              {Array.isArray(projects) && projects.length > 0 ? (
                 projects.map((p) => (
                   <CardProyecto
-                    key={p.id}
-                    title={p.title}
-                    description={p.description}
-                    skills={p.skills}
-                    duration={p.duration}
-                    modality={p.modality}
-                    remuneration={p.remuneration}
-                    company={p.company?.email}
+                    key={p.id || p.title}
+                    title={p.title || "Sin título"}
+                    description={p.description || "Sin descripción"}
+                    skills={p.skills || "No especificado"}
+                    duration={p.duration || "No especificado"}
+                    modality={p.modality || "No especificado"}
+                    remuneration={p.remuneration || "No especificado"}
+                    company={p.company?.email || "Empresa no disponible"}
                   />
                 ))
+              ) : (
+                <p>No hay proyectos publicados todavía.</p>
               )}
             </div>
           </section>

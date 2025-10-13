@@ -1,121 +1,98 @@
-/* 🔹 ESTILOS ADICIONALES PARA EDICIÓN DE PERFIL */
-
-/* Botones de edición */
-.edit-profile-section {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
+/* 🔹 PERFIL COMPANY CON ESTILO SIMILAR AL PERFIL USER */
+.perfil-company {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f3e8ff, #dbeafe);
+  padding: 2rem 1rem;
 }
 
-.edit-profile-btn {
+.perfil-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header Card */
+.perfil-header-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.perfil-header-bg {
+  height: 8rem;
+  background: linear-gradient(to right, #7c3aed, #581c87);
+}
+
+.perfil-header-content {
+  padding: 0 2rem 2rem;
+}
+
+.perfil-header-info {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
-  background: #6b4eff;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 6px rgba(107, 78, 255, 0.3);
-  transition: all 0.3s;
+  margin-top: -4rem;
+  gap: 1rem;
 }
 
-.edit-profile-btn:hover {
-  background: #5a3dd9;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(107, 78, 255, 0.4);
+@media (min-width: 768px) {
+  .perfil-header-info {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
 }
 
-.edit-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.save-btn {
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.save-btn:hover {
-  background: #059669;
-}
-
-.cancel-btn {
-  background: #6b7280;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.cancel-btn:hover {
-  background: #4b5563;
-}
-
-/* Logo de empresa */
-.company-logo-section {
-  background: #fff;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  margin-bottom: 25px;
-  text-align: center;
+/* Logo de Empresa */
+.company-logo-container {
+  position: relative;
+  flex-shrink: 0;
 }
 
 .company-logo-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-bottom: 15px;
-}
-
-.company-logo-img {
-  width: 120px;
-  height: 120px;
-  border-radius: 12px;
-  object-fit: cover;
-  border: 3px solid #6b4eff;
-}
-
-.company-logo-placeholder {
-  width: 120px;
-  height: 120px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 8rem;
+  height: 8rem;
+  border-radius: 16px;
+  border: 4px solid white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background: linear-gradient(to bottom right, #c084fc, #7c3aed);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.company-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.company-logo-placeholder {
+  width: 3rem;
+  height: 3rem;
   color: white;
 }
 
 .upload-logo-btn {
   position: absolute;
-  bottom: -10px;
-  right: -10px;
-  background: #6b4eff;
-  width: 40px;
-  height: 40px;
+  bottom: 0;
+  right: 0;
+  background: #7c3aed;
+  padding: 0.5rem;
   border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s;
+  border: 2px solid white;
 }
 
 .upload-logo-btn:hover {
-  background: #5a3dd9;
+  background: #6b21a8;
   transform: scale(1.1);
 }
 
@@ -127,106 +104,452 @@
   display: none;
 }
 
-.company-name-title {
-  color: #6b4eff;
-  font-size: 1.5rem;
-  margin: 0;
+/* Información Básica */
+.company-basic-info {
+  flex: 1;
+  text-align: center;
 }
 
-/* Campos de edición */
+@media (min-width: 768px) {
+  .company-basic-info {
+    text-align: left;
+  }
+}
+
+.company-name-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.company-sector {
+  color: #7c3aed;
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.company-contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+@media (min-width: 768px) {
+  .company-contact-info {
+    justify-content: flex-start;
+  }
+}
+
+.company-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Botones de Edición */
+.edit-profile-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.edit-profile-btn {
+  background: #7c3aed;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-profile-btn:hover {
+  background: #6b21a8;
+  box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.4);
+  transform: translateY(-2px);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.save-btn {
+  background: #10b981;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.save-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.cancel-btn {
+  background: #6b7280;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+/* Grid de Contenido */
+.frame {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .frame {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Tarjetas */
+.company-profile,
+.company-info,
+.contact-section,
+.photos-section,
+.benefits-section,
+.job-postings,
+.freelancer-postings {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+}
+
+.company-profile h2,
+.company-info h3,
+.contact-section h3,
+.photos-section h3,
+.benefits-section h3,
+.job-postings h2,
+.freelancer-postings h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid #f3f4f6;
+  padding-bottom: 0.75rem;
+}
+
+/* Lista de Información */
+.company-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.company-info-item {
+  font-size: 0.875rem;
+}
+
+.company-info-label {
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.company-info-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Campos de Edición */
 .edit-field {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .edit-field label {
   display: block;
   font-weight: 600;
-  color: #444;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .edit-textarea,
 .edit-input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 0.95rem;
-  font-family: inherit;
+  font-size: 0.875rem;
   transition: all 0.2s;
+  outline: none;
+  font-family: inherit;
+  background: #f9fafb;
+}
+
+.edit-textarea {
   resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
 }
 
 .edit-textarea:focus,
 .edit-input:focus {
-  outline: none;
-  border-color: #6b4eff;
-  box-shadow: 0 0 0 3px rgba(107, 78, 255, 0.1);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  background: white;
 }
 
 .edit-field-inline {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
 }
 
 .edit-field-inline label {
   font-weight: 600;
-  color: #444;
+  color: #374151;
   min-width: 100px;
+  margin: 0;
+  font-size: 0.875rem;
 }
 
 .edit-field-inline input {
   flex: 1;
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
   transition: all 0.2s;
+  background: white;
 }
 
 .edit-field-inline input:focus {
   outline: none;
-  border-color: #6b4eff;
-  box-shadow: 0 0 0 3px rgba(107, 78, 255, 0.1);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
 }
 
-/* Contactos en edición */
+/* Contactos */
 .edit-contacts {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.75rem;
 }
 
 .edit-contacts input {
-  padding: 10px 12px;
+  padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   transition: all 0.2s;
+  background: #f9fafb;
 }
 
 .edit-contacts input:focus {
   outline: none;
-  border-color: #6b4eff;
-  box-shadow: 0 0 0 3px rgba(107, 78, 255, 0.1);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  background: white;
 }
 
-/* Responsive para botones de edición */
-@media (max-width: 768px) {
-  .edit-profile-section {
-    justify-content: center;
-  }
+/* Fotos */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
 
-  .edit-actions {
+.photo-grid img {
+  width: 100%;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.photo-grid img:hover {
+  border-color: #7c3aed;
+  transform: scale(1.05);
+}
+
+/* Trabajos y Proyectos */
+.job-and-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.carousel-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Texto */
+.company-description {
+  color: #4b5563;
+  line-height: 1.75;
+}
+
+.empty-text {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Header de Navegación */
+.header {
+  background: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  color: #7c3aed;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.logo span {
+  color: #10b981;
+}
+
+.link {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.nav ul {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.nav li:hover {
+  background: #7c3aed;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .perfil-company {
+    padding: 1rem 0.5rem;
+  }
+  
+  .perfil-header-content {
+    padding: 0 1rem 1rem;
+  }
+  
+  .company-name-title {
+    font-size: 1.5rem;
+  }
+  
+  .company-sector {
+    font-size: 1rem;
+  }
+  
+  .company-profile,
+  .company-info,
+  .contact-section,
+  .photos-section,
+  .benefits-section,
+  .job-postings,
+  .freelancer-postings {
+    padding: 1rem;
+  }
+  
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .edit-field-inline {
     flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .edit-field-inline label {
+    min-width: auto;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
     width: 100%;
   }
-
-  .save-btn,
-  .cancel-btn {
-    width: 100%;
+  
+  .nav li {
+    justify-content: center;
   }
 }

@@ -218,6 +218,42 @@ export default function HomeCompany() {
       )}
 
       {/* ---------- PROYECTOS ---------- */}
+      <section className="freelancer-postings">
+        <div className="section-header">
+          <h2>Proyectos publicados</h2>
+          {!showAllProjects && projects.length > 3 && (
+            <button className="view-more-btn" onClick={() => setShowAllProjects(true)}>
+              Ver todo →
+            </button>
+          )}
+        </div>
+
+        {!showAllProjects ? (
+          <div id="carouselProjects" className="carousel slide" data-bs-ride="carousel">
+            <div className="carousel-inner">
+              {Array.isArray(projects) && projects.map((p, index) => (
+  <div
+    className={`carousel-item ${index === 0 ? "active" : ""}`}
+    key={p.id || index} // Usa index como fallback si no hay id
+  >
+    <div className="carousel-card-wrapper">
+      <CardProyecto {...p} company={p.company?.email} />
+    </div>
+  </div>
+))}
+            </div>
+          </div>
+        ) : (
+          <div className="freelancer-list">
+            {projects.map((p) => (
+              <CardProyecto key={p.id} {...p} company={p.company?.email} />
+            ))}
+            <button className="view-more-btn back-btn" onClick={() => setShowAllProjects(false)}>
+              ← Volver
+            </button>
+          </div>
+        )}
+      </section>
        {/* 💡 PROYECTOS */}
             <section className="featured">
               <div className="header">
@@ -265,7 +301,6 @@ export default function HomeCompany() {
                 <p className="no-data">No hay proyectos publicados por ahora</p>
               )}
             </section>
-
       {/* 💼 TRABAJOS */}
             <section className="featured">
               <div className="header">
