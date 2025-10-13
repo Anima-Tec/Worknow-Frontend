@@ -227,16 +227,16 @@ export default function HomeCompany() {
         {!showAllProjects ? (
           <div id="carouselProjects" className="carousel slide" data-bs-ride="carousel">
             <div className="carousel-inner">
-              {projects.map((p, index) => (
-                <div
-                  className={`carousel-item ${index === 0 ? "active" : ""}`}
-                  key={p.id}
-                >
-                  <div className="carousel-card-wrapper">
-                    <CardProyecto {...p} company={p.company?.email} />
-                  </div>
-                </div>
-              ))}
+              {Array.isArray(projects) && projects.map((p, index) => (
+  <div
+    className={`carousel-item ${index === 0 ? "active" : ""}`}
+    key={p.id || index} // Usa index como fallback si no hay id
+  >
+    <div className="carousel-card-wrapper">
+      <CardProyecto {...p} company={p.company?.email} />
+    </div>
+  </div>
+))}
             </div>
           </div>
         ) : (

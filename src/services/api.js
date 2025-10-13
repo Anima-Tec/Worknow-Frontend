@@ -1,8 +1,7 @@
 // ======================= 🌐 CONFIGURACIÓN BASE ==========================
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
-
-// ============================ 🔐 LOGIN =================================
+// ============================ 🔐 AUTH =================================
 export async function loginApi({ email, password }) {
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: "POST",
@@ -15,6 +14,80 @@ export async function loginApi({ email, password }) {
   return res.json();
 }
 
+export async function registerUser(userData) {
+  const res = await fetch(`${API_BASE}/auth/register/user`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Error al registrar usuario");
+  }
+
+  return res.json();
+}
+
+export async function registerCompany(companyData) {
+  const res = await fetch(`${API_BASE}/auth/register/company`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(companyData),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Error al registrar empresa");
+  }
+
+  return res.json();
+}
+
+// ============================ 👤 PERFIL =================================
+export async function getProfile() {
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    throw new Error("No hay token de autenticación");
+  }
+
+  const res = await fetch(`${API_BASE}/auth/profile`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Error obteniendo perfil");
+  }
+
+  return res.json();
+}
+
+export async function updateProfile(profileData) {
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    throw new Error("No hay token de autenticación");
+  }
+
+  const res = await fetch(`${API_BASE}/auth/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(profileData),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.message || "Error actualizando perfil");
+  }
+
+  return res.json();
+}
 
 // ======================== 💼 TRABAJOS ==================================
 export async function searchJobs(filters) {
@@ -49,7 +122,6 @@ export async function createJob(jobData) {
   return res.json();
 }
 
-
 // ======================== 🧩 PROYECTOS =================================
 export async function searchProjects(filters) {
   const params = new URLSearchParams(filters).toString();
@@ -83,7 +155,6 @@ export async function getProjectById(id) {
   return res.json();
 }
 
-
 // ==================== 📩 POSTULACIONES (APPLY) ==========================
 export async function sendApplication({ projectId, name, email }) {
   try {
@@ -111,7 +182,6 @@ export async function sendApplication({ projectId, name, email }) {
   }
 }
 
-
 // ==================== 🏢 EMPRESAS (VER POSTULADOS) =====================
 export async function getCompanyApplications() {
   const token = localStorage.getItem("token");
@@ -137,7 +207,6 @@ export async function getCompanyApplications() {
   console.log("📦 Postulaciones de empresa:", data);
   return data;
 }
-
 
 // ==================== 🔄 ACTUALIZAR ESTADO POSTULACIÓN =================
 export async function updateApplicationStatus(id, status) {
