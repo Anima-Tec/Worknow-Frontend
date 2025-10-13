@@ -67,7 +67,6 @@ export default function HomeUser() {
               <AiOutlineHome />
               <span>Home</span>
             </li>
-            <li className="nav-item">
             <li
               className="nav-item"
               onClick={() => (window.location.href = "/ContactUser")}
@@ -193,7 +192,6 @@ export default function HomeUser() {
       </section>
 
       {/* 💡 PROYECTOS */}
-      <section className="featured">
         <div className="header">
           <h3>Featured projects</h3>
           <a

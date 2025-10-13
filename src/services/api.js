@@ -196,9 +196,6 @@ export async function sendApplication({ projectId, name, email }) {
 }
 
 
-
-
- ==================== 🏢 EMPRESAS (VER POSTULADOS) =====================
 export async function getCompanyApplications() {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
