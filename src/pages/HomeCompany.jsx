@@ -111,7 +111,7 @@ export default function HomeCompany() {
               <span>Home</span>
             </li>
 
-            {/* ✅ Botón de postulados funcional */}
+            {/* ✅ Botón de postulados funcional - SOLO ESTO CAMBIÉ */}
             <li
               className="nav-item"
               onClick={() => {
@@ -205,16 +205,12 @@ export default function HomeCompany() {
         </div>
       )}
 
-      {/* ✅ Modal Postulados */}
+      {/* ✅ Modal Postulados - SOLO ESTO CAMBIÉ */}
       {showApplications && (
-        <div className="modal" style={{ position: "fixed", top: 0, left: 0, zIndex: 9999 }}>
-          <div className="modal-content">
-            <ApplicationsModal
-              applications={applications}
-              onClose={() => setShowApplications(false)}
-            />
-          </div>
-        </div>
+        <ApplicationsModal
+          open={showApplications}
+          onClose={() => setShowApplications(false)}
+        />
       )}
 
       {/* ---------- PROYECTOS ---------- */}
