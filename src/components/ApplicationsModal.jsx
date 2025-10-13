@@ -7,7 +7,7 @@ export default function ApplicationsModal({ open, onClose }) {
 
   useEffect(() => {
     if (open) {
-      fetch("http://localhost:3000/api/projects/applications/company/me", {
+      fetch("http://localhost:3000/api/applications/company/me", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
