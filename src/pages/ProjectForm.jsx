@@ -6,11 +6,12 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
   const [formData, setFormData] = useState({
     title: "",
     duration: "",
+    deliveryFormat: "",
+    evaluationCriteria: "",
+    remuneration: "",
     description: "",
     modality: "Freelance",
-    remuneration: "",
     skills: "",
-    location: "",
   });
 
   const handleChange = (e) => {
@@ -23,7 +24,7 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token"); // JWT
+      const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:3000/api/projects", {
         method: "POST",
         headers: {
@@ -53,11 +54,11 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
           <form className="projectform" onSubmit={handleSubmit}>
             <h2>Publicar proyecto</h2>
 
-            <label>Título *</label>
+            <label>Título del proyecto *</label>
             <input
               type="text"
               name="title"
-              placeholder="Ej. Prototipo UI (Figma)"
+              placeholder="Ej. Desarrollo de landing page"
               value={formData.title}
               onChange={handleChange}
               required
@@ -65,40 +66,57 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
 
             <div className="form-row">
               <div>
-                <label>Duración *</label>
+                <label>Tiempo estimado *</label>
                 <input
                   type="text"
                   name="duration"
-                  placeholder="Ej. 2 semanas"
+                  placeholder="Ej. 3 semanas"
                   value={formData.duration}
                   onChange={handleChange}
                   required
                 />
               </div>
               <div>
-                <label>Remuneración</label>
+                <label>Remuneración *</label>
                 <input
                   type="text"
                   name="remuneration"
-                  placeholder="Ej. $30.000"
+                  placeholder="Ej. $25.000"
                   value={formData.remuneration}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
 
-            <label>Descripción *</label>
-            <textarea
-              name="description"
-              placeholder="Tareas, responsabilidades, objetivos..."
-              value={formData.description}
-              onChange={handleChange}
-              required
-            />
+            <div className="form-row">
+              <div>
+                <label>Formato de entrega *</label>
+                <input
+                  type="text"
+                  name="deliveryFormat"
+                  placeholder="Ej. Repositorio GitHub, Demo, PDF..."
+                  value={formData.deliveryFormat}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Criterios a evaluar *</label>
+                <input
+                  type="text"
+                  name="evaluationCriteria"
+                  placeholder="Ej. Creatividad, Funcionalidad, Cumplimiento"
+                  value={formData.evaluationCriteria}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
 
             <div className="form-row">
               <div>
-                <label>Habilidades</label>
+                <label>Habilidades requeridas</label>
                 <input
                   type="text"
                   name="skills"
@@ -107,28 +125,27 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
                   onChange={handleChange}
                 />
               </div>
-              <div>
-                <label>Ubicación</label>
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="Remoto / Montevideo"
-                  value={formData.location}
-                  onChange={handleChange}
-                />
-              </div>
             </div>
+
+            <label>Descripción del proyecto *</label>
+            <textarea
+              name="description"
+              placeholder="Explicá objetivos, tareas, requisitos..."
+              value={formData.description}
+              onChange={handleChange}
+              required
+            />
 
             <button type="submit" className="btn-publicar-proyecto">
               Subir proyecto
             </button>
           </form>
 
+          {/* ✅ Vista previa igual */}
           <div className="project-preview">
             <h3>Vista previa</h3>
             <CardProyecto
               title={formData.title || "Título del proyecto"}
-              description={formData.description || "Descripción corta..."}
               skills={formData.skills || "Habilidades"}
               duration={formData.duration || "Tiempo estimado"}
               modality={formData.modality}

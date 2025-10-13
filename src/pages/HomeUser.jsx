@@ -7,6 +7,9 @@ import { IoIosContacts, IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import "./HomeUser.css";
 import { Link } from "react-router-dom";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import Footer from "../components/Footer";
 
 export default function HomeUser() {
   const [jobs, setJobs] = useState([]);
@@ -17,6 +20,9 @@ export default function HomeUser() {
   const [type, setType] = useState("");
   const [area, setArea] = useState("");
   const [level, setLevel] = useState("");
+
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [showAllJobs, setShowAllJobs] = useState(false);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -50,6 +56,7 @@ export default function HomeUser() {
 
   return (
     <div className="home-user">
+      {/* 🟣 HEADER */}
       <header className="header">
         <h1 className="h1">
           work<span>now</span>
@@ -60,6 +67,7 @@ export default function HomeUser() {
               <AiOutlineHome />
               <span>Home</span>
             </li>
+            <li className="nav-item">
             <li
               className="nav-item"
               onClick={() => (window.location.href = "/ContactUser")}
@@ -89,6 +97,7 @@ export default function HomeUser() {
         </video>
       </section>
 
+      {/* 🔍 FILTROS */}
       <div className="search-box">
         <div className="filter">
           <label>Buscar</label>
@@ -135,6 +144,100 @@ export default function HomeUser() {
         </button>
       </div>
 
+      {/* 💼 TRABAJOS */}
+      <section className="featured">
+        <div className="header">
+          <h3>Featured jobs</h3>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowAllJobs(!showAllJobs);
+            }}
+          >
+            {showAllJobs ? "Ver menos ↑" : "View all →"}
+          </a>
+        </div>
+
+        {loading ? (
+          <p className="loading">Cargando...</p>
+        ) : jobs.length > 0 ? (
+          showAllJobs ? (
+            <div className="cards">
+              {jobs.map((job) => (
+                <CardTrabajo key={job.id} {...job} />
+              ))}
+            </div>
+          ) : (
+            <Carousel
+              responsive={{
+                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+              }}
+              infinite
+              autoPlay={false}
+              keyBoardControl
+              containerClass="carousel-container"
+              itemClass="carousel-card"
+              removeArrowOnDeviceType={["mobile"]}
+            >
+              {jobs.map((job) => (
+                <CardTrabajo key={job.id} {...job} />
+              ))}
+            </Carousel>
+          )
+        ) : (
+          <p className="no-data">No hay trabajos por ahora</p>
+        )}
+      </section>
+
+      {/* 💡 PROYECTOS */}
+      <section className="featured">
+        <div className="header">
+          <h3>Featured projects</h3>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowAllProjects(!showAllProjects);
+            }}
+          >
+            {showAllProjects ? "Ver menos ↑" : "View all →"}
+          </a>
+        </div>
+
+        {loading ? (
+          <p className="loading">Cargando...</p>
+        ) : projects.length > 0 ? (
+          showAllProjects ? (
+            <div className="cards">
+              {projects.map((p) => (
+                <CardProyecto key={p.id} {...p} />
+              ))}
+            </div>
+          ) : (
+            <Carousel
+              responsive={{
+                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+              }}
+              infinite
+              autoPlay={false}
+              keyBoardControl
+              containerClass="carousel-container"
+              itemClass="carousel-card"
+              removeArrowOnDeviceType={["mobile"]}
+            >
+              {projects.map((p) => (
+                <CardProyecto key={p.id} {...p} />
+              ))}
+            </Carousel>
+          )
+        ) : (
+          <p className="no-data">No hay proyectos publicados por ahora</p>
+        )}
       {/* 💼 Trabajos */}
       <section className="featured">
         <div className="header">
@@ -194,6 +297,8 @@ export default function HomeUser() {
           )}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

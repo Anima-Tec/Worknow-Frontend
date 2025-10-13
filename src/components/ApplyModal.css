@@ -1,0 +1,151 @@
+.apply-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.apply-modal {
+  background: white;
+  border-radius: 20px;
+  width: 80%;
+  max-width: 800px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.apply-title {
+  color: #5b21b6;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.apply-company {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* ---------- INFO BOX ---------- */
+.apply-info-box {
+  background: #f7f5ff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.apply-info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #333;
+}
+
+.apply-info-item strong {
+  color: #4c1d95;
+}
+
+.icon {
+  font-size: 18px;
+}
+
+.icon.violet { color: #6d28d9; }
+.icon.green { color: #22c55e; }
+.icon.blue { color: #2563eb; }
+.icon.orange { color: #f97316; }
+.icon.purple { color: #9333ea; }
+.icon.gray { color: #4b5563; }
+
+/* ---------- FORMULARIO ---------- */
+.apply-form-container {
+  background: #fafafa;
+  padding: 25px;
+  border-radius: 15px;
+}
+
+.apply-subtitle {
+  color: #5b21b6;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.apply-form .input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.apply-form input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.apply-form input:focus {
+  outline: 2px solid #7c3aed;
+}
+
+.apply-submit-btn {
+  width: 100%;
+  background: #6d28d9;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.apply-submit-btn:hover {
+  background: #5b21b6;
+}
+
+.apply-success {
+  text-align: center;
+  padding: 40px;
+}
+
+.apply-success h3 {
+  color: #16a34a;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

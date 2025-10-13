@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./HomeCompany.css";
 import { AiOutlineHome } from "react-icons/ai";
-import { IoIosContacts, IoIosNotifications } from "react-icons/io";
+import { IoIosContacts } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import { useLocation } from "react-router-dom";
 import { getJobs } from "../services/api";
@@ -9,52 +9,93 @@ import ProjectForm from "./ProjectForm";
 import JobForm from "./JobForm.jsx";
 import CardProyecto from "../components/CardProyecto";
 import CardTrabajo from "../components/CardTrabajo.jsx";
+import ApplicationsModal from "../components/ApplicationsModal";
+import Footer from "../components/Footer";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 
 export default function HomeCompany() {
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [showJobForm, setShowJobForm] = useState(false);
   const [projects, setProjects] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
+  const [showApplications, setShowApplications] = useState(false);
   const location = useLocation();
+  const [showAllJobs, setShowAllJobs] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // 🔹 Obtener proyectos del backend
   useEffect(() => {
     fetch("http://localhost:3000/api/projects")
       .then((res) => res.json())
-      .then((data) => setProjects(data))
-      .catch((err) => console.error("Error cargando proyectos:", err));
+      .then(setProjects)
+      .catch((err) => console.error("❌ Error cargando proyectos:", err));
   }, []);
 
   // 🔹 Obtener trabajos del backend
   useEffect(() => {
     getJobs()
       .then(setJobs)
-      .catch((err) => console.error("Error cargando trabajos:", err));
+      .catch((err) => console.error("❌ Error cargando trabajos:", err));
   }, []);
 
-  // 🔹 Mostrar modal de éxito si viene de JobForm con navigate()
+  // 🔹 Cargar postulaciones cuando abrís el modal
+  useEffect(() => {
+    if (!showApplications) return;
+
+    async function fetchApplications() {
+      try {
+        const token = localStorage.getItem("token");
+        const user = JSON.parse(localStorage.getItem("user"));
+        const companyId = user?.id;
+
+        if (!token || !companyId) {
+          console.warn("⚠️ No hay token o ID de empresa guardado.");
+          setApplications([]);
+          return;
+        }
+
+        const res = await fetch(
+          `http://localhost:3000/api/applications/company/${companyId}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("📨 Status respuesta:", res.status);
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("⚠️ Error del backend:", res.status, text);
+          setApplications([]);
+          return;
+        }
+
+        const data = await res.json();
+        console.log("📦 Postulaciones cargadas:", data);
+        setApplications(data);
+      } catch (err) {
+        console.error("❌ Error cargando postulaciones:", err);
+        setApplications([]);
+      }
+    }
+
+    fetchApplications();
+  }, [showApplications]);
+
+  // 🔹 Mostrar modal de éxito tras publicar
   useEffect(() => {
     if (location.state?.jobCreated) {
       setShowSuccess(true);
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
-
-  // 🔹 Manejar proyecto creado
-  const handleProjectCreated = (newProject) => {
-    setProjects((prev) => [newProject, ...prev]);
-    setShowProjectForm(false);
-    setShowSuccess(true);
-  };
-
-  // 🔹 Manejar trabajo creado
-  const handleJobCreated = (newJob) => {
-    setJobs((prev) => [newJob, ...prev]);
-    setShowJobForm(false);
-    setShowSuccess(true);
-  };
 
   return (
     <div>
@@ -69,17 +110,20 @@ export default function HomeCompany() {
               <AiOutlineHome />
               <span>Home</span>
             </li>
+
+            {/* ✅ Botón de postulados funcional - SOLO ESTO CAMBIÉ */}
             <li
               className="nav-item"
-              onClick={() => (window.location.href = "/contactcompany")}
+              onClick={() => {
+                console.log("✅ Abriendo modal de postulaciones");
+                setShowApplications(true);
+              }}
+              style={{ cursor: "pointer" }}
             >
               <IoIosContacts />
-              <span>Contacto</span>
+              <span>Postulados</span>
             </li>
-            <li className="nav-item">
-              <IoIosNotifications />
-              <span>Notificaciones</span>
-            </li>
+
             <li
               className="nav-item"
               onClick={() => (window.location.href = "/PerfilCompany")}
@@ -103,10 +147,7 @@ export default function HomeCompany() {
           <p>
             Accedé a talento independiente que se adapta a las necesidades de tu empresa.
           </p>
-          <button
-            className="primaryBtn"
-            onClick={() => setShowProjectForm(true)}
-          >
+          <button className="primaryBtn" onClick={() => setShowProjectForm(true)}>
             Publicar Proyecto
           </button>
         </div>
@@ -126,35 +167,31 @@ export default function HomeCompany() {
       {showJobForm && (
         <div className="modal">
           <div className="modal-content">
-            <button
-              className="close-btn"
-              onClick={() => setShowJobForm(false)}
-              style={{ float: "right" }}
-            >
+            <button className="close-btn" onClick={() => setShowJobForm(false)}>
               ✖
             </button>
-            <JobForm onJobCreated={handleJobCreated} />
+            <JobForm onJobCreated={() => setShowSuccess(true)} />
           </div>
         </div>
       )}
 
       {showProjectForm && (
-        <div className="modal">
-          <div className="modal-content">
-            <button
-              className="close-btn"
-              onClick={() => setShowProjectForm(false)}
-              style={{ float: "right" }}
-            >
-              ✖
-            </button>
-            <ProjectForm
-              onClose={() => setShowProjectForm(false)}
-              onProjectCreated={handleProjectCreated}
-            />
-          </div>
-        </div>
-      )}
+  <div className="modal">
+    <div className="modal-content">
+      <button className="close-btn" onClick={() => setShowProjectForm(false)}>
+        ✖
+      </button>
+      <ProjectForm
+        onClose={() => setShowProjectForm(false)} // ✅ Agregado
+        onProjectCreated={(newProject) => {
+          setProjects((prev) => [newProject, ...prev]); // opcional: actualiza lista
+          setShowSuccess(true);
+        }}
+      />
+    </div>
+  </div>
+)}
+
 
       {showSuccess && (
         <div className="modal">
@@ -168,115 +205,146 @@ export default function HomeCompany() {
         </div>
       )}
 
-      {/* ---------- PROYECTOS PUBLICADOS (CARRUSEL BOOTSTRAP) ---------- */}
+      {/* ✅ Modal Postulados - SOLO ESTO CAMBIÉ */}
+      {showApplications && (
+        <ApplicationsModal
+          open={showApplications}
+          onClose={() => setShowApplications(false)}
+        />
+      )}
+
+      {/* ---------- PROYECTOS ---------- */}
       <section className="freelancer-postings">
         <div className="section-header">
           <h2>Proyectos publicados</h2>
           {!showAllProjects && projects.length > 3 && (
-            <button
-              className="view-more-btn"
-              onClick={() => setShowAllProjects(true)}
-            >
+            <button className="view-more-btn" onClick={() => setShowAllProjects(true)}>
               Ver todo →
             </button>
           )}
         </div>
 
         {!showAllProjects ? (
-          <div
-            id="carouselProjects"
-            className="carousel slide"
-            data-bs-ride="carousel"
-          >
+          <div id="carouselProjects" className="carousel slide" data-bs-ride="carousel">
             <div className="carousel-inner">
-              {projects.map((p, index) => (
-                <div
-                  className={`carousel-item ${index === 0 ? "active" : ""}`}
-                  key={p.id}
-                >
-                  <div className="carousel-card-wrapper">
-                    <CardProyecto
-                      title={p.title}
-                      description={p.description}
-                      skills={p.skills}
-                      duration={p.duration}
-                      modality={p.modality}
-                      remuneration={p.remuneration}
-                      company={p.company?.email}
-                    />
-                  </div>
-                </div>
-              ))}
+              {Array.isArray(projects) && projects.map((p, index) => (
+  <div
+    className={`carousel-item ${index === 0 ? "active" : ""}`}
+    key={p.id || index} // Usa index como fallback si no hay id
+  >
+    <div className="carousel-card-wrapper">
+      <CardProyecto {...p} company={p.company?.email} />
+    </div>
+  </div>
+))}
             </div>
-
-            <button
-              className="carousel-control-prev"
-              type="button"
-              data-bs-target="#carouselProjects"
-              data-bs-slide="prev"
-            >
-              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Anterior</span>
-            </button>
-            <button
-              className="carousel-control-next"
-              type="button"
-              data-bs-target="#carouselProjects"
-              data-bs-slide="next"
-            >
-              <span className="carousel-control-next-icon" aria-hidden="true"></span>
-              <span className="visually-hidden">Siguiente</span>
-            </button>
           </div>
         ) : (
           <div className="freelancer-list">
             {projects.map((p) => (
-              <CardProyecto
-                key={p.id}
-                title={p.title}
-                description={p.description}
-                skills={p.skills}
-                duration={p.duration}
-                modality={p.modality}
-                remuneration={p.remuneration}
-                company={p.company?.email}
-              />
+              <CardProyecto key={p.id} {...p} company={p.company?.email} />
             ))}
-            <button
-              className="view-more-btn back-btn"
-              onClick={() => setShowAllProjects(false)}
-            >
+            <button className="view-more-btn back-btn" onClick={() => setShowAllProjects(false)}>
               ← Volver
             </button>
           </div>
         )}
       </section>
-
-      {/* ---------- TRABAJOS PUBLICADOS ---------- */}
-      <section className="job-postings">
-        <h2>Puestos de Trabajo publicados</h2>
-        <div className="jobs">
-          {jobs.length === 0 ? (
-            <p>No hay trabajos publicados aún.</p>
-          ) : (
-            jobs.map((job) => (
-              <CardTrabajo
-                key={job.id}
-                title={job.title}
-                company={job.companyName}
-                area={job.area}
-                jobType={job.jobType}
-                contractType={job.contractType}
-                modality={job.modality}
-                location={job.location}
-                salary={job.salaryRange}
-                description={job.description}
-                projectUrl={job.projectUrl}
-              />
-            ))
-          )}
-        </div>
-      </section>
+       {/* 💡 PROYECTOS */}
+            <section className="featured">
+              <div className="header">
+                <h3>Featured projects</h3>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAllProjects(!showAllProjects);
+                  }}
+                >
+                  {showAllProjects ? "Ver menos ↑" : "View all →"}
+                </a>
+              </div>
+      
+              {loading ? (
+                <p className="loading">Cargando...</p>
+              ) : projects.length > 0 ? (
+                showAllProjects ? (
+                  <div className="cards">
+                    {projects.map((p) => (
+                      <CardProyecto key={p.id} {...p} />
+                    ))}
+                  </div>
+                ) : (
+                  <Carousel
+                    responsive={{
+                      desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                      tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                      mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+                    }}
+                    infinite
+                    autoPlay={false}
+                    keyBoardControl
+                    containerClass="carousel-container"
+                    itemClass="carousel-card"
+                    removeArrowOnDeviceType={["mobile"]}
+                  >
+                    {projects.map((p) => (
+                      <CardProyecto key={p.id} {...p} />
+                    ))}
+                  </Carousel>
+                )
+              ) : (
+                <p className="no-data">No hay proyectos publicados por ahora</p>
+              )}
+            </section>
+      {/* 💼 TRABAJOS */}
+            <section className="featured">
+              <div className="header">
+                <h3>Featured jobs</h3>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAllJobs(!showAllJobs);
+                  }}
+                >
+                  {showAllJobs ? "Ver menos ↑" : "View all →"}
+                </a>
+              </div>
+      
+              {loading ? (
+                <p className="loading">Cargando...</p>
+              ) : jobs.length > 0 ? (
+                showAllJobs ? (
+                  <div className="cards">
+                    {jobs.map((job) => (
+                      <CardTrabajo key={job.id} {...job} />
+                    ))}
+                  </div>
+                ) : (
+                  <Carousel
+                    responsive={{
+                      desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                      tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                      mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+                    }}
+                    infinite
+                    autoPlay={false}
+                    keyBoardControl
+                    containerClass="carousel-container"
+                    itemClass="carousel-card"
+                    removeArrowOnDeviceType={["mobile"]}
+                  >
+                    {jobs.map((job) => (
+                      <CardTrabajo key={job.id} {...job} />
+                    ))}
+                  </Carousel>
+                )
+              ) : (
+                <p className="no-data">No hay trabajos por ahora</p>
+              )}
+            </section>
+      <Footer />
     </div>
   );
 }

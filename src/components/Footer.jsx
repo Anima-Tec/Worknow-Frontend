@@ -14,7 +14,6 @@ export default function Footer() {
         </div>
         <div className="footer-links">
           <div>
-            <h4>Acerca de:</h4>
             <ul>
               <li>
                 <a
@@ -27,27 +26,9 @@ export default function Footer() {
                   Inicio
                 </a>
               </li>
-              <li><span className="disabled-link">Quiénes somos</span></li>
-              <li><span className="disabled-link">Empresas</span></li>
-              <li><span className="disabled-link">Términos y condiciones</span></li>
-              <li><span className="disabled-link">Política de privacidad</span></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4>Recursos</h4>
-            <ul>
-              <li><span className="disabled-link">Guía de uso</span></li>
-              <li><span className="disabled-link">Preguntas frecuentes</span></li>
-              <li><span className="disabled-link">Chatbot</span></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4>Contacto</h4>
-            <ul>
-              <li><span className="disabled-link">contacto@worknow.com</span></li>
-              <li><span className="disabled-link">Soporte técnico</span></li>
+              <li className="disabled-link" onClick={() => (window.location.href = "/QuienesSomos")}>
+                <span>Quienes Somos</span>
+              </li>
             </ul>
           </div>
         </div>

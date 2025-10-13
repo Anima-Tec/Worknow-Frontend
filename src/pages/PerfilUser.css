@@ -1,0 +1,380 @@
+/* Perfil Container */
+.perfil-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f3e8ff, #dbeafe);
+  padding: 2rem 1rem;
+}
+
+.perfil-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header Card */
+.perfil-header-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.perfil-header-bg {
+  height: 8rem;
+  background: linear-gradient(to right, #7c3aed, #581c87);
+}
+
+.perfil-header-content {
+  padding: 0 2rem 2rem;
+}
+
+.perfil-header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -4rem;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .perfil-header-info {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 1.5rem;
+  }
+}
+
+/* Profile Image */
+.perfil-image-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.perfil-image-wrapper {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  border: 4px solid white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  background: linear-gradient(to bottom right, #c084fc, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfil-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.perfil-image-placeholder {
+  width: 3rem;
+  height: 3rem;
+  color: white;
+}
+
+.perfil-image-upload {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #7c3aed;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.perfil-image-upload:hover {
+  background: #6b21a8;
+}
+
+.perfil-image-upload svg {
+  color: white;
+}
+
+.perfil-image-input {
+  display: none;
+}
+
+/* Basic Info */
+.perfil-basic-info {
+  flex: 1;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .perfil-basic-info {
+    text-align: left;
+  }
+}
+
+.perfil-name {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.perfil-profession {
+  color: #7c3aed;
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.perfil-contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+@media (min-width: 768px) {
+  .perfil-contact-info {
+    justify-content: flex-start;
+  }
+}
+
+.perfil-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Edit Button */
+.perfil-edit-btn {
+  background: #7c3aed;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3);
+  transition: all 0.3s;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .perfil-edit-btn {
+    margin-top: 0;
+  }
+}
+
+.perfil-edit-btn:hover {
+  background: #6b21a8;
+  box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.4);
+}
+
+.perfil-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .perfil-edit-actions {
+    margin-top: 0;
+  }
+}
+
+.perfil-save-btn {
+  background: #10b981;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.perfil-save-btn:hover {
+  background: #059669;
+}
+
+.perfil-cancel-btn {
+  background: #6b7280;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.perfil-cancel-btn:hover {
+  background: #4b5563;
+}
+
+/* Content Grid */
+.perfil-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .perfil-content-grid {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.perfil-left-column,
+.perfil-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Card */
+.perfil-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+}
+
+.perfil-card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.perfil-card-title svg {
+  color: #7c3aed;
+}
+
+/* Info List */
+.perfil-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.perfil-info-item {
+  font-size: 0.875rem;
+}
+
+.perfil-info-label {
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.perfil-info-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Input & Textarea */
+.perfil-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  outline: none;
+  margin-top: 0.25rem;
+}
+
+.perfil-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.perfil-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.perfil-textarea:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+/* Skills */
+.perfil-skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.perfil-skill-tag {
+  padding: 0.5rem 0.75rem;
+  background: #ede9fe;
+  color: #6b21a8;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Text */
+.perfil-text {
+  color: #4b5563;
+  line-height: 1.75;
+}
+
+.perfil-text-multiline {
+  color: #4b5563;
+  white-space: pre-line;
+  line-height: 1.75;
+}
+
+.perfil-empty-text {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Experience & Education Containers */
+.perfil-experience-container,
+.perfil-education-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .perfil-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .perfil-header-content {
+    padding: 0 1rem 1rem;
+  }
+  
+  .perfil-name {
+    font-size: 1.5rem;
+  }
+  
+  .perfil-profession {
+    font-size: 1rem;
+  }
+  
+  .perfil-card {
+    padding: 1rem;
+  }
+}
