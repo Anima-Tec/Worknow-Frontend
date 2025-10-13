@@ -158,23 +158,36 @@ export async function getProjectById(id) {
 // ==================== 📩 POSTULACIONES (APPLY) ==========================
 export async function sendApplication({ projectId, name, email }) {
   try {
-    console.log("🚀 Enviando postulación a:", `${API_BASE}/applications/project/${projectId}/apply`);
-    const res = await fetch(`${API_BASE}/applications/project/${projectId}/apply`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email }),
-    });
+    // 🔐 Recuperar token del usuario logueado
+    const token = localStorage.getItem("token");
+
+    console.log(
+      "🚀 Enviando postulación a:",
+      `${API_BASE}/applications/project/${projectId}/apply`
+    );
+
+    const res = await fetch(
+      `${API_BASE}/applications/project/${projectId}/apply`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ Token enviado al backend
+        },
+        body: JSON.stringify({ name, email }),
+      }
+    );
 
     if (!res.ok) {
       const text = await res.text();
       console.error("⚠️ Error en la API de postulación:", res.status, text);
-      throw new Error("Error al enviar postulación");
+      throw new Error(
+        JSON.parse(text)?.message || "Error al enviar postulación"
+      );
     }
 
     const data = await res.json();
-    console.log("✅ Postulación enviada:", data);
+    console.log("✅ Postulación enviada correctamente:", data);
     return data;
   } catch (error) {
     console.error("❌ Error en sendApplication:", error);
@@ -182,7 +195,10 @@ export async function sendApplication({ projectId, name, email }) {
   }
 }
 
-// ==================== 🏢 EMPRESAS (VER POSTULADOS) =====================
+
+
+
+ ==================== 🏢 EMPRESAS (VER POSTULADOS) =====================
 export async function getCompanyApplications() {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
