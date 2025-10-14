@@ -17,7 +17,6 @@ export default function HomeUser() {
   const [notificationCount, setNotificationCount] = useState(0);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
-  const [jobType, setJobType] = useState("");
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showAllJobs, setShowAllJobs] = useState(false);
 
@@ -25,19 +24,27 @@ export default function HomeUser() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const filters = { query, type, jobType };
+      console.log("🔍 Buscando con:", { query, type }); // Para debug
+      
+      const filters = { 
+        query: query.trim(), // Limpiar espacios
+        type 
+      };
 
       if (type === "jobs") {
         const jobsData = await searchJobs(filters);
+        console.log("📊 Jobs encontrados:", jobsData);
         setJobs(jobsData);
         setProjects([]);
       } else if (type === "projects") {
         const projectsData = await searchProjects(filters);
+        console.log("📊 Projects encontrados:", projectsData);
         setProjects(projectsData);
         setJobs([]);
       } else {
         const jobsData = await searchJobs(filters);
         const projectsData = await searchProjects(filters);
+        console.log("📊 Todos encontrados - Jobs:", jobsData, "Projects:", projectsData);
         setJobs(jobsData);
         setProjects(projectsData);
       }
@@ -72,17 +79,23 @@ export default function HomeUser() {
     }
   };
 
+  // 🎯 Cargar datos iniciales
   useEffect(() => {
     handleSearch();
     loadNotifications();
   }, []);
 
-  // ✅ Filtrar solo trabajos activos (no aceptados ni completados)
+  // 🎯 Filtrar cuando cambie el tipo
+  useEffect(() => {
+    handleSearch();
+  }, [type]);
+
+  // ✅ Filtrar solo trabajos activos
   const activeJobs = jobs.filter(
     (job) => job.userStatus === "NONE" || job.userStatus === "REJECTED"
   );
 
-  // ✅ Filtrar solo proyectos activos (no aceptados ni completados)
+  // ✅ Filtrar solo proyectos activos
   const activeProjects = projects.filter(
     (project) => project.userStatus === "NONE" || project.userStatus === "REJECTED"
   );
@@ -128,7 +141,7 @@ export default function HomeUser() {
         </video>
       </section>
 
-      {/* 🔍 FILTROS */}
+      {/* 🔍 FILTROS CON ESTILO ORIGINAL - CORREGIDO */}
       <div className="search-box">
         <div className="filter">
           <label>Buscar</label>
@@ -137,11 +150,12 @@ export default function HomeUser() {
             placeholder="Escribe palabras clave..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
           />
         </div>
 
         <div className="filter">
-          <label>Tipo</label>
+          <label>TIPO</label>
           <select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="">Todos</option>
             <option value="jobs">Trabajos</option>
@@ -149,116 +163,118 @@ export default function HomeUser() {
           </select>
         </div>
 
-        <div className="filter">
-          <label>Modalidad</label>
-          <select value={jobType} onChange={(e) => setJobType(e.target.value)}>
-            <option value="">Todas</option>
-            <option value="full-time">Full Time</option>
-            <option value="part-time">Part Time</option>
-            <option value="freelance">Freelance</option>
-          </select>
-        </div>
-
-        <button className="btn-search" onClick={handleSearch}>
-          Buscar
+        <button className="btn-search" onClick={handleSearch} disabled={loading}>
+          {loading ? "Buscando..." : "Buscar"}
         </button>
       </div>
 
-      {/* 💼 TRABAJOS */}
-      <section className="featured">
-        <div className="header">
-          <h3>Featured jobs</h3>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowAllJobs(!showAllJobs);
-            }}
-          >
-            {showAllJobs ? "Ver menos ↑" : "View all →"}
-          </a>
-        </div>
+      {/* 💼 TRABAJOS - Solo se muestra si type no es "projects" */}
+      {(type === "" || type === "jobs") && (
+        <section className="featured">
+          <div className="header">
+            <h3>Featured jobs {activeJobs.length > 0 && `(${activeJobs.length})`}</h3>
+            {activeJobs.length > 0 && (
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowAllJobs(!showAllJobs);
+                }}
+              >
+                {showAllJobs ? "Ver menos ↑" : "View all →"}
+              </a>
+            )}
+          </div>
 
-        {loading ? (
-          <p className="loading">Cargando...</p>
-        ) : activeJobs.length > 0 ? (
-          showAllJobs ? (
-            <div className="cards">
-              {activeJobs.map((job) => (
-                <CardTrabajo key={job.id} {...job} />
-              ))}
-            </div>
+          {loading ? (
+            <p className="loading">Cargando...</p>
+          ) : activeJobs.length > 0 ? (
+            showAllJobs ? (
+              <div className="cards">
+                {activeJobs.map((job) => (
+                  <CardTrabajo key={job.id} {...job} />
+                ))}
+              </div>
+            ) : (
+              <Carousel
+                responsive={{
+                  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                  tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                  mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+                }}
+                infinite
+                autoPlay={false}
+                keyBoardControl
+                containerClass="carousel-container"
+                itemClass="carousel-card"
+                removeArrowOnDeviceType={["mobile"]}
+              >
+                {activeJobs.map((job) => (
+                  <CardTrabajo key={job.id} {...job} />
+                ))}
+              </Carousel>
+            )
           ) : (
-            <Carousel
-              responsive={{
-                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-              }}
-              infinite
-              autoPlay={false}
-              keyBoardControl
-              containerClass="carousel-container"
-              itemClass="carousel-card"
-              removeArrowOnDeviceType={["mobile"]}
-            >
-              {activeJobs.map((job) => (
-                <CardTrabajo key={job.id} {...job} />
-              ))}
-            </Carousel>
-          )
-        ) : (
-          <p className="no-data">No hay trabajos por ahora</p>
-        )}
-      </section>
+            <p className="no-data">
+              {query ? `No hay trabajos que coincidan con "${query}"` : "No hay trabajos disponibles"}
+            </p>
+          )}
+        </section>
+      )}
 
-      {/* 💡 PROYECTOS */}
-      <section className="featured">
-        <div className="header">
-          <h3>Featured projects</h3>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowAllProjects(!showAllProjects);
-            }}
-          >
-            {showAllProjects ? "Ver menos ↑" : "View all →"}
-          </a>
-        </div>
+      {/* 💡 PROYECTOS - Solo se muestra si type no es "jobs" */}
+      {(type === "" || type === "projects") && (
+        <section className="featured">
+          <div className="header">
+            <h3>Featured projects {activeProjects.length > 0 && `(${activeProjects.length})`}</h3>
+            {activeProjects.length > 0 && (
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowAllProjects(!showAllProjects);
+                }}
+              >
+                {showAllProjects ? "Ver menos ↑" : "View all →"}
+              </a>
+            )}
+          </div>
 
-        {loading ? (
-          <p className="loading">Cargando...</p>
-        ) : activeProjects.length > 0 ? (
-          showAllProjects ? (
-            <div className="cards">
-              {activeProjects.map((p) => (
-                <CardProyecto key={p.id} {...p} />
-              ))}
-            </div>
+          {loading ? (
+            <p className="loading">Cargando...</p>
+          ) : activeProjects.length > 0 ? (
+            showAllProjects ? (
+              <div className="cards">
+                {activeProjects.map((p) => (
+                  <CardProyecto key={p.id} {...p} />
+                ))}
+              </div>
+            ) : (
+              <Carousel
+                responsive={{
+                  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                  tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                  mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+                }}
+                infinite
+                autoPlay={false}
+                keyBoardControl
+                containerClass="carousel-container"
+                itemClass="carousel-card"
+                removeArrowOnDeviceType={["mobile"]}
+              >
+                {activeProjects.map((p) => (
+                  <CardProyecto key={p.id} {...p} />
+                ))}
+              </Carousel>
+            )
           ) : (
-            <Carousel
-              responsive={{
-                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-              }}
-              infinite
-              autoPlay={false}
-              keyBoardControl
-              containerClass="carousel-container"
-              itemClass="carousel-card"
-              removeArrowOnDeviceType={["mobile"]}
-            >
-              {activeProjects.map((p) => (
-                <CardProyecto key={p.id} {...p} />
-              ))}
-            </Carousel>
-          )
-        ) : (
-          <p className="no-data">No hay proyectos publicados por ahora</p>
-        )}
-      </section>
+            <p className="no-data">
+              {query ? `No hay proyectos que coincidan con "${query}"` : "No hay proyectos disponibles"}
+            </p>
+          )}
+        </section>
+      )}
 
       <Footer />
     </div>

@@ -95,9 +95,40 @@ export async function updateProfile(profileData) {
 
 // ======================== 💼 TRABAJOS =================================
 export async function searchJobs(filters) {
-  const params = new URLSearchParams(filters).toString();
-  const res = await fetch(`${API_BASE}/jobs?${params}`);
-  return res.ok ? res.json() : [];
+  try {
+    console.log("🔍 Buscando trabajos con filters:", filters);
+    
+    // Construir URL de forma MÁS SIMPLE
+    let url = `${API_BASE}/jobs`;
+    const params = [];
+    
+    if (filters.query && filters.query.trim() !== '') {
+      params.push(`query=${encodeURIComponent(filters.query.trim())}`);
+    }
+    if (filters.type && filters.type.trim() !== '') {
+      params.push(`type=${encodeURIComponent(filters.type.trim())}`);
+    }
+    
+    if (params.length > 0) {
+      url += '?' + params.join('&');
+    }
+    
+    console.log("🔍 URL final jobs:", url);
+    
+    const res = await fetch(url);
+    
+    if (!res.ok) {
+      console.error(`❌ Error ${res.status} en jobs:`, await res.text());
+      return [];
+    }
+    
+    const data = await res.json();
+    console.log(`✅ ${data.length} trabajos encontrados`);
+    return data;
+  } catch (error) {
+    console.error("❌ Error en searchJobs:", error);
+    return [];
+  }
 }
 
 export async function getJobs() {
@@ -155,9 +186,40 @@ export async function applyToJob(jobId, applicationData) {
 
 // ======================== 🧩 PROYECTOS ================================
 export async function searchProjects(filters) {
-  const params = new URLSearchParams(filters).toString();
-  const res = await fetch(`${API_BASE}/projects?${params}`);
-  return res.ok ? res.json() : [];
+  try {
+    console.log("🔍 Buscando proyectos con filters:", filters);
+    
+    // Construir URL de forma MÁS SIMPLE
+    let url = `${API_BASE}/projects`;
+    const params = [];
+    
+    if (filters.query && filters.query.trim() !== '') {
+      params.push(`query=${encodeURIComponent(filters.query.trim())}`);
+    }
+    if (filters.type && filters.type.trim() !== '') {
+      params.push(`type=${encodeURIComponent(filters.type.trim())}`);
+    }
+    
+    if (params.length > 0) {
+      url += '?' + params.join('&');
+    }
+    
+    console.log("🔍 URL final projects:", url);
+    
+    const res = await fetch(url);
+    
+    if (!res.ok) {
+      console.error(`❌ Error ${res.status} en projects:`, await res.text());
+      return [];
+    }
+    
+    const data = await res.json();
+    console.log(`✅ ${data.length} proyectos encontrados`);
+    return data;
+  } catch (error) {
+    console.error("❌ Error en searchProjects:", error);
+    return [];
+  }
 }
 
 export async function createProject(projectData) {
