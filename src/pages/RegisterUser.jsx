@@ -17,12 +17,65 @@ const Register = () => {
   });
   const [errors, setErrors] = useState({});
 
+  // Departamentos de Uruguay CORREGIDOS
+  const departamentosUruguay = [
+    'Artigas', 'Canelones', 'Cerro Largo', 'Colonia', 'Durazno', 
+    'Flores', 'Florida', 'Lavalleja', 'Maldonado', 'Montevideo', 
+    'Paysandú', 'Río Negro', 'Rivera', 'Rocha', 'Salto', 
+    'San José', 'Soriano', 'Tacuarembó', 'Treinta y Tres'
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validación específica para teléfono
+    if (name === 'telefono') {
+      // Si el usuario borra el +598, lo mantenemos automáticamente
+      if (!value.startsWith('+598') && value.length > 0) {
+        // Si empieza con 598 sin el +, lo convertimos
+        if (value.startsWith('598')) {
+          setFormData(prev => ({
+            ...prev,
+            telefono: '+' + value
+          }));
+          return;
+        }
+        // Si no tiene código de país, lo agregamos
+        else if (!value.startsWith('+')) {
+          setFormData(prev => ({
+            ...prev,
+            telefono: '+598 ' + value
+          }));
+          return;
+        }
+      }
+      
+      // Validar que después del código solo haya números
+      const telefonoValue = value.replace('+598 ', '');
+      const telefonoRegex = /^[0-9]*$/;
+      if (telefonoValue && !telefonoRegex.test(telefonoValue)) {
+        setErrors(prev => ({
+          ...prev,
+          telefono: 'El teléfono solo puede contener números después del código +598'
+        }));
+        return;
+      }
+      
+      // Limitar longitud total (código + 8 dígitos + espacios)
+      if (value.length > 15) {
+        setErrors(prev => ({
+          ...prev,
+          telefono: 'El teléfono no puede tener más de 8 dígitos después del código +598'
+        }));
+        return;
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    
     // Limpiar error del campo al escribir
     if (errors[name]) {
       setErrors(prev => ({
@@ -37,14 +90,25 @@ const Register = () => {
     
     if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es requerido';
     if (!formData.apellido.trim()) newErrors.apellido = 'El apellido es requerido';
+    
+    // Validación email
     if (!formData.email.trim()) {
       newErrors.email = 'El email es requerido';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email inválido';
     }
-    if (!formData.telefono.trim()) newErrors.telefono = 'El teléfono es requerido';
+    
+    // Validación teléfono
+    if (!formData.telefono.trim()) {
+      newErrors.telefono = 'El teléfono es requerido';
+    } else if (!formData.telefono.startsWith('+598')) {
+      newErrors.telefono = 'El teléfono debe comenzar con +598 (Uruguay)';
+    } else if (!/^\+598 [0-9]{7,8}$/.test(formData.telefono.replace(/\s/g, '').replace('+598', '+598 '))) {
+      newErrors.telefono = 'Formato inválido. Debe ser: +598 seguido de 7 u 8 dígitos';
+    }
+    
     if (!formData.fechaNacimiento) newErrors.fechaNacimiento = 'La fecha de nacimiento es requerida';
-    if (!formData.ciudad.trim()) newErrors.ciudad = 'La ciudad es requerida';
+    if (!formData.ciudad.trim()) newErrors.ciudad = 'El departamento es requerido';
     if (!formData.profesion.trim()) newErrors.profesion = 'La profesión es requerida';
     if (!formData.password) {
       newErrors.password = 'La contraseña es requerida';
@@ -64,14 +128,12 @@ const Register = () => {
 
     if (!validateForm()) return;
 
-    // ✅ La fecha del input type="date" ya viene en formato YYYY-MM-DD
-    // No necesitamos convertirla
     const userData = {
       nombre: formData.nombre.trim(),
       apellido: formData.apellido.trim(),
       email: formData.email.trim().toLowerCase(),
       telefono: formData.telefono.trim(),
-      fechaNacimiento: formData.fechaNacimiento, // Ya está en formato YYYY-MM-DD
+      fechaNacimiento: formData.fechaNacimiento,
       ciudad: formData.ciudad.trim(),
       profesion: formData.profesion.trim(),
       password: formData.password,
@@ -82,7 +144,6 @@ const Register = () => {
 
       console.log("📤 Enviando datos de registro:", userData);
 
-      // ✅ Endpoint correcto: /auth/register/user
       const res = await fetch(`${API_BASE}/auth/register/user`, {
         method: "POST",
         headers: {
@@ -264,22 +325,25 @@ const Register = () => {
               </div>
 
               <div className="register-form-row">
-                {/* Ciudad */}
+                {/* Departamento - CAMBIADO A SELECT */}
                 <div className="register-form-group">
-                  <label className="register-label">Ciudad</label>
+                  <label className="register-label">Departamento</label>
                   <div className="register-input-wrapper">
                     <svg className="register-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                       <circle cx="12" cy="10" r="3"></circle>
                     </svg>
-                    <input
-                      type="text"
+                    <select
                       name="ciudad"
                       value={formData.ciudad}
                       onChange={handleChange}
-                      placeholder="Montevideo"
-                      className={`register-input ${errors.ciudad ? 'register-input-error' : ''}`} 
-                    />
+                      className={`register-input ${errors.ciudad ? 'register-input-error' : ''}`}
+                    >
+                      <option value="">Selecciona un departamento</option>
+                      {departamentosUruguay.map(depto => (
+                        <option key={depto} value={depto}>{depto}</option>
+                      ))}
+                    </select>
                   </div>
                   {errors.ciudad && <p className="register-error-text">{errors.ciudad}</p>}
                 </div>

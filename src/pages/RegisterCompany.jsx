@@ -19,14 +19,116 @@ const RegisterCompany = () => {
   });
   const [errors, setErrors] = useState({});
 
+  // Departamentos de Uruguay
+  const departamentosUruguay = [
+    'Artigas', 'Canelones', 'Cerro Largo', 'Colonia', 'Durazno', 
+    'Flores', 'Florida', 'Lavalleja', 'Maldonado', 'Montevideo', 
+    'Paysandú', 'Río Negro', 'Rivera', 'Rocha', 'Salto', 
+    'San José', 'Soriano', 'Tacuarembó', 'Treinta y Tres'
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validación específica para RUT
+    if (name === 'rut') {
+      // Limitar a 11 caracteres máximo
+      if (value.length > 11) {
+        setErrors(prev => ({
+          ...prev,
+          rut: 'El RUT no puede tener más de 11 caracteres'
+        }));
+        return;
+      }
+      
+      // Validar que solo contenga números, puntos, guiones y la letra K
+      const rutRegex = /^[0-9.kK-]+$/;
+      if (value && !rutRegex.test(value)) {
+        setErrors(prev => ({
+          ...prev,
+          rut: 'El RUT solo puede contener números, puntos, guiones y la letra K'
+        }));
+        return;
+      }
+    }
+    
+    // Validación específica para teléfono
+    if (name === 'telefono') {
+      // Si el usuario borra el +598, lo mantenemos automáticamente
+      if (!value.startsWith('+598') && value.length > 0) {
+        // Si empieza con 598 sin el +, lo convertimos
+        if (value.startsWith('598')) {
+          setFormData(prev => ({
+            ...prev,
+            telefono: '+' + value
+          }));
+          return;
+        }
+        // Si no tiene código de país, lo agregamos
+        else if (!value.startsWith('+')) {
+          setFormData(prev => ({
+            ...prev,
+            telefono: '+598 ' + value
+          }));
+          return;
+        }
+      }
+      
+      // Validar que después del código solo haya números
+      const telefonoValue = value.replace('+598 ', '');
+      const telefonoRegex = /^[0-9]*$/;
+      if (telefonoValue && !telefonoRegex.test(telefonoValue)) {
+        setErrors(prev => ({
+          ...prev,
+          telefono: 'El teléfono solo puede contener números después del código +598'
+        }));
+        return;
+      }
+      
+      // Limitar longitud total (código + 8 dígitos + espacios)
+      if (value.length > 15) {
+        setErrors(prev => ({
+          ...prev,
+          telefono: 'El teléfono no puede tener más de 8 dígitos después del código +598'
+        }));
+        return;
+      }
+    }
+    
+    // Validación específica para sitio web
+    if (name === 'sitioWeb') {
+      // Validar formato de URL si no está vacío
+      if (value && value.trim() !== '') {
+        const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+        if (!urlRegex.test(value)) {
+          setErrors(prev => ({
+            ...prev,
+            sitioWeb: 'Por favor ingresa una URL válida (ej: www.empresa.com)'
+          }));
+        } else {
+          // Limpiar error si la URL es válida
+          if (errors.sitioWeb) {
+            setErrors(prev => {
+              const newErrors = { ...prev };
+              delete newErrors.sitioWeb;
+              return newErrors;
+            });
+          }
+        }
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Limpiar error del campo al escribir
-    if (errors[name]) {
+    
+    // Limpiar error del campo al escribir (excepto para los casos donde ya mostramos error)
+    if (errors[name] && !(
+      (name === 'rut' && value.length > 11) ||
+      (name === 'telefono' && value.length > 15) ||
+      (name === 'sitioWeb' && value && !/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/.test(value))
+    )) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
@@ -38,17 +140,42 @@ const RegisterCompany = () => {
     const newErrors = {};
     
     if (!formData.nombreEmpresa.trim()) newErrors.nombreEmpresa = 'El nombre de la empresa es requerido';
-    if (!formData.rut.trim()) newErrors.rut = 'El RUT es requerido';
+    
+    // Validación RUT
+    if (!formData.rut.trim()) {
+      newErrors.rut = 'El RUT es requerido';
+    } else if (formData.rut.length > 11) {
+      newErrors.rut = 'El RUT no puede tener más de 11 caracteres';
+    } else if (!/^[0-9.kK-]+$/.test(formData.rut)) {
+      newErrors.rut = 'El RUT solo puede contener números, puntos, guiones y la letra K';
+    }
+    
+    // Validación email
     if (!formData.email.trim()) {
       newErrors.email = 'El email es requerido';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email inválido';
     }
-    if (!formData.telefono.trim()) newErrors.telefono = 'El teléfono es requerido';
+    
+    // Validación teléfono
+    if (!formData.telefono.trim()) {
+      newErrors.telefono = 'El teléfono es requerido';
+    } else if (!formData.telefono.startsWith('+598')) {
+      newErrors.telefono = 'El teléfono debe comenzar con +598 (Uruguay)';
+    } else if (!/^\+598 [0-9]{7,8}$/.test(formData.telefono.replace(/\s/g, '').replace('+598', '+598 '))) {
+      newErrors.telefono = 'Formato inválido. Debe ser: +598 seguido de 7 u 8 dígitos';
+    }
+    
     if (!formData.direccion.trim()) newErrors.direccion = 'La dirección es requerida';
     if (!formData.ciudad.trim()) newErrors.ciudad = 'La ciudad es requerida';
     if (!formData.sector.trim()) newErrors.sector = 'El sector es requerido';
     if (!formData.tamano) newErrors.tamano = 'Selecciona el tamaño de la empresa';
+    
+    // Validación sitio web (opcional pero debe ser URL válida si se completa)
+    if (formData.sitioWeb.trim() && !/^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/.test(formData.sitioWeb)) {
+      newErrors.sitioWeb = 'Por favor ingresa una URL válida';
+    }
+    
     if (!formData.password) {
       newErrors.password = 'La contraseña es requerida';
     } else if (formData.password.length < 6) {
@@ -62,7 +189,7 @@ const RegisterCompany = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async  (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (validateForm()) {
@@ -81,24 +208,24 @@ const RegisterCompany = () => {
         tipoUsuario: 'empresa' // Identificador para el backend
       };
       
-     try {
-  const res = await fetch("http://localhost:3000/api/auth/register/company", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(companyData),
-});
+      try {
+        const res = await fetch("http://localhost:3000/api/auth/register/company", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(companyData),
+        });
 
-  if (!res.ok) throw new Error("Error al registrar empresa");
-  const data = await res.json();
-  alert("✅ Registro de empresa exitoso!");
+        if (!res.ok) throw new Error("Error al registrar empresa");
+        const data = await res.json();
+        alert("✅ Registro de empresa exitoso!");
 
-  // opcional: guardar token o redirigir
-  localStorage.setItem("token", data.token);
-  window.location.href = "/home/company";
-} catch (error) {
-  console.error(error);
-  alert("❌ Error al registrar empresa");
-}
+        // opcional: guardar token o redirigir
+        localStorage.setItem("token", data.token);
+        window.location.href = "/home/company";
+      } catch (error) {
+        console.error(error);
+        alert("❌ Error al registrar empresa");
+      }
     }
   };
 
@@ -195,6 +322,7 @@ const RegisterCompany = () => {
                       placeholder="12.345.678-9"
                       className={`register-company-input ${errors.rut ? 'register-company-input-error' : ''}`}
                       required
+                      maxLength={11}
                     />
                   </div>
                   {errors.rut && <p className="register-company-error-text">{errors.rut}</p>}
@@ -241,22 +369,25 @@ const RegisterCompany = () => {
                   {errors.telefono && <p className="register-company-error-text">{errors.telefono}</p>}
                 </div>
 
-                {/* Ciudad */}
+                {/* Ciudad - Cambiado a select */}
                 <div className="register-company-form-group">
-                  <label className="register-company-label">Ciudad*</label>
+                  <label className="register-company-label">Departamento*</label>
                   <div className="register-company-input-wrapper">
                     <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                       <circle cx="12" cy="10" r="3"></circle>
                     </svg>
-                    <input
-                      type="text"
+                    <select
                       name="ciudad"
                       value={formData.ciudad}
                       onChange={handleChange}
-                      placeholder="Montevideo"
-                      className={`register-company-input ${errors.ciudad ? 'register-company-input-error' : ''}`}
-                    />
+                      className={`register-company-select ${errors.ciudad ? 'register-company-input-error' : ''}`}
+                    >
+                      <option value="">Selecciona un departamento</option>
+                      {departamentosUruguay.map(depto => (
+                        <option key={depto} value={depto}>{depto}</option>
+                      ))}
+                    </select>
                   </div>
                   {errors.ciudad && <p className="register-company-error-text">{errors.ciudad}</p>}
                 </div>
@@ -318,9 +449,10 @@ const RegisterCompany = () => {
                       value={formData.sitioWeb}
                       onChange={handleChange}
                       placeholder="www.empresa.com"
-                      className="register-company-input"
+                      className={`register-company-input ${errors.sitioWeb ? 'register-company-input-error' : ''}`}
                     />
                   </div>
+                  {errors.sitioWeb && <p className="register-company-error-text">{errors.sitioWeb}</p>}
                 </div>
               </div>
 
