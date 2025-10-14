@@ -27,7 +27,9 @@ export default function Login() {
     try {
       const data = await loginApi({ email, password });
       saveSession(data, { rememberEmail });
-      navigate("/choose");
+      console.log("✅ Login exitoso:", data.user.role);
+      if (data.user.role === "COMPANY") navigate("/home/company");
+      else navigate("/home/user");
     } catch (error) {
       setErr(error.message);
     } finally {

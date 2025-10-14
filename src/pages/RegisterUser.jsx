@@ -157,7 +157,7 @@ const Register = () => {
       if (res.ok) {
         console.log("✅ Usuario creado exitosamente:", data);
         alert("✅ Registro exitoso! Ahora podés iniciar sesión.");
-        window.location.href = "/login";
+        window.location.href = "/home/user";
       } else {
         console.error("❌ Error del backend:", data);
         alert(data.message || "❌ Error al registrar usuario. Revisá los datos e intentá nuevamente.");

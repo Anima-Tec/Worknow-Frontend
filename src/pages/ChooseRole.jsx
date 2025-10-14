@@ -23,7 +23,7 @@ export default function ChooseRole() {
           <p>
           Postúlate a proyectos o trabajos, crea tu huella digital, demuestra tus habilidades y haz crecer tu perfil profesional.
           </p>
-          <button className="btnPrimary" onClick={() => navigate("/home/user")}>
+          <button className="btnPrimary" onClick={() => navigate("/register/user")}>
             Soy Usuario
           </button>
         </div>
@@ -34,7 +34,7 @@ export default function ChooseRole() {
           <p>
            Publica proyectos o puestos de trabajo, recibe postulaciones y selecciona al mejor talento para tu necesidad.
           </p>
-          <button className="btnLight" onClick={() => navigate("/home/company")}>
+          <button className="btnLight" onClick={() => navigate("/register/company")}>
             Soy Empresa
           </button>
         </div>
