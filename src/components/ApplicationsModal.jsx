@@ -5,14 +5,18 @@ import "./ApplicationsModal.css";
 export default function ApplicationsModal({ open, onClose }) {
   const [applications, setApplications] = useState([]);
 
+  // 🟣 Cargar postulaciones de trabajos de la empresa
   useEffect(() => {
     if (open) {
-      fetch("http://localhost:3000/api/applications/company/me", {
+      fetch("http://localhost:3000/api/job-applications/company/me", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) throw new Error(`Error ${res.status}`);
+          return res.json();
+        })
         .then((data) => {
           if (Array.isArray(data)) {
             setApplications(data);
@@ -21,30 +25,34 @@ export default function ApplicationsModal({ open, onClose }) {
           }
         })
         .catch((err) =>
-          console.error("❌ Error cargando postulaciones:", err)
+          console.error("❌ Error cargando postulaciones de trabajos:", err)
         );
     }
   }, [open]);
 
   if (!open) return null;
 
+  // 🟣 Actualizar estado de postulación
   const updateStatus = async (id, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/applications/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const res = await fetch(
+        `http://localhost:3000/api/job-applications/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
 
       if (res.ok) {
         setApplications((prev) =>
           prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
         );
       } else {
-        console.error("Error actualizando estado");
+        console.error("❌ Error al actualizar estado:", res.status);
       }
     } catch (error) {
       console.error("❌ Error al actualizar estado:", error);
@@ -64,7 +72,7 @@ export default function ApplicationsModal({ open, onClose }) {
         <table className="applications-table">
           <thead>
             <tr>
-              <th>Proyecto</th>
+              <th>Trabajo</th>
               <th>Nombre</th>
               <th>Email</th>
               <th>Fecha</th>
@@ -76,7 +84,7 @@ export default function ApplicationsModal({ open, onClose }) {
             {applications.length > 0 ? (
               applications.map((a) => (
                 <tr key={a.id}>
-                  <td>{a.projectTitle}</td>
+                  <td>{a.jobTitle}</td>
                   <td>{a.applicantName}</td>
                   <td>{a.applicantEmail}</td>
                   <td>
@@ -97,17 +105,17 @@ export default function ApplicationsModal({ open, onClose }) {
                     <FaCheckCircle
                       className="icon accept"
                       title="Aceptar"
-                      onClick={() => updateStatus(a.id, "Aceptado")}
+                      onClick={() => updateStatus(a.id, "ACEPTADO")}
                     />
                     <FaTimesCircle
                       className="icon reject"
                       title="Rechazar"
-                      onClick={() => updateStatus(a.id, "Rechazado")}
+                      onClick={() => updateStatus(a.id, "RECHAZADO")}
                     />
                     <FaHourglassHalf
                       className="icon review"
                       title="En revisión"
-                      onClick={() => updateStatus(a.id, "En revisión")}
+                      onClick={() => updateStatus(a.id, "PENDIENTE")}
                     />
                   </td>
                 </tr>

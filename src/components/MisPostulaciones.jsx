@@ -1,4 +1,3 @@
-// src/pages/MisPostulaciones.jsx
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "./MisPostulaciones.css";
@@ -8,18 +7,15 @@ export default function MisPostulaciones() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // ✅ Normalizar estados (independientemente del idioma o mayúsculas)
+  // ✅ Normalizar estados
   const normalizeStatus = (status) => {
     if (!status) return "PENDING";
-
     const s = status.toString().toLowerCase();
-
     if (s.includes("aceptado") || s.includes("accepted")) return "ACCEPTED";
     if (s.includes("rechazado") || s.includes("rejected")) return "REJECTED";
     if (s.includes("hecho") || s.includes("done")) return "HECHO";
     if (s.includes("no_hecho") || s.includes("not_done")) return "NO_HECHO";
     if (s.includes("pendiente") || s.includes("pending")) return "PENDING";
-
     return "PENDING";
   };
 
@@ -35,25 +31,52 @@ export default function MisPostulaciones() {
     return estados[estado] || estados.PENDING;
   };
 
+  // ✅ Cargar postulaciones de proyectos y trabajos
   const loadPostulaciones = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log("🔄 Cargando postulaciones del usuario...");
+      console.log("🔄 Cargando postulaciones de proyectos y trabajos...");
 
-      const res = await fetch("http://localhost:3000/api/applications/user/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const [resProyectos, resTrabajos] = await Promise.all([
+        fetch("http://localhost:3000/api/applications/user/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch("http://localhost:3000/api/job-applications/user/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
 
-      if (res.ok) {
-        const data = await res.json();
-        console.log("✅ Datos de postulaciones:", data);
-        setPostulaciones(data);
-      } else {
-        console.error("❌ Error cargando postulaciones, status:", res.status);
-        setPostulaciones([]);
-      }
+      const proyectos = resProyectos.ok ? await resProyectos.json() : [];
+      const trabajos = resTrabajos.ok ? await resTrabajos.json() : [];
+
+      // 🔹 Normalizamos formato para unificar ambos tipos
+      const formattedProyectos = proyectos.map((p) => ({
+        id: p.id,
+        title: p.projectTitle || p.project?.title || "Proyecto sin título",
+        companyName:
+          p.companyName ||
+          p.project?.company?.nombreEmpresa ||
+          "Empresa desconocida",
+        createdAt: p.createdAt,
+        status: p.status,
+        tipo: "Proyecto",
+      }));
+
+      const formattedTrabajos = trabajos.map((t) => ({
+        id: t.id,
+        title: t.jobTitle || t.job?.title || "Trabajo sin título",
+        companyName:
+          t.companyName ||
+          t.job?.company?.nombreEmpresa ||
+          "Empresa desconocida",
+        createdAt: t.createdAt,
+        status: t.status,
+        tipo: "Trabajo",
+      }));
+
+      const allPostulaciones = [...formattedProyectos, ...formattedTrabajos];
+      console.log("✅ Total postulaciones combinadas:", allPostulaciones.length);
+      setPostulaciones(allPostulaciones);
     } catch (err) {
       console.error("❌ Error cargando postulaciones:", err);
       setPostulaciones([]);
@@ -62,14 +85,13 @@ export default function MisPostulaciones() {
     }
   };
 
+  // ✅ Actualizar estado de postulación
   const updateStatus = async (id, newStatus) => {
     try {
       const token = localStorage.getItem("token");
       const url = `http://localhost:3000/api/applications/user/${id}/status`;
 
-      console.log("🔄 ===== INICIANDO ACTUALIZACIÓN =====");
-      console.log(`📤 PUT ${url}`);
-      console.log(`📤 Status: "${newStatus}"`);
+      console.log(`📤 PUT ${url} - Estado: ${newStatus}`);
 
       const res = await fetch(url, {
         method: "PUT",
@@ -81,16 +103,12 @@ export default function MisPostulaciones() {
       });
 
       if (res.ok) {
-        console.log("✅ Estado actualizado correctamente");
         await loadPostulaciones();
         setMessage("✅ ¡Tu respuesta ha sido guardada!");
-        setTimeout(() => setMessage(""), 3000);
       } else {
-        const errorData = await res.json();
-        console.error("❌ Error del servidor:", errorData);
         setMessage("❌ Error al guardar tu respuesta");
-        setTimeout(() => setMessage(""), 3000);
       }
+      setTimeout(() => setMessage(""), 3000);
     } catch (error) {
       console.error("❌ Error de conexión:", error);
       setMessage("❌ Error de conexión");
@@ -102,14 +120,20 @@ export default function MisPostulaciones() {
     loadPostulaciones();
   }, []);
 
+  // ================== RENDER ===================
   if (loading) {
     return (
       <div className="mis-postulaciones">
         <header className="header">
-          <h1 className="h1">work<span>now</span></h1>
+          <h1 className="h1">
+            work<span>now</span>
+          </h1>
           <nav className="nav">
             <ul>
-              <li className="nav-item" onClick={() => (window.location.href = "/home/user")}>
+              <li
+                className="nav-item"
+                onClick={() => (window.location.href = "/home/user")}
+              >
                 <span>← Volver al Home</span>
               </li>
             </ul>
@@ -128,7 +152,10 @@ export default function MisPostulaciones() {
         </h1>
         <nav className="nav">
           <ul>
-            <li className="nav-item" onClick={() => (window.location.href = "/home/user")}>
+            <li
+              className="nav-item"
+              onClick={() => (window.location.href = "/home/user")}
+            >
               <span>← Volver al Home</span>
             </li>
           </ul>
@@ -159,38 +186,64 @@ export default function MisPostulaciones() {
               return (
                 <div key={postulacion.id} className="postulacion-card">
                   <div className="postulacion-header">
-                    <h3>{postulacion.projectTitle}</h3>
+                    <h3>{postulacion.title}</h3>
                     <span className={`estado-badge ${estadoInfo.class}`}>
                       {estadoInfo.text}
                     </span>
                   </div>
 
                   <div className="postulacion-info">
-                    <p><strong>Empresa:</strong> {postulacion.companyName}</p>
-                    <p><strong>Fecha de postulación:</strong> {new Date(postulacion.createdAt).toLocaleDateString("es-ES")}</p>
-                    <p><strong>ID Aplicación:</strong> {postulacion.id}</p>
+                    <p>
+                      <strong>Empresa:</strong> {postulacion.companyName}
+                    </p>
+                    <p>
+                      <strong>Fecha de postulación:</strong>{" "}
+                      {new Date(postulacion.createdAt).toLocaleDateString(
+                        "es-ES"
+                      )}
+                    </p>
+                    <p>
+                      <strong>Tipo:</strong> {postulacion.tipo}
+                    </p>
                   </div>
 
-                  {/* 🔸 BOTONES solo si está aceptado */}
+                  {/* 🔸 Estado ACEPTADO → comportamiento distinto según tipo */}
                   {normalized === "ACCEPTED" && (
-                    <div className="postulacion-actions">
-                      <p className="instruccion">¿Ya completaste este proyecto?</p>
-                      <button
-                        className="btn-status hecho"
-                        onClick={() => updateStatus(postulacion.id, "HECHO")}
-                      >
-                        <FaCheckCircle /> Sí, lo completé
-                      </button>
-                      <button
-                        className="btn-status no-hecho"
-                        onClick={() => updateStatus(postulacion.id, "NO_HECHO")}
-                      >
-                        <FaTimesCircle /> No lo completé
-                      </button>
-                    </div>
+                    <>
+                      {postulacion.tipo === "Proyecto" ? (
+                        <div className="postulacion-actions">
+                          <p className="instruccion">
+                            ¿Ya completaste este proyecto?
+                          </p>
+                          <button
+                            className="btn-status hecho"
+                            onClick={() =>
+                              updateStatus(postulacion.id, "HECHO")
+                            }
+                          >
+                            <FaCheckCircle /> Sí, lo completé
+                          </button>
+                          <button
+                            className="btn-status no-hecho"
+                            onClick={() =>
+                              updateStatus(postulacion.id, "NO_HECHO")
+                            }
+                          >
+                            <FaTimesCircle /> No lo completé
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="estado-mensaje success">
+                          <p>
+                            ✅ Tu postulación fue aceptada. La empresa se pondrá
+                            en contacto contigo pronto.
+                          </p>
+                        </div>
+                      )}
+                    </>
                   )}
 
-                  {/* 🔸 Mensajes según estado */}
+                  {/* 🔸 Otros estados */}
                   {normalized === "PENDING" && (
                     <div className="estado-mensaje">
                       <p>⏳ Tu postulación está siendo revisada por la empresa</p>
@@ -205,7 +258,10 @@ export default function MisPostulaciones() {
 
                   {normalized === "HECHO" && (
                     <div className="estado-mensaje success">
-                      <p>✅ ¡Marcaste este proyecto como completado! Se agregó a tu perfil.</p>
+                      <p>
+                        ✅ ¡Marcaste este proyecto como completado! Se agregó a
+                        tu perfil.
+                      </p>
                     </div>
                   )}
 

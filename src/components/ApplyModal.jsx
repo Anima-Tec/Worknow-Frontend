@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./ApplyModal.css";
-import { sendApplication, getProjectById } from "../services/api";
+import {
+  sendApplication,
+  sendJobApplication,
+  getProjectById,
+  getJobById,
+} from "../services/api";
 import {
   FaMoneyBillWave,
   FaLaptopCode,
@@ -10,24 +15,31 @@ import {
   FaFileAlt,
 } from "react-icons/fa";
 
-export default function ApplyModal({ project, onClose }) {
-  const [projectData, setProjectData] = useState(null);
+export default function ApplyModal({ project, job, onClose }) {
+  const [data, setData] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // 🔹 Cargar datos del proyecto seleccionado
+  // 🔹 Detectar tipo de postulación
+  const isJob = Boolean(job);
+  const itemId = isJob ? job?.id : project?.id;
+
+  // 🔹 Cargar datos
   useEffect(() => {
-    if (project?.id) {
-      console.log("📦 Cargando datos del proyecto ID:", project.id);
-      getProjectById(project.id)
-        .then((data) => {
-          console.log("✅ Proyecto cargado:", data);
-          setProjectData(data);
-        })
-        .catch((err) => console.error("❌ Error cargando proyecto:", err));
-    }
-  }, [project]);
+    if (!itemId) return;
+    const fetchData = async () => {
+      try {
+        const result = isJob
+          ? await getJobById(itemId)
+          : await getProjectById(itemId);
+        setData(result);
+      } catch (err) {
+        console.error("❌ Error cargando datos:", err);
+      }
+    };
+    fetchData();
+  }, [itemId, isJob]);
 
   // 🔹 Manejo de inputs
   const handleChange = (e) =>
@@ -36,34 +48,39 @@ export default function ApplyModal({ project, onClose }) {
   // 🔹 Envío de postulación
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🧩 handleSubmit ejecutado");
-    console.log("Datos enviados:", formData, "para projectId:", project.id);
 
     if (!formData.name || !formData.email) {
-      alert("Por favor, completá tu nombre y correo electrónico.");
+      alert("Por favor completá tu nombre y correo electrónico.");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await sendApplication({
-        projectId: project.id,
-        name: formData.name,
-        email: formData.email,
-      });
+      if (isJob) {
+        await sendJobApplication({
+          jobId: itemId,
+          name: formData.name,
+          email: formData.email,
+        });
+      } else {
+        await sendApplication({
+          projectId: itemId,
+          name: formData.name,
+          email: formData.email,
+        });
+      }
 
-      console.log("✅ Postulación enviada correctamente:", response);
+      console.log("✅ Postulación enviada correctamente");
       setSuccess(true);
     } catch (error) {
       console.error("❌ Error enviando postulación:", error);
-      alert("Error al enviar la postulación. Intenta nuevamente.");
+      alert("Error al enviar la postulación.");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Si no hay datos, no renderiza
-  if (!projectData) return null;
+  if (!data) return null;
 
   return (
     <div className="apply-modal-overlay">
@@ -74,52 +91,85 @@ export default function ApplyModal({ project, onClose }) {
 
         {!success ? (
           <>
-            {/* ---------- HEADER ---------- */}
-            <h2 className="apply-title">{projectData.title}</h2>
+            <h2 className="apply-title">{data.title}</h2>
             <p className="apply-company">
-              Publicado por {projectData.company?.nombreEmpresa || "WorkNow"}
+              Publicado por {data.company?.nombreEmpresa || "WorkNow"}
             </p>
 
-            {/* ---------- INFO GENERAL ---------- */}
             <div className="apply-info-box">
-              <div className="apply-info-item">
-                <FaClock className="icon violet" />
-                <strong>Duración estimada:</strong>{" "}
-                {projectData.duration || "No especificada"}
-              </div>
+              {isJob ? (
+                <>
+                  <div className="apply-info-item">
+                    <FaClock className="icon violet" />
+                    <strong>Modalidad:</strong>{" "}
+                    {data.modality || "No especificada"}
+                  </div>
 
-              <div className="apply-info-item">
-                <FaMoneyBillWave className="icon green" />
-                <strong>Remuneración:</strong>{" "}
-                {projectData.remuneration || "A convenir"}
-              </div>
+                  <div className="apply-info-item">
+                    <FaMoneyBillWave className="icon green" />
+                    <strong>Remuneración:</strong>{" "}
+                    {data.remuneration || "A convenir"}
+                  </div>
 
-              <div className="apply-info-item">
-                <FaClipboardList className="icon blue" />
-                <strong>Modalidad:</strong>{" "}
-                {projectData.modality || "No especificada"}
-              </div>
+                  <div className="apply-info-item">
+                    <FaLaptopCode className="icon purple" />
+                    <strong>Habilidades requeridas:</strong>{" "}
+                    {data.skills || "No especificadas"}
+                  </div>
 
-              <div className="apply-info-item">
-                <FaCheckCircle className="icon orange" />
-                <strong>Criterios a evaluar:</strong>{" "}
-                {projectData.evaluationCriteria || "No definidos"}
-              </div>
+                  <div className="apply-info-item">
+                    <FaClipboardList className="icon blue" />
+                    <strong>Ubicación:</strong>{" "}
+                    {data.location || "No especificada"}
+                  </div>
 
-              <div className="apply-info-item">
-                <FaLaptopCode className="icon purple" />
-                <strong>Habilidades requeridas:</strong>{" "}
-                {projectData.skills || "No especificadas"}
-              </div>
+                  <div className="apply-info-item">
+                    <FaFileAlt className="icon gray" />
+                    <strong>Descripción:</strong>{" "}
+                    {data.description || "Sin descripción"}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="apply-info-item">
+                    <FaClock className="icon violet" />
+                    <strong>Duración estimada:</strong>{" "}
+                    {data.duration || "No especificada"}
+                  </div>
 
-              <div className="apply-info-item">
-                <FaFileAlt className="icon gray" />
-                <strong>Descripción:</strong>{" "}
-                {projectData.description || "Sin descripción"}
-              </div>
+                    <div className="apply-info-item">
+                      <FaMoneyBillWave className="icon green" />
+                      <strong>Remuneración:</strong>{" "}
+                      {data.remuneration || "A convenir"}
+                    </div>
+
+                    <div className="apply-info-item">
+                      <FaClipboardList className="icon blue" />
+                      <strong>Modalidad:</strong>{" "}
+                      {data.modality || "No especificada"}
+                    </div>
+
+                    <div className="apply-info-item">
+                      <FaCheckCircle className="icon orange" />
+                      <strong>Criterios a evaluar:</strong>{" "}
+                      {data.evaluationCriteria || "No definidos"}
+                    </div>
+
+                    <div className="apply-info-item">
+                      <FaLaptopCode className="icon purple" />
+                      <strong>Habilidades requeridas:</strong>{" "}
+                      {data.skills || "No especificadas"}
+                    </div>
+
+                    <div className="apply-info-item">
+                      <FaFileAlt className="icon gray" />
+                      <strong>Descripción:</strong>{" "}
+                      {data.description || "Sin descripción"}
+                    </div>
+                </>
+              )}
             </div>
 
-            {/* ---------- FORMULARIO ---------- */}
             <div className="apply-form-container">
               <h3 className="apply-subtitle">Completá tu postulación</h3>
               <form className="apply-form" onSubmit={handleSubmit}>

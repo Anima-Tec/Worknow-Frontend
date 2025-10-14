@@ -331,3 +331,22 @@ export async function applyToJob(jobId, applicationData) {
 
   return res.json();
 }
+export async function sendJobApplication({ jobId, name, email }) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`http://localhost:3000/api/job-applications/job/${jobId}/apply`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name, email }),
+  });
+  if (!res.ok) throw new Error("Error al postularse a trabajo");
+  return res.json();
+}
+
+export async function getJobById(id) {
+  const res = await fetch(`http://localhost:3000/api/jobs/${id}`);
+  if (!res.ok) throw new Error("Error obteniendo trabajo");
+  return res.json();
+}

@@ -6,7 +6,6 @@ import { AiOutlineHome } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { MdWorkOutline } from "react-icons/md";
 import "./HomeUser.css";
-import { Link } from "react-router-dom";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Footer from "../components/Footer";
@@ -16,14 +15,13 @@ export default function HomeUser() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
-
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
   const [jobType, setJobType] = useState("");
-
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showAllJobs, setShowAllJobs] = useState(false);
 
+  // 🔍 Buscar trabajos y proyectos
   const handleSearch = async () => {
     setLoading(true);
     try {
@@ -44,44 +42,33 @@ export default function HomeUser() {
         setProjects(projectsData);
       }
     } catch (err) {
-      console.error("Error en búsqueda:", err);
+      console.error("❌ Error en búsqueda:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  // 🔔 Cargar notificaciones
   const loadNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
-      
-      if (!token) {
-        setNotificationCount(0);
-        return;
-      }
+      if (!token) return;
 
       const res = await fetch("http://localhost:3000/api/applications/user/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
-          // Contar postulaciones con estado diferente a "Pendiente" y no vistas
-          const count = data.filter(app => 
-            app.status !== "Pendiente" && !app.visto
+          const count = data.filter(
+            (app) => app.status !== "Pendiente" && !app.visto
           ).length;
           setNotificationCount(count);
-        } else {
-          setNotificationCount(0);
         }
-      } else {
-        setNotificationCount(0);
       }
     } catch (err) {
-      console.error("Error cargando notificaciones:", err);
-      setNotificationCount(0);
+      console.error("❌ Error cargando notificaciones:", err);
     }
   };
 
@@ -90,9 +77,19 @@ export default function HomeUser() {
     loadNotifications();
   }, []);
 
+  // ✅ Filtrar solo trabajos activos (no aceptados ni completados)
+  const activeJobs = jobs.filter(
+    (job) => job.userStatus === "NONE" || job.userStatus === "REJECTED"
+  );
+
+  // ✅ Filtrar solo proyectos activos (no aceptados ni completados)
+  const activeProjects = projects.filter(
+    (project) => project.userStatus === "NONE" || project.userStatus === "REJECTED"
+  );
+
   return (
     <div className="home-user">
-      {/* 🟣 HEADER SIMPLIFICADO */}
+      {/* 🟣 HEADER */}
       <header className="header">
         <h1 className="h1">
           work<span>now</span>
@@ -103,10 +100,8 @@ export default function HomeUser() {
               <AiOutlineHome />
               <span>Home</span>
             </li>
-            
-            {/* BOTÓN DE POSTULACIONES */}
-            <li 
-              className="nav-item" 
+            <li
+              className="nav-item"
               onClick={() => (window.location.href = "/mis-postulaciones")}
             >
               <MdWorkOutline />
@@ -115,8 +110,6 @@ export default function HomeUser() {
                 <span className="notification-badge">{notificationCount}</span>
               )}
             </li>
-
-            {/* SOLO PERFIL */}
             <li
               className="nav-item"
               onClick={() => (window.location.href = "/PerfilUser")}
@@ -128,15 +121,14 @@ export default function HomeUser() {
         </nav>
       </header>
 
-      {/* HERO SECTION */}
+      {/* 🎬 VIDEO BANNER */}
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
           <source src="/video-banner.mp4" type="video/mp4" />
-          Tu navegador no soporta videos HTML5.
         </video>
       </section>
 
-      {/* 🔍 FILTROS SIMPLIFICADOS */}
+      {/* 🔍 FILTROS */}
       <div className="search-box">
         <div className="filter">
           <label>Buscar</label>
@@ -189,10 +181,10 @@ export default function HomeUser() {
 
         {loading ? (
           <p className="loading">Cargando...</p>
-        ) : jobs.length > 0 ? (
+        ) : activeJobs.length > 0 ? (
           showAllJobs ? (
             <div className="cards">
-              {jobs.map((job) => (
+              {activeJobs.map((job) => (
                 <CardTrabajo key={job.id} {...job} />
               ))}
             </div>
@@ -210,7 +202,7 @@ export default function HomeUser() {
               itemClass="carousel-card"
               removeArrowOnDeviceType={["mobile"]}
             >
-              {jobs.map((job) => (
+              {activeJobs.map((job) => (
                 <CardTrabajo key={job.id} {...job} />
               ))}
             </Carousel>
@@ -237,10 +229,10 @@ export default function HomeUser() {
 
         {loading ? (
           <p className="loading">Cargando...</p>
-        ) : projects.length > 0 ? (
+        ) : activeProjects.length > 0 ? (
           showAllProjects ? (
             <div className="cards">
-              {projects.map((p) => (
+              {activeProjects.map((p) => (
                 <CardProyecto key={p.id} {...p} />
               ))}
             </div>
@@ -258,7 +250,7 @@ export default function HomeUser() {
               itemClass="carousel-card"
               removeArrowOnDeviceType={["mobile"]}
             >
-              {projects.map((p) => (
+              {activeProjects.map((p) => (
                 <CardProyecto key={p.id} {...p} />
               ))}
             </Carousel>

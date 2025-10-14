@@ -23,96 +23,96 @@ export default function HomeCompany() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
-  const location = useLocation();
   const [showAllJobs, setShowAllJobs] = useState(false);
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
 
-  // 🔹 Obtener proyectos del backend
-// ✅ Cargar solo los proyectos de la empresa logueada
-useEffect(() => {
-  async function fetchCompanyProjects() {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/api/projects/company/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        console.error("❌ Error del backend al traer proyectos:", res.status);
-        setProjects([]);
-        return;
-      }
-
-      const data = await res.json();
-      console.log("🏢 Proyectos de la empresa:", data);
-      setProjects(data);
-    } catch (err) {
-      console.error("❌ Error cargando proyectos de empresa:", err);
-      setProjects([]);
-    }
-  }
-
-  fetchCompanyProjects();
-}, []);
-
-
-  // 🔹 Obtener trabajos del backend
+  // 🔹 Obtener proyectos de la empresa logueada
   useEffect(() => {
-    getJobs()
-      .then(setJobs)
-      .catch((err) => console.error("❌ Error cargando trabajos:", err));
+    async function fetchCompanyProjects() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3000/api/projects/company/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          console.error("❌ Error del backend al traer proyectos:", res.status);
+          setProjects([]);
+          return;
+        }
+        const data = await res.json();
+        setProjects(data);
+      } catch (err) {
+        console.error("❌ Error cargando proyectos de empresa:", err);
+        setProjects([]);
+      }
+    }
+    fetchCompanyProjects();
   }, []);
+
+  // 🔹 Obtener trabajos del backend (solo de la empresa)
+  useEffect(() => {
+    async function fetchCompanyJobs() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3000/api/jobs/company/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          console.error("❌ Error del backend al traer trabajos:", res.status);
+          setJobs([]);
+          return;
+        }
+        const data = await res.json();
+        setJobs(data);
+      } catch (err) {
+        console.error("❌ Error cargando trabajos de empresa:", err);
+        setJobs([]);
+      }
+    }
+    fetchCompanyJobs();
+  }, []);
+
+  // ✅ Filtrar proyectos y trabajos activos (no completados ni “no hechos”)
+  const activeProjects = projects.filter(
+    (p) =>
+      p.status !== "HECHO" &&
+      p.status !== "NO_HECHO" &&
+      p.isCompleted !== true
+  );
+  const activeJobs = jobs.filter(
+    (j) =>
+      j.status !== "HECHO" &&
+      j.status !== "NO_HECHO" &&
+      j.isCompleted !== true
+  );
 
   // 🔹 Cargar postulaciones cuando abrís el modal
   useEffect(() => {
     if (!showApplications) return;
-
     async function fetchApplications() {
       try {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         const companyId = user?.id;
-
-        if (!token || !companyId) {
-          console.warn("⚠️ No hay token o ID de empresa guardado.");
-          setApplications([]);
-          return;
-        }
+        if (!token || !companyId) return;
 
         const res = await fetch(
           `http://localhost:3000/api/applications/company/${companyId}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        console.log("📨 Status respuesta:", res.status);
-
-        if (!res.ok) {
-          const text = await res.text();
-          console.error("⚠️ Error del backend:", res.status, text);
-          setApplications([]);
-          return;
-        }
-
+        if (!res.ok) return;
         const data = await res.json();
-        console.log("📦 Postulaciones cargadas:", data);
         setApplications(data);
       } catch (err) {
         console.error("❌ Error cargando postulaciones:", err);
         setApplications([]);
       }
     }
-
     fetchApplications();
   }, [showApplications]);
 
-  // 🔹 Mostrar modal de éxito tras publicar
+  // 🔹 Mostrar modal éxito tras publicar
   useEffect(() => {
     if (location.state?.jobCreated) {
       setShowSuccess(true);
@@ -122,7 +122,7 @@ useEffect(() => {
 
   return (
     <div>
-      {/* ---------- HEADER ---------- */}
+      {/* HEADER */}
       <header className="header">
         <h1 className="h1">
           work<span>now</span>
@@ -133,20 +133,14 @@ useEffect(() => {
               <AiOutlineHome />
               <span>Home</span>
             </li>
-
-            {/* ✅ Botón de postulados funcional - SOLO ESTO CAMBIÉ */}
             <li
               className="nav-item"
-              onClick={() => {
-                console.log("✅ Abriendo modal de postulaciones");
-                setShowApplications(true);
-              }}
+              onClick={() => setShowApplications(true)}
               style={{ cursor: "pointer" }}
             >
               <IoIosContacts />
               <span>Postulados</span>
             </li>
-
             <li
               className="nav-item"
               onClick={() => (window.location.href = "/PerfilCompany")}
@@ -158,18 +152,16 @@ useEffect(() => {
         </nav>
       </header>
 
-      {/* ---------- VIDEO ---------- */}
+      {/* VIDEO */}
       <div className="video-container">
         <video src="/EMPRESA.mp4" autoPlay loop muted />
       </div>
 
-      {/* ---------- SECCIÓN PUBLICAR ---------- */}
+      {/* PUBLICAR */}
       <div className="cards-container">
         <div className="card1">
           <h2>Publicar proyecto Freelance</h2>
-          <p>
-            Accedé a talento independiente que se adapta a las necesidades de tu empresa.
-          </p>
+          <p>Accedé a talento independiente adaptado a tu empresa.</p>
           <button className="primaryBtn" onClick={() => setShowProjectForm(true)}>
             Publicar Proyecto
           </button>
@@ -177,16 +169,14 @@ useEffect(() => {
 
         <div className="card2">
           <h2>Publicar puesto de Trabajo</h2>
-          <p>
-            Busca el perfil ideal y suma profesionales comprometidos a largo plazo.
-          </p>
+          <p>Buscá el perfil ideal y sumá profesionales comprometidos.</p>
           <button className="primaryBtn" onClick={() => setShowJobForm(true)}>
-            Publicar trabajo
+            Publicar Trabajo
           </button>
         </div>
       </div>
 
-      {/* ---------- MODALES ---------- */}
+      {/* MODALES */}
       {showJobForm && (
         <div className="modal">
           <div className="modal-content">
@@ -199,22 +189,21 @@ useEffect(() => {
       )}
 
       {showProjectForm && (
-  <div className="modal">
-    <div className="modal-content">
-      <button className="close-btn" onClick={() => setShowProjectForm(false)}>
-        ✖
-      </button>
-      <ProjectForm
-        onClose={() => setShowProjectForm(false)} // ✅ Agregado
-        onProjectCreated={(newProject) => {
-          setProjects((prev) => [newProject, ...prev]); // opcional: actualiza lista
-          setShowSuccess(true);
-        }}
-      />
-    </div>
-  </div>
-)}
-
+        <div className="modal">
+          <div className="modal-content">
+            <button className="close-btn" onClick={() => setShowProjectForm(false)}>
+              ✖
+            </button>
+            <ProjectForm
+              onClose={() => setShowProjectForm(false)}
+              onProjectCreated={(newProject) => {
+                setProjects((prev) => [newProject, ...prev]);
+                setShowSuccess(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {showSuccess && (
         <div className="modal">
@@ -228,7 +217,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* ✅ Modal Postulados - SOLO ESTO CAMBIÉ */}
       {showApplications && (
         <ApplicationsModal
           open={showApplications}
@@ -236,137 +224,102 @@ useEffect(() => {
         />
       )}
 
-      {/* ---------- PROYECTOS ---------- */}
-      <section className="freelancer-postings">
-        <div className="section-header">
-          <h2>Proyectos publicados</h2>
-          {!showAllProjects && projects.length > 3 && (
-            <button className="view-more-btn" onClick={() => setShowAllProjects(true)}>
-              Ver todo →
-            </button>
-          )}
+      {/* PROYECTOS */}
+      <section className="featured">
+        <div className="header">
+          <h3>Proyectos publicados</h3>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowAllProjects(!showAllProjects);
+            }}
+          >
+            {showAllProjects ? "Ver menos ↑" : "View all →"}
+          </a>
         </div>
 
-        {!showAllProjects ? (
-          <div id="carouselProjects" className="carousel slide" data-bs-ride="carousel">
-            <div className="carousel-inner">
-              {Array.isArray(projects) && projects.map((p, index) => (
-  <div
-    className={`carousel-item ${index === 0 ? "active" : ""}`}
-    key={p.id || index} // Usa index como fallback si no hay id
-  >
-    <div className="carousel-card-wrapper">
-      <CardProyecto {...p} company={p.company?.email} />
-    </div>
-  </div>
-))}
+        {loading ? (
+          <p className="loading">Cargando...</p>
+        ) : activeProjects.length > 0 ? (
+          showAllProjects ? (
+            <div className="cards">
+              {activeProjects.map((p) => (
+                <CardProyecto key={p.id} {...p} />
+              ))}
             </div>
-          </div>
+          ) : (
+            <Carousel
+              responsive={{
+                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+              }}
+              infinite
+              autoPlay={false}
+              keyBoardControl
+              containerClass="carousel-container"
+              itemClass="carousel-card"
+              removeArrowOnDeviceType={["mobile"]}
+            >
+              {activeProjects.map((p) => (
+                <CardProyecto key={p.id} {...p} />
+              ))}
+            </Carousel>
+          )
         ) : (
-          <div className="freelancer-list">
-            {projects.map((p) => (
-              <CardProyecto key={p.id} {...p} company={p.company?.email} />
-            ))}
-            <button className="view-more-btn back-btn" onClick={() => setShowAllProjects(false)}>
-              ← Volver
-            </button>
-          </div>
+          <p className="no-data">No hay proyectos publicados por ahora</p>
         )}
       </section>
-       {/* 💡 PROYECTOS */}
-            <section className="featured">
-              <div className="header">
-                <h3>Featured projects</h3>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowAllProjects(!showAllProjects);
-                  }}
-                >
-                  {showAllProjects ? "Ver menos ↑" : "View all →"}
-                </a>
-              </div>
-      
-              {loading ? (
-                <p className="loading">Cargando...</p>
-              ) : projects.length > 0 ? (
-                showAllProjects ? (
-                  <div className="cards">
-                    {projects.map((p) => (
-                      <CardProyecto key={p.id} {...p} />
-                    ))}
-                  </div>
-                ) : (
-                  <Carousel
-                    responsive={{
-                      desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                      tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                      mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-                    }}
-                    infinite
-                    autoPlay={false}
-                    keyBoardControl
-                    containerClass="carousel-container"
-                    itemClass="carousel-card"
-                    removeArrowOnDeviceType={["mobile"]}
-                  >
-                    {projects.map((p) => (
-                      <CardProyecto key={p.id} {...p} />
-                    ))}
-                  </Carousel>
-                )
-              ) : (
-                <p className="no-data">No hay proyectos publicados por ahora</p>
-              )}
-            </section>
-      {/* 💼 TRABAJOS */}
-            <section className="featured">
-              <div className="header">
-                <h3>Featured jobs</h3>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowAllJobs(!showAllJobs);
-                  }}
-                >
-                  {showAllJobs ? "Ver menos ↑" : "View all →"}
-                </a>
-              </div>
-      
-              {loading ? (
-                <p className="loading">Cargando...</p>
-              ) : jobs.length > 0 ? (
-                showAllJobs ? (
-                  <div className="cards">
-                    {jobs.map((job) => (
-                      <CardTrabajo key={job.id} {...job} />
-                    ))}
-                  </div>
-                ) : (
-                  <Carousel
-                    responsive={{
-                      desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                      tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                      mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-                    }}
-                    infinite
-                    autoPlay={false}
-                    keyBoardControl
-                    containerClass="carousel-container"
-                    itemClass="carousel-card"
-                    removeArrowOnDeviceType={["mobile"]}
-                  >
-                    {jobs.map((job) => (
-                      <CardTrabajo key={job.id} {...job} />
-                    ))}
-                  </Carousel>
-                )
-              ) : (
-                <p className="no-data">No hay trabajos por ahora</p>
-              )}
-            </section>
+
+      {/* TRABAJOS */}
+      <section className="featured">
+        <div className="header">
+          <h3>Trabajos publicados</h3>
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowAllJobs(!showAllJobs);
+            }}
+          >
+            {showAllJobs ? "Ver menos ↑" : "View all →"}
+          </a>
+        </div>
+
+        {loading ? (
+          <p className="loading">Cargando...</p>
+        ) : activeJobs.length > 0 ? (
+          showAllJobs ? (
+            <div className="cards">
+              {activeJobs.map((job) => (
+                <CardTrabajo key={job.id} {...job} />
+              ))}
+            </div>
+          ) : (
+            <Carousel
+              responsive={{
+                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
+                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
+                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
+              }}
+              infinite
+              autoPlay={false}
+              keyBoardControl
+              containerClass="carousel-container"
+              itemClass="carousel-card"
+              removeArrowOnDeviceType={["mobile"]}
+            >
+              {activeJobs.map((job) => (
+                <CardTrabajo key={job.id} {...job} />
+              ))}
+            </Carousel>
+          )
+        ) : (
+          <p className="no-data">No hay trabajos publicados por ahora</p>
+        )}
+      </section>
+
       <Footer />
     </div>
   );
