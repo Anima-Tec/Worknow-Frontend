@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { FaQuoteRight, FaUserCircle } from "react-icons/fa";
-import "./Landing.css";
 import Footer from "../components/Footer";
+import "./Landing.css";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -13,107 +13,103 @@ export default function Landing() {
       role: "Frontend Jr",
     },
     {
-      text: "Los desafíos prácticos me permitieron demostrar mis capacidades reales.",
+      text: "Los desafíos reales me ayudaron a demostrar mi talento a empresas que buscaban justo mi perfil.",
       name: "Diego López",
       role: "UX Designer",
     },
     {
-      text: "Encontramos talento validado en semanas, optimizando todo nuestro proceso.",
+      text: "Encontramos talento validado en semanas, optimizando todo nuestro proceso de selección.",
       name: "Sofía Martínez",
       role: "HR Partner",
-    },
-    {
-      text: "Pude postularme en segundos y ya estoy trabajando en mi primer proyecto.",
-      name: "Martín Pérez",
-      role: "Data Analyst",
-    },
-    {
-      text: "Nuestra startup contrató a 3 talentos clave gracias a WorkNow.",
-      name: "Andrés Silva",
-      role: "CTO",
     },
   ];
 
   return (
     <div className="landing">
-      <section className="landing-hero">
+      {/* 🟣 HERO */}
+      <section className="hero-section">
+        <video autoPlay loop muted playsInline className="hero-video">
+          <source src="/video-banner.mp4" type="video/mp4" />
+        </video>
+        <div className="hero-overlay" />
         <div className="hero-content">
           <h1>
-            Conecta <span>tu talento</span> con oportunidades reales
+            Conectamos <span>talento</span> con oportunidades reales
           </h1>
           <p>
-            La plataforma que transforma perfiles en huellas digitales validadas
-            con proyectos reales y empresas.
+            WorkNow impulsa el futuro laboral uniendo personas y empresas a través de proyectos reales y experiencias verificadas.
           </p>
           <div className="cta-buttons">
-            <button className="btnPrimary" onClick={() => navigate("/login?role=user")}>
-              Soy Usuario
+            <button className="btn btn-primary" onClick={() => navigate("/choose")}>
+              Registrarme
             </button>
-            <button className="btnSecondary" onClick={() => navigate("/login?role=company")}>
-              Soy Empresa
+            <button className="btn btn-outline" onClick={() => navigate("/login")}>
+              Iniciar sesión
             </button>
-          </div>
-        </div>
-        <div className="hero-image">
-          <img src="/hero-illustration.svg" alt="WorkNow Hero" />
-        </div>
-      </section>
-      <section className="how">
-        <h2>
-          Cómo funciona <span>WorkNow</span>
-        </h2>
-        <div className="steps-line">
-          <div className="step-circle strong">
-            <img src="/icons/cv.svg" alt="CV Upload" />
-            <h3>CV Upload</h3>
-            <p>Sube tu CV y crea tu huella digital en minutos.</p>
-          </div>
-          <div className="arrow">➔</div>
-          <div className="step-circle light">
-            <img src="/icons/challenge.svg" alt="Challenge" />
-            <h3>Challenge</h3>
-            <p>Participa en desafíos reales con empresas y valida tu talento.</p>
-          </div>
-          <div className="arrow">➔</div>
-          <div className="step-circle strong">
-            <img src="/icons/search.svg" alt="Job Search" />
-            <h3>Job Search</h3>
-            <p>Conecta con empresas y aplica en segundos.</p>
-          </div>
-        </div>
-      </section>
-      <section className="banner violet-banner">
-        <h2>Impulsa tu carrera con WorkNow</h2>
-        <p>Un puente entre talento y empresas reales.</p>
-        <button className="btnPrimary" onClick={() => navigate("/login")}>
-          Crear mi cuenta
-        </button>
-      </section>
-      <section className="metrics">
-        <h2>
-          Nuestro <span>impacto</span>
-        </h2>
-        <div className="metric-grid">
-          <div>
-            <h3>+60%</h3>
-            <p>más inserción laboral</p>
-          </div>
-          <div>
-            <h3>+230</h3>
-            <p>proyectos exitosos</p>
-          </div>
-          <div>
-            <h3>+40%</h3>
-            <p>primer empleo conseguido</p>
           </div>
         </div>
       </section>
 
-      <section className="testimonials">
+      {/* 🟣 FUNCIONAMIENTO */}
+      <section className="how-section">
+        <h2>
+          Cómo funciona <span>WorkNow</span>
+        </h2>
+        <div className="steps">
+          <div className="step">
+            <img src="/icons/cv.svg" alt="Perfil" />
+            <h3>Crea tu perfil</h3>
+            <p>Mostrá tus habilidades y experiencia con una huella digital única.</p>
+          </div>
+          <div className="step">
+            <img src="/icons/challenge.svg" alt="Desafíos" />
+            <h3>Participá en proyectos</h3>
+            <p>Demostrá tu talento con desafíos reales de empresas verificadas.</p>
+          </div>
+          <div className="step">
+            <img src="/icons/search.svg" alt="Conecta" />
+            <h3>Conectá y trabajá</h3>
+            <p>Aplicá a oportunidades en segundos y da el siguiente paso en tu carrera.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 🟣 BANNER */}
+      <section className="banner-section">
+        <h2>El puente entre talento y oportunidad</h2>
+        <p>Empresas reales, desafíos reales, resultados reales.</p>
+        <button className="btn btn-white" onClick={() => navigate("/choose")}>
+          Crear mi cuenta
+        </button>
+      </section>
+
+      {/* 🟣 MÉTRICAS */}
+      <section className="metrics-section">
+        <h2>
+          Nuestro <span>impacto</span>
+        </h2>
+        <div className="metrics-grid">
+          <div className="metric-card">
+            <h3>+230</h3>
+            <p>Proyectos completados</p>
+          </div>
+          <div className="metric-card">
+            <h3>+60%</h3>
+            <p>Mayor inserción laboral</p>
+          </div>
+          <div className="metric-card">
+            <h3>+40%</h3>
+            <p>Primer empleo tech</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 🟣 TESTIMONIOS */}
+      <section className="testimonials-section">
         <h2>
           Historias que <span>inspiran</span>
         </h2>
-        <div className="testimonial-grid">
+        <div className="testimonials-grid">
           {testimonials.map((t, i) => (
             <div className="testimonial-card" key={i}>
               <FaQuoteRight className="quote-icon" />
@@ -130,15 +126,16 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="banner final-banner">
+      {/* 🟣 CTA FINAL */}
+      <section className="cta-section">
         <h2>¿Listo para crear tu huella digital?</h2>
-        <p>Empieza hoy mismo y conecta con el futuro laboral.</p>
+        <p>Registrate y empezá a conectar con oportunidades reales hoy mismo.</p>
         <div className="cta-buttons">
-          <button className="btnPrimary" onClick={() => navigate("/login?role=user")}>
-            Soy Usuario
+          <button className="btn btn-primary" onClick={() => navigate("/choose")}>
+            Registrarme
           </button>
-          <button className="btnSecondary" onClick={() => navigate("/login?role=company")}>
-            Soy Empresa
+          <button className="btn btn-outline" onClick={() => navigate("/login")}>
+            Iniciar sesión
           </button>
         </div>
       </section>
