@@ -36,6 +36,8 @@ export default function JobForm() {
     }
   };
 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -72,6 +74,7 @@ export default function JobForm() {
 
         <label>Website de la empresa *</label>
         <input
+          type="url"
           name="companyWebsite"
           placeholder="Pega la URL del sitio web"
           value={form.companyWebsite}
@@ -79,12 +82,14 @@ export default function JobForm() {
           required
         />
 
-        <label>URL del proyecto asociado</label>
+        <label>URL del proyecto asociado*</label>
         <input
+          type="url"
           name="projectUrl"
           placeholder="https://worknow.com/proyecto/123"
           value={form.projectUrl}
           onChange={handleChange}
+          required
         />
 
         <div className="form-row">
@@ -171,6 +176,7 @@ export default function JobForm() {
 
         <label>Rango salarial *</label>
         <input
+          type="number"
           name="salaryRange"
           placeholder="Ej: $30000"
           value={form.salaryRange}

@@ -156,7 +156,7 @@ const RegisterCompany = () => {
             <div className="register-company-form">
               {/* Nombre de Empresa */}
               <div className="register-company-form-group">
-                <label className="register-company-label">Nombre de la Empresa</label>
+                <label className="register-company-label">Nombre de la Empresa*</label>
                 <div className="register-company-input-wrapper">
                   <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -169,6 +169,7 @@ const RegisterCompany = () => {
                     onChange={handleChange}
                     placeholder="Tech Solutions S.A."
                     className={`register-company-input ${errors.nombreEmpresa ? 'register-company-input-error' : ''}`}
+                    required
                   />
                 </div>
                 {errors.nombreEmpresa && <p className="register-company-error-text">{errors.nombreEmpresa}</p>}
@@ -177,7 +178,7 @@ const RegisterCompany = () => {
               <div className="register-company-form-row">
                 {/* RUT */}
                 <div className="register-company-form-group">
-                  <label className="register-company-label">RUT</label>
+                  <label className="register-company-label">RUT*</label>
                   <div className="register-company-input-wrapper">
                     <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -193,6 +194,7 @@ const RegisterCompany = () => {
                       onChange={handleChange}
                       placeholder="12.345.678-9"
                       className={`register-company-input ${errors.rut ? 'register-company-input-error' : ''}`}
+                      required
                     />
                   </div>
                   {errors.rut && <p className="register-company-error-text">{errors.rut}</p>}
@@ -200,7 +202,7 @@ const RegisterCompany = () => {
 
                 {/* Email */}
                 <div className="register-company-form-group">
-                  <label className="register-company-label">Email Corporativo</label>
+                  <label className="register-company-label">Email Corporativo*</label>
                   <div className="register-company-input-wrapper">
                     <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -222,7 +224,7 @@ const RegisterCompany = () => {
               <div className="register-company-form-row">
                 {/* Teléfono */}
                 <div className="register-company-form-group">
-                  <label className="register-company-label">Teléfono</label>
+                  <label className="register-company-label">Teléfono*</label>
                   <div className="register-company-input-wrapper">
                     <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
@@ -241,7 +243,7 @@ const RegisterCompany = () => {
 
                 {/* Ciudad */}
                 <div className="register-company-form-group">
-                  <label className="register-company-label">Ciudad</label>
+                  <label className="register-company-label">Ciudad*</label>
                   <div className="register-company-input-wrapper">
                     <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
@@ -262,7 +264,7 @@ const RegisterCompany = () => {
 
               {/* Dirección */}
               <div className="register-company-form-group">
-                <label className="register-company-label">Dirección</label>
+                <label className="register-company-label">Dirección*</label>
                 <div className="register-company-input-wrapper">
                   <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -283,7 +285,7 @@ const RegisterCompany = () => {
               <div className="register-company-form-row">
                 {/* Sector */}
                 <div className="register-company-form-group">
-                  <label className="register-company-label">Sector</label>
+                  <label className="register-company-label">Sector*</label>
                   <div className="register-company-input-wrapper">
                     <svg className="register-company-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -324,7 +326,7 @@ const RegisterCompany = () => {
 
               {/* Tamaño de Empresa */}
               <div className="register-company-form-group">
-                <label className="register-company-label">Tamaño de la Empresa</label>
+                <label className="register-company-label">Tamaño de la Empresa*</label>
                 <select
                   name="tamano"
                   value={formData.tamano}
@@ -343,7 +345,7 @@ const RegisterCompany = () => {
 
               {/* Contraseña */}
               <div className="register-company-form-group">
-                <label className="register-company-label">Contraseña</label>
+                <label className="register-company-label">Contraseña*</label>
                 <div className="register-company-input-wrapper">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -376,7 +378,7 @@ const RegisterCompany = () => {
 
               {/* Confirmar Contraseña */}
               <div className="register-company-form-group">
-                <label className="register-company-label">Confirmar Contraseña</label>
+                <label className="register-company-label">Confirmar Contraseña*</label>
                 <div className="register-company-input-wrapper">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
@@ -385,6 +387,7 @@ const RegisterCompany = () => {
                     onChange={handleChange}
                     placeholder="Confirma tu contraseña"
                     className={`register-company-input ${errors.confirmPassword ? 'register-company-input-error' : ''}`}
+                    required
                   />
                   <button
                     type="button"
