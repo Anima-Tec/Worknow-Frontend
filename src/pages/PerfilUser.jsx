@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./PerfilUser.css";
 import Footer from "../components/Footer";
+import ProyectosCompletados from "../components/ProyectosCompletados";
 
 const PerfilUser = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -355,6 +356,9 @@ const PerfilUser = () => {
                 </div>
               )}
             </div>
+
+            {/* 🆕 NUEVA SECCIÓN: Proyectos Realizados */}
+            <ProyectosCompletados />
           </div>
 
           {/* Derecha */}

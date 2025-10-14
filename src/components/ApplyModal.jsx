@@ -77,7 +77,7 @@ export default function ApplyModal({ project, onClose }) {
             {/* ---------- HEADER ---------- */}
             <h2 className="apply-title">{projectData.title}</h2>
             <p className="apply-company">
-              Publicado por {projectData.company?.name || "WorkNow"}
+              Publicado por {projectData.company?.nombreEmpresa || "WorkNow"}
             </p>
 
             {/* ---------- INFO GENERAL ---------- */}

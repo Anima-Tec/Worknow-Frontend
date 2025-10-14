@@ -12,6 +12,7 @@ import QuienesSomos from "./pages/QuienesSomos";
 import JobForm from "./pages/JobForm";
 import RegisterUser from "./pages/RegisterUser.jsx";
 import RegisterCompany from "./pages/RegisterCompany.jsx";
+import MisPostulaciones from './components/MisPostulaciones';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
       <Route path="/perfilcompany" element={<PerfilCompany />} />
       <Route path="/QuienesSomos" element={<QuienesSomos />} />
       <Route path="/jobs/form" element={<JobForm />} />
+      <Route path="/mis-postulaciones" element={<MisPostulaciones />} /> {/* Agregada esta línea */}
     </Routes>
   );
 }

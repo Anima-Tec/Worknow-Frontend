@@ -3,8 +3,8 @@ import { searchJobs, searchProjects } from "../services/api";
 import CardTrabajo from "../components/CardTrabajo";
 import CardProyecto from "../components/CardProyecto";
 import { AiOutlineHome } from "react-icons/ai";
-import { IoIosContacts, IoIosNotifications } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
+import { MdWorkOutline } from "react-icons/md";
 import "./HomeUser.css";
 import { Link } from "react-router-dom";
 import Carousel from "react-multi-carousel";
@@ -15,11 +15,11 @@ export default function HomeUser() {
   const [jobs, setJobs] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
-  const [area, setArea] = useState("");
-  const [level, setLevel] = useState("");
+  const [jobType, setJobType] = useState("");
 
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showAllJobs, setShowAllJobs] = useState(false);
@@ -27,7 +27,7 @@ export default function HomeUser() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const filters = { query, type, area, level };
+      const filters = { query, type, jobType };
 
       if (type === "jobs") {
         const jobsData = await searchJobs(filters);
@@ -50,13 +50,49 @@ export default function HomeUser() {
     }
   };
 
+  const loadNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setNotificationCount(0);
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/api/applications/user/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          // Contar postulaciones con estado diferente a "Pendiente" y no vistas
+          const count = data.filter(app => 
+            app.status !== "Pendiente" && !app.visto
+          ).length;
+          setNotificationCount(count);
+        } else {
+          setNotificationCount(0);
+        }
+      } else {
+        setNotificationCount(0);
+      }
+    } catch (err) {
+      console.error("Error cargando notificaciones:", err);
+      setNotificationCount(0);
+    }
+  };
+
   useEffect(() => {
     handleSearch();
+    loadNotifications();
   }, []);
 
   return (
     <div className="home-user">
-      {/* 🟣 HEADER */}
+      {/* 🟣 HEADER SIMPLIFICADO */}
       <header className="header">
         <h1 className="h1">
           work<span>now</span>
@@ -67,17 +103,20 @@ export default function HomeUser() {
               <AiOutlineHome />
               <span>Home</span>
             </li>
-            <li
-              className="nav-item"
-              onClick={() => (window.location.href = "/ContactUser")}
+            
+            {/* BOTÓN DE POSTULACIONES */}
+            <li 
+              className="nav-item" 
+              onClick={() => (window.location.href = "/mis-postulaciones")}
             >
-              <IoIosContacts />
-              <span>Contacto</span>
+              <MdWorkOutline />
+              <span>Mis Postulaciones</span>
+              {notificationCount > 0 && (
+                <span className="notification-badge">{notificationCount}</span>
+              )}
             </li>
-            <li className="nav-item" onClick={() => {}}>
-              <IoIosNotifications />
-              <span>Notificaciones</span>
-            </li>
+
+            {/* SOLO PERFIL */}
             <li
               className="nav-item"
               onClick={() => (window.location.href = "/PerfilUser")}
@@ -89,6 +128,7 @@ export default function HomeUser() {
         </nav>
       </header>
 
+      {/* HERO SECTION */}
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
           <source src="/video-banner.mp4" type="video/mp4" />
@@ -96,7 +136,7 @@ export default function HomeUser() {
         </video>
       </section>
 
-      {/* 🔍 FILTROS */}
+      {/* 🔍 FILTROS SIMPLIFICADOS */}
       <div className="search-box">
         <div className="filter">
           <label>Buscar</label>
@@ -111,35 +151,24 @@ export default function HomeUser() {
         <div className="filter">
           <label>Tipo</label>
           <select value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="">Selecciona</option>
+            <option value="">Todos</option>
             <option value="jobs">Trabajos</option>
             <option value="projects">Proyectos</option>
           </select>
         </div>
 
         <div className="filter">
-          <label>Área de especialización</label>
-          <select value={area} onChange={(e) => setArea(e.target.value)}>
-            <option value="">Selecciona</option>
-            <option value="desarrollo">Desarrollo</option>
-            <option value="diseño">Diseño</option>
-            <option value="marketing">Marketing</option>
-            <option value="data">Data</option>
-          </select>
-        </div>
-
-        <div className="filter">
-          <label>Nivel requerido</label>
-          <select value={level} onChange={(e) => setLevel(e.target.value)}>
-            <option value="">Selecciona</option>
-            <option value="junior">Junior</option>
-            <option value="semijunior">Semi Junior</option>
-            <option value="senior">Senior</option>
+          <label>Modalidad</label>
+          <select value={jobType} onChange={(e) => setJobType(e.target.value)}>
+            <option value="">Todas</option>
+            <option value="full-time">Full Time</option>
+            <option value="part-time">Part Time</option>
+            <option value="freelance">Freelance</option>
           </select>
         </div>
 
         <button className="btn-search" onClick={handleSearch}>
-          Find
+          Buscar
         </button>
       </div>
 
@@ -192,6 +221,7 @@ export default function HomeUser() {
       </section>
 
       {/* 💡 PROYECTOS */}
+      <section className="featured">
         <div className="header">
           <h3>Featured projects</h3>
           <a
@@ -236,64 +266,6 @@ export default function HomeUser() {
         ) : (
           <p className="no-data">No hay proyectos publicados por ahora</p>
         )}
-      {/* 💼 Trabajos */}
-      <section className="featured">
-        <div className="header">
-          <h3>Featured jobs</h3>
-          <a href="#">View all →</a>
-        </div>
-        <div className="cards">
-          {loading ? (
-            <p className="loading">Cargando...</p>
-          ) : jobs.length > 0 ? (
-            jobs.map((job) => (
-              <CardTrabajo
-                key={job.id}
-                title={job.title}
-                company={job.companyName}
-                area={job.area}
-                jobType={job.jobType}
-                contractType={job.contractType}
-                modality={job.modality}
-                location={job.location}
-                salary={job.salaryRange}
-                description={job.description}
-                projectUrl={job.projectUrl}
-              />
-            ))
-          ) : (
-            <p className="no-data">No hay trabajos por ahora</p>
-          )}
-        </div>
-      </section>
-
-      {/* 💡 Proyectos */}
-      <section className="featured">
-        <div className="header">
-          <h3>Featured projects</h3>
-          <a href="#">View all →</a>
-        </div>
-
-        <div className="cards">
-          {loading ? (
-            <p className="loading">Cargando...</p>
-          ) : projects.length > 0 ? (
-            projects.map((project) => (
-              <CardProyecto
-                key={project.id}
-                title={project.title}
-                description={project.description}
-                skills={project.skills}
-                duration={project.duration}
-                modality={project.modality}
-                remuneration={project.remuneration}
-                company={project.companyName || "Empresa"}
-              />
-            ))
-          ) : (
-            <p className="no-data">No hay proyectos publicados por ahora</p>
-          )}
-        </div>
       </section>
 
       <Footer />

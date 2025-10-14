@@ -1,0 +1,232 @@
+/* src/pages/MisPostulaciones.css */
+.mis-postulaciones {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.container h2 {
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.no-postulaciones {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.btn-primary {
+  background: #6c63ff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 1rem;
+}
+
+.btn-primary:hover {
+  background: #5752d4;
+}
+
+.postulaciones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.postulacion-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-left: 4px solid #6c63ff;
+}
+
+.postulacion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.postulacion-header h3 {
+  margin: 0;
+  color: #333;
+  flex: 1;
+}
+
+.estado-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 1rem;
+}
+
+.estado-pendiente {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.estado-revision {
+  background: #cce7ff;
+  color: #0066cc;
+}
+
+.estado-rechazado {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.estado-contratado {
+  background: #d1f7e4;
+  color: #155724;
+}
+
+.postulacion-info p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+/* Estilos para los botones de acción */
+.postulacion-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.instruccion {
+  margin-bottom: 0.75rem;
+  color: #666;
+  font-style: italic;
+}
+
+.btn-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+  margin-right: 0.5rem;
+}
+
+.btn-status.hecho {
+  background: #28a745;
+  color: white;
+}
+
+.btn-status.hecho:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-status.no-hecho {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-status.no-hecho:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.message-alert {
+  background: #d1f7e4;
+  color: #155724;
+  padding: 12px;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  text-align: center;
+  border-left: 4px solid #28a745;
+  font-weight: bold;
+}
+
+.estado-mensaje {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 5px;
+  border-left: 3px solid #6c63ff;
+}
+
+.estado-mensaje p {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+}
+
+.estado-mensaje.success {
+  background: #d1f7e4;
+  color: #155724;
+  border-left-color: #28a745;
+}
+
+.estado-mensaje.warning {
+  background: #fff3cd;
+  color: #856404;
+  border-left-color: #ffc107;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.h1 span {
+  color: #6c63ff;
+}
+
+.nav ul {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.nav-item:hover {
+  color: #6c63ff;
+}

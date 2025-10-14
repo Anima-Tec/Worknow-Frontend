@@ -1,0 +1,128 @@
+/* src/components/ProyectosCompletados.css */
+.proyectos-completados-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.proyectos-title {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-bottom: 2px solid #6c63ff;
+  padding-bottom: 0.5rem;
+}
+
+.loading-proyectos {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.no-proyectos {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.no-proyectos p {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.no-proyectos small {
+  color: #999;
+}
+
+.proyectos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.proyecto-item {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.proyecto-item:hover {
+  border-color: #6c63ff;
+  box-shadow: 0 2px 8px rgba(108, 99, 255, 0.1);
+}
+
+.proyecto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.proyecto-nombre {
+  color: #333;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.proyecto-fecha {
+  color: #666;
+  font-size: 0.875rem;
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 1rem;
+}
+
+.proyecto-empresa {
+  color: #555;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.proyecto-descripcion {
+  color: #666;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* 🆕 ESTILOS PARA DETALLES DEL PROYECTO */
+.proyecto-detalles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 3px solid #6c63ff;
+}
+
+.proyecto-detalle {
+  color: #555;
+  font-size: 0.85rem;
+}
+
+.proyecto-detalle strong {
+  color: #333;
+}
+
+.proyecto-badge {
+  display: inline-block;
+  background: #d1f7e4;
+  color: #155724;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}

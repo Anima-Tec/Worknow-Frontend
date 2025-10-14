@@ -158,7 +158,6 @@ export async function getProjectById(id) {
 // ==================== 📩 POSTULACIONES (APPLY) ==========================
 export async function sendApplication({ projectId, name, email }) {
   try {
-    // 🔐 Recuperar token del usuario logueado
     const token = localStorage.getItem("token");
 
     console.log(
@@ -172,7 +171,7 @@ export async function sendApplication({ projectId, name, email }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ Token enviado al backend
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name, email }),
       }
@@ -194,7 +193,6 @@ export async function sendApplication({ projectId, name, email }) {
     throw error;
   }
 }
-
 
 export async function getCompanyApplications() {
   const token = localStorage.getItem("token");
@@ -238,6 +236,97 @@ export async function updateApplicationStatus(id, status) {
     const text = await res.text();
     console.error("❌ Error actualizando estado:", res.status, text);
     throw new Error("Error actualizando estado");
+  }
+
+  return res.json();
+}
+
+// ==================== 📋 MIS POSTULACIONES =============================
+export async function getMyApplications() {
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    throw new Error("No hay token de autenticación");
+  }
+
+  const res = await fetch(`${API_BASE}/applications/my-applications`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Error obteniendo mis postulaciones:", res.status, text);
+    throw new Error("Error obteniendo mis postulaciones");
+  }
+
+  return res.json();
+}
+
+// ==================== 🔔 NOTIFICACIONES ================================
+export async function getNotificationCount() {
+  const token = localStorage.getItem("token");
+  
+  if (!token) {
+    return 0;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/applications/notifications/count`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      return 0;
+    }
+
+    const data = await res.json();
+    return data.count || 0;
+  } catch (error) {
+    console.error("❌ Error obteniendo notificaciones:", error);
+    return 0;
+  }
+}
+
+export async function markApplicationAsRead(applicationId) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API_BASE}/applications/${applicationId}/mark-read`, {
+    method: "PUT",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Error marcando como leído:", res.status, text);
+    throw new Error("Error marcando notificación como leída");
+  }
+
+  return res.json();
+}
+
+// ==================== 💼 POSTULAR A TRABAJO ============================
+export async function applyToJob(jobId, applicationData) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API_BASE}/applications/job/${jobId}/apply`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(applicationData),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Error postulando a trabajo:", res.status, text);
+    throw new Error("Error al postular al trabajo");
   }
 
   return res.json();

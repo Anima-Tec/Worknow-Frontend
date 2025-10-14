@@ -28,12 +28,35 @@ export default function HomeCompany() {
   const [loading, setLoading] = useState(false);
 
   // 🔹 Obtener proyectos del backend
-  useEffect(() => {
-    fetch("http://localhost:3000/api/projects")
-      .then((res) => res.json())
-      .then(setProjects)
-      .catch((err) => console.error("❌ Error cargando proyectos:", err));
-  }, []);
+// ✅ Cargar solo los proyectos de la empresa logueada
+useEffect(() => {
+  async function fetchCompanyProjects() {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:3000/api/projects/company/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        console.error("❌ Error del backend al traer proyectos:", res.status);
+        setProjects([]);
+        return;
+      }
+
+      const data = await res.json();
+      console.log("🏢 Proyectos de la empresa:", data);
+      setProjects(data);
+    } catch (err) {
+      console.error("❌ Error cargando proyectos de empresa:", err);
+      setProjects([]);
+    }
+  }
+
+  fetchCompanyProjects();
+}, []);
+
 
   // 🔹 Obtener trabajos del backend
   useEffect(() => {
