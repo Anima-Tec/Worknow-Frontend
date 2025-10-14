@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./ApplyModal.css";
 import {
   sendApplication,
-  sendJobApplication,
+  applyToJob, // ✅ cambio importante
   getProjectById,
   getJobById,
 } from "../services/api";
@@ -25,7 +25,7 @@ export default function ApplyModal({ project, job, onClose }) {
   const isJob = Boolean(job);
   const itemId = isJob ? job?.id : project?.id;
 
-  // 🔹 Cargar datos
+  // 🔹 Cargar datos (trabajo o proyecto)
   useEffect(() => {
     if (!itemId) return;
     const fetchData = async () => {
@@ -57,8 +57,7 @@ export default function ApplyModal({ project, job, onClose }) {
     setLoading(true);
     try {
       if (isJob) {
-        await sendJobApplication({
-          jobId: itemId,
+        await applyToJob(itemId, {
           name: formData.name,
           email: formData.email,
         });
@@ -137,35 +136,35 @@ export default function ApplyModal({ project, job, onClose }) {
                     {data.duration || "No especificada"}
                   </div>
 
-                    <div className="apply-info-item">
-                      <FaMoneyBillWave className="icon green" />
-                      <strong>Remuneración:</strong>{" "}
-                      {data.remuneration || "A convenir"}
-                    </div>
+                  <div className="apply-info-item">
+                    <FaMoneyBillWave className="icon green" />
+                    <strong>Remuneración:</strong>{" "}
+                    {data.remuneration || "A convenir"}
+                  </div>
 
-                    <div className="apply-info-item">
-                      <FaClipboardList className="icon blue" />
-                      <strong>Modalidad:</strong>{" "}
-                      {data.modality || "No especificada"}
-                    </div>
+                  <div className="apply-info-item">
+                    <FaClipboardList className="icon blue" />
+                    <strong>Modalidad:</strong>{" "}
+                    {data.modality || "No especificada"}
+                  </div>
 
-                    <div className="apply-info-item">
-                      <FaCheckCircle className="icon orange" />
-                      <strong>Criterios a evaluar:</strong>{" "}
-                      {data.evaluationCriteria || "No definidos"}
-                    </div>
+                  <div className="apply-info-item">
+                    <FaCheckCircle className="icon orange" />
+                    <strong>Criterios a evaluar:</strong>{" "}
+                    {data.evaluationCriteria || "No definidos"}
+                  </div>
 
-                    <div className="apply-info-item">
-                      <FaLaptopCode className="icon purple" />
-                      <strong>Habilidades requeridas:</strong>{" "}
-                      {data.skills || "No especificadas"}
-                    </div>
+                  <div className="apply-info-item">
+                    <FaLaptopCode className="icon purple" />
+                    <strong>Habilidades requeridas:</strong>{" "}
+                    {data.skills || "No especificadas"}
+                  </div>
 
-                    <div className="apply-info-item">
-                      <FaFileAlt className="icon gray" />
-                      <strong>Descripción:</strong>{" "}
-                      {data.description || "Sin descripción"}
-                    </div>
+                  <div className="apply-info-item">
+                    <FaFileAlt className="icon gray" />
+                    <strong>Descripción:</strong>{" "}
+                    {data.description || "Sin descripción"}
+                  </div>
                 </>
               )}
             </div>

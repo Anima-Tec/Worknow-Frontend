@@ -17,11 +17,24 @@ export default function CardTrabajo({
 }) {
   const [showModal, setShowModal] = useState(false);
 
-  if (!title && !company) {
+  // 🟣 Normalizar el nombre de la empresa
+  const companyName =
+    typeof company === "string"
+      ? company
+      : company?.nombreEmpresa || company?.email || "WorkNow";
+
+  // 🟣 Obtener inicial segura para el logo
+  const companyInitial =
+    typeof companyName === "string" && companyName.length > 0
+      ? companyName.charAt(0).toUpperCase()
+      : "W";
+
+  if (!title && !companyName) {
     console.warn("⚠️ CardTrabajo recibió datos vacíos o inválidos");
     return null;
   }
 
+  // 🟣 Clases según tipo de trabajo
   const normalizedType = jobType?.toLowerCase().trim() || "";
   const jobTypeClass =
     normalizedType === "full-time"
@@ -30,6 +43,7 @@ export default function CardTrabajo({
       ? "part-time"
       : "";
 
+  // 🟣 Formato de salario
   const formatSalary = (value) => {
     if (!value || value === "null" || value === "0") return "A convenir";
     return `$${value}`;
@@ -41,7 +55,7 @@ export default function CardTrabajo({
         {/* ---------- HEADER SUPERIOR ---------- */}
         <div className="job-banner">
           <div className="banner-text">Empowering people through technology</div>
-          <div className="logo-circle">{company?.charAt(0) || "W"}</div>
+          <div className="logo-circle">{companyInitial}</div>
         </div>
 
         {/* ---------- CONTENIDO PRINCIPAL ---------- */}
@@ -55,7 +69,7 @@ export default function CardTrabajo({
             </div>
           </div>
 
-          <p className="job-company">{company || "Empresa"}</p>
+          <p className="job-company">{companyName}</p>
 
           {/* ---------- INFO RESUMEN ---------- */}
           <ul className="job-summary">
@@ -66,7 +80,8 @@ export default function CardTrabajo({
               <strong>Contrato:</strong> {contractType || "Contrato indefinido"}
             </li>
             <li>
-              <strong>Ubicación:</strong> {location || "Ubicación no especificada"}
+              <strong>Ubicación:</strong>{" "}
+              {location || "Ubicación no especificada"}
             </li>
             <li>
               <strong>Área:</strong> {area || "General"}
@@ -107,7 +122,7 @@ export default function CardTrabajo({
         </div>
       </div>
 
-      {/* ---------- MODAL DE POSTULACIÓN UNIFICADO ---------- */}
+      {/* ---------- MODAL DE POSTULACIÓN ---------- */}
       {showModal && (
         <ApplyModal
           job={{ id, title }}

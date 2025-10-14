@@ -7,11 +7,25 @@ export async function loginApi({ email, password }) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
-    credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Credenciales inválidas");
-  return res.json();
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Credenciales inválidas");
+  }
+
+  const data = await res.json();
+
+  // 🟣 Guardar token y datos de usuario
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    console.log("✅ Token guardado correctamente:", data.token);
+  } else {
+    console.warn("⚠️ No se recibió token del backend:", data);
+  }
+
+  return data;
 }
 
 export async function registerUser(userData) {
@@ -22,7 +36,7 @@ export async function registerUser(userData) {
   });
 
   if (!res.ok) {
-    const errorData = await res.json();
+    const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || "Error al registrar usuario");
   }
 
@@ -37,59 +51,49 @@ export async function registerCompany(companyData) {
   });
 
   if (!res.ok) {
-    const errorData = await res.json();
+    const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || "Error al registrar empresa");
   }
 
   return res.json();
 }
 
-// ============================ 👤 PERFIL =================================
+// ============================ 👤 PERFIL ================================
 export async function getProfile() {
   const token = localStorage.getItem("token");
-  
-  if (!token) {
-    throw new Error("No hay token de autenticación");
-  }
+  if (!token) throw new Error("No hay token de autenticación");
 
   const res = await fetch(`${API_BASE}/auth/profile`, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
-  if (!res.ok) {
-    throw new Error("Error obteniendo perfil");
-  }
+  if (!res.ok) throw new Error("Error obteniendo perfil");
 
   return res.json();
 }
 
 export async function updateProfile(profileData) {
   const token = localStorage.getItem("token");
-  
-  if (!token) {
-    throw new Error("No hay token de autenticación");
-  }
+  if (!token) throw new Error("No hay token de autenticación");
 
   const res = await fetch(`${API_BASE}/auth/profile`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(profileData),
   });
 
   if (!res.ok) {
-    const errorData = await res.json();
+    const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.message || "Error actualizando perfil");
   }
 
   return res.json();
 }
 
-// ======================== 💼 TRABAJOS ==================================
+// ======================== 💼 TRABAJOS =================================
 export async function searchJobs(filters) {
   const params = new URLSearchParams(filters).toString();
   const res = await fetch(`${API_BASE}/jobs?${params}`);
@@ -122,7 +126,34 @@ export async function createJob(jobData) {
   return res.json();
 }
 
-// ======================== 🧩 PROYECTOS =================================
+export async function getJobById(id) {
+  const res = await fetch(`${API_BASE}/jobs/${id}`);
+  if (!res.ok) throw new Error("Error obteniendo trabajo");
+  return res.json();
+}
+
+export async function applyToJob(jobId, applicationData) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${API_BASE}/applications/job/${jobId}/apply`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(applicationData),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("❌ Error postulando a trabajo:", res.status, text);
+    throw new Error("Error al postular al trabajo");
+  }
+
+  return res.json();
+}
+
+// ======================== 🧩 PROYECTOS ================================
 export async function searchProjects(filters) {
   const params = new URLSearchParams(filters).toString();
   const res = await fetch(`${API_BASE}/projects?${params}`);
@@ -155,43 +186,25 @@ export async function getProjectById(id) {
   return res.json();
 }
 
-// ==================== 📩 POSTULACIONES (APPLY) ==========================
+// ==================== 📩 POSTULACIONES ================================
 export async function sendApplication({ projectId, name, email }) {
-  try {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_BASE}/applications/project/${projectId}/apply`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name, email }),
+  });
 
-    console.log(
-      "🚀 Enviando postulación a:",
-      `${API_BASE}/applications/project/${projectId}/apply`
-    );
-
-    const res = await fetch(
-      `${API_BASE}/applications/project/${projectId}/apply`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name, email }),
-      }
-    );
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("⚠️ Error en la API de postulación:", res.status, text);
-      throw new Error(
-        JSON.parse(text)?.message || "Error al enviar postulación"
-      );
-    }
-
-    const data = await res.json();
-    console.log("✅ Postulación enviada correctamente:", data);
-    return data;
-  } catch (error) {
-    console.error("❌ Error en sendApplication:", error);
-    throw error;
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("⚠️ Error en la API de postulación:", res.status, text);
+    throw new Error("Error al enviar postulación");
   }
+
+  return res.json();
 }
 
 export async function getCompanyApplications() {
@@ -199,10 +212,7 @@ export async function getCompanyApplications() {
   const user = JSON.parse(localStorage.getItem("user"));
   const companyId = user?.id;
 
-  if (!token || !companyId) {
-    console.warn("⚠️ No hay token o empresa logueada");
-    return [];
-  }
+  if (!token || !companyId) return [];
 
   const res = await fetch(`${API_BASE}/applications/company/${companyId}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -214,12 +224,9 @@ export async function getCompanyApplications() {
     throw new Error("Error obteniendo postulaciones de la empresa");
   }
 
-  const data = await res.json();
-  console.log("📦 Postulaciones de empresa:", data);
-  return data;
+  return res.json();
 }
 
-// ==================== 🔄 ACTUALIZAR ESTADO POSTULACIÓN =================
 export async function updateApplicationStatus(id, status) {
   const token = localStorage.getItem("token");
 
@@ -241,18 +248,13 @@ export async function updateApplicationStatus(id, status) {
   return res.json();
 }
 
-// ==================== 📋 MIS POSTULACIONES =============================
+// ==================== 📋 MIS POSTULACIONES ============================
 export async function getMyApplications() {
   const token = localStorage.getItem("token");
-  
-  if (!token) {
-    throw new Error("No hay token de autenticación");
-  }
+  if (!token) throw new Error("No hay token de autenticación");
 
-  const res = await fetch(`${API_BASE}/applications/my-applications`, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    },
+  const res = await fetch(`${API_BASE}/applications/user/me`, {
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!res.ok) {
@@ -264,25 +266,17 @@ export async function getMyApplications() {
   return res.json();
 }
 
-// ==================== 🔔 NOTIFICACIONES ================================
+// ==================== 🔔 NOTIFICACIONES ===============================
 export async function getNotificationCount() {
   const token = localStorage.getItem("token");
-  
-  if (!token) {
-    return 0;
-  }
+  if (!token) return 0;
 
   try {
     const res = await fetch(`${API_BASE}/applications/notifications/count`, {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!res.ok) {
-      return 0;
-    }
-
+    if (!res.ok) return 0;
     const data = await res.json();
     return data.count || 0;
   } catch (error) {
@@ -296,9 +290,7 @@ export async function markApplicationAsRead(applicationId) {
 
   const res = await fetch(`${API_BASE}/applications/${applicationId}/mark-read`, {
     method: "PUT",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   if (!res.ok) {
@@ -307,46 +299,5 @@ export async function markApplicationAsRead(applicationId) {
     throw new Error("Error marcando notificación como leída");
   }
 
-  return res.json();
-}
-
-// ==================== 💼 POSTULAR A TRABAJO ============================
-export async function applyToJob(jobId, applicationData) {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${API_BASE}/applications/job/${jobId}/apply`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
-    body: JSON.stringify(applicationData),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error postulando a trabajo:", res.status, text);
-    throw new Error("Error al postular al trabajo");
-  }
-
-  return res.json();
-}
-export async function sendJobApplication({ jobId, name, email }) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`http://localhost:3000/api/job-applications/job/${jobId}/apply`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ name, email }),
-  });
-  if (!res.ok) throw new Error("Error al postularse a trabajo");
-  return res.json();
-}
-
-export async function getJobById(id) {
-  const res = await fetch(`http://localhost:3000/api/jobs/${id}`);
-  if (!res.ok) throw new Error("Error obteniendo trabajo");
   return res.json();
 }
