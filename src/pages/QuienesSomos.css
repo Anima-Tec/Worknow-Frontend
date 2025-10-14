@@ -1,0 +1,231 @@
+.about-container {
+  font-family: "Poppins", sans-serif;
+  color: #1f1f1f;
+  line-height: 1.7;
+  background: #fff;
+  overflow-x: hidden;
+}
+
+/* 🟣 HERO PRINCIPAL */
+.about-hero {
+  background: linear-gradient(120deg, #6d28d9, #8b5cf6);
+  color: #fff;
+  text-align: center;
+  padding: 6rem 8%;
+  border-bottom-left-radius: 60px;
+  border-bottom-right-radius: 60px;
+  box-shadow: 0 15px 40px rgba(109, 40, 217, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-hero::before,
+.about-hero::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+}
+
+.about-hero::before {
+  width: 250px;
+  height: 250px;
+  background: rgba(255, 255, 255, 0.15);
+  top: 40px;
+  left: -80px;
+}
+
+.about-hero::after {
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  bottom: -80px;
+  right: -100px;
+}
+
+.about-hero h1 {
+  font-size: 3.2rem;
+  margin-bottom: 1rem;
+  animation: fadeInDown 1.2s ease;
+}
+
+.about-hero span {
+  color: #e9d5ff;
+}
+
+.about-hero p {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  opacity: 0.95;
+  animation: fadeIn 1.6s ease;
+}
+
+/* 🟣 SECCIONES GENERALES */
+.about-section {
+  padding: 5rem 10%;
+  text-align: center;
+  animation: fadeInUp 1s ease;
+}
+
+.about-section h2 {
+  color: #6d28d9;
+  margin-bottom: 1.2rem;
+  font-size: 2rem;
+  position: relative;
+}
+
+.about-section h2::after {
+  content: "";
+  position: absolute;
+  width: 60px;
+  height: 4px;
+  background: #8b5cf6;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -10px;
+  border-radius: 2px;
+}
+
+.about-section p {
+  font-size: 1.1rem;
+  max-width: 900px;
+  margin: 1.2rem auto;
+  color: #374151;
+}
+
+/* 🟣 BLOQUE CON FONDO VIOLETA SUAVE */
+.purple-bg {
+  background: linear-gradient(180deg, #faf5ff, #f3e8ff);
+  border-radius: 24px;
+  margin: 4rem auto;
+  padding: 4rem 10%;
+  width: 85%;
+  box-shadow: 0 8px 25px rgba(109, 40, 217, 0.15);
+  animation: fadeInUp 1.2s ease;
+}
+
+/* 🟣 BENEFICIOS */
+.benefits-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  margin-top: 3rem;
+}
+
+.benefit-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 340px;
+  text-align: left;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  border-top: 6px solid #6d28d9;
+  transition: all 0.35s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(109, 40, 217, 0.25);
+}
+
+/* 🟣 EQUIPO (versión original, sobria) */
+.team-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 2rem;
+}
+
+.team-list li {
+  font-weight: 500;
+  margin: 0.6rem 0;
+  color: #374151;
+}
+
+/* 🟣 CONTACTO (más compacto y elegante) */
+.about-contact {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+  color: white;
+  text-align: center;
+  padding: 3rem 8%;
+  margin-top: 4rem;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  box-shadow: 0 -8px 20px rgba(109, 40, 217, 0.3);
+}
+
+.about-contact h2 {
+  font-size: 1.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.about-contact p {
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.contact-emails {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.contact-emails a {
+  color: #e9d5ff;
+  font-weight: 500;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  transition: 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contact-emails a:hover {
+  background: white;
+  color: #6d28d9;
+  transform: translateY(-3px);
+}
+
+/* ✨ ANIMACIONES */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 900px) {
+  .about-hero {
+    padding: 4rem 5%;
+  }
+
+  .about-hero h1 {
+    font-size: 2.3rem;
+  }
+
+  .about-section {
+    padding: 3.5rem 7%;
+  }
+
+  .benefit-card {
+    width: 100%;
+  }
+
+  .contact-emails {
+    flex-direction: column;
+  }
+}
