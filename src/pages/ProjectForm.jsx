@@ -79,7 +79,7 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
               <div>
                 <label>Remuneración *</label>
                 <input
-                  type="text"
+                  type="number"
                   name="remuneration"
                   placeholder="Ej. $25.000"
                   value={formData.remuneration}
@@ -116,13 +116,14 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
 
             <div className="form-row">
               <div>
-                <label>Habilidades requeridas</label>
+                <label>Habilidades requeridas*</label>
                 <input
                   type="text"
                   name="skills"
                   placeholder="React, UX/UI, Node.js..."
                   value={formData.skills}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
