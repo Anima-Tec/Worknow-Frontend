@@ -174,7 +174,7 @@ export async function applyToJob(jobId, applicationData) {
     },
     body: JSON.stringify(applicationData),
   });
-
+  console.log("datos enviados:", applicationData);
   if (!res.ok) {
     const text = await res.text();
     console.error("❌ Error postulando a trabajo:", res.status, text);

@@ -92,12 +92,12 @@ export default function HomeUser() {
 
   // ✅ Filtrar solo trabajos activos
   const activeJobs = jobs.filter(
-    (job) => job.userStatus === "NONE" || job.userStatus === "REJECTED"
+    (job) => job.userStatus === "NONE" || job.userStatus === "REJECTED" || job.userStatus === "PENDING"
   );
 
   // ✅ Filtrar solo proyectos activos
   const activeProjects = projects.filter(
-    (project) => project.userStatus === "NONE" || project.userStatus === "REJECTED"
+    (project) => project.userStatus === "NONE" || project.userStatus === "REJECTED" || project.userStatus === "PENDING"
   );
 
   return (

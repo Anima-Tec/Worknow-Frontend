@@ -42,6 +42,7 @@ export default function ApplicationsModal({ open, onClose }) {
         } else {
           console.warn("⚠️ No se pudieron cargar postulaciones a proyectos:", applicationsRes.status);
         }
+        console.log("jobApplicationsRes:", jobApplicationsRes);
 
         // Procesar postulaciones a trabajos
         if (jobApplicationsRes.ok) {
