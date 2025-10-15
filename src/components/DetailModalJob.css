@@ -1,0 +1,188 @@
+/* ======================= OVERLAY ======================= */
+.apply-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 30, 30, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+/* ======================= MODAL BOX ======================= */
+.apply-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 640px;
+  padding: 2.2rem 2.5rem 2.5rem;
+  position: relative;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.25s ease;
+  overflow-y: auto;
+  max-height: 90vh;
+  font-family: "Poppins", "Inter", sans-serif;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ======================= HEADER ======================= */
+.apply-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #4c1d95;
+  margin-bottom: 0.4rem;
+  text-align: left;
+}
+
+.apply-company {
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 1.8rem;
+}
+
+/* ======================= INFO BOX ======================= */
+.apply-info-box {
+  background: #f5f3ff;
+  border-radius: 16px;
+  padding: 1.8rem 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 0 0 1px rgba(109, 40, 217, 0.1);
+}
+
+/* ======================= INFO ITEM ======================= */
+.apply-info-item {
+  display: flex;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 1rem;
+  line-height: 1.45;
+}
+
+.apply-info-item .icon {
+  font-size: 1.1rem;
+  margin-right: 0.6rem;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+/* ---------- ICON COLORS ---------- */
+.icon.violet { color: #7c3aed; }
+.icon.green { color: #10b981; }
+.icon.blue { color: #3b82f6; }
+.icon.orange { color: #f97316; }
+.icon.purple { color: #6d28d9; }
+.icon.gray { color: #6b7280; }
+
+/* ---------- LABELS ---------- */
+.apply-info-item strong {
+  color: #4c1d95;
+  font-weight: 600;
+  margin-right: 0.35rem;
+  white-space: nowrap;
+}
+
+/* ---------- LINKS ---------- */
+.apply-info-item a {
+  color: #5b21b6;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.apply-info-item a:hover {
+  color: #4c1d95;
+  text-decoration: underline;
+}
+
+/* ======================= CLOSE BUTTON ======================= */
+.close-btn {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.25s ease, transform 0.1s ease;
+}
+
+.close-btn:hover {
+  color: #4c1d95;
+  transform: scale(1.1);
+}
+
+/* ======================= ACTION BUTTON ======================= */
+.primaryBtn {
+  display: inline-block;
+  background: linear-gradient(135deg, #6d28d9, #5b21b6);
+  color: white;
+  border: none;
+  padding: 0.7rem 2.2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 1rem;
+}
+
+.primaryBtn:hover {
+  background: linear-gradient(135deg, #5b21b6, #4c1d95);
+  transform: translateY(-1px);
+}
+
+.apply-modal button.primaryBtn {
+  display: block;
+  margin: 1.2rem auto 0;
+}
+
+/* ======================= SCROLLBAR ======================= */
+.apply-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.apply-modal::-webkit-scrollbar-thumb {
+  background: #c4b5fd;
+  border-radius: 10px;
+}
+
+.apply-modal::-webkit-scrollbar-thumb:hover {
+  background: #a78bfa;
+}
+/* ======================= LINK DE WEBSITE ======================= */
+.apply-info-item a {
+  display: inline-block;
+  color: #5b21b6;
+  font-weight: 600;
+  text-decoration: none;
+  background: rgba(109, 40, 217, 0.08);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  word-break: break-all; /* ✅ evita que se corte mal en pantallas pequeñas */
+  margin-top: 0.15rem;
+}
+
+.apply-info-item a:hover {
+  background: rgba(109, 40, 217, 0.15);
+  color: #4c1d95;
+  text-decoration: underline;
+  transform: translateY(-1px);
+}
+

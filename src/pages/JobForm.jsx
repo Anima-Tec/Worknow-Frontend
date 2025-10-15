@@ -15,9 +15,10 @@ export default function JobForm({ onClose, onJobCreated }) {
     projectUrl: "",
     modality: "",
     location: "",
-    salaryRange: "",
+    remuneration: "", // ✅ corregido
     description: "",
   });
+
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -25,8 +26,8 @@ export default function JobForm({ onClose, onJobCreated }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "salaryRange") {
-      // Solo permite dígitos (0–9)
+    if (name === "remuneration") {
+      // Solo permite números
       if (/^\d*$/.test(value)) {
         setForm({ ...form, [name]: value });
       }
@@ -35,12 +36,12 @@ export default function JobForm({ onClose, onJobCreated }) {
     }
   };
 
-  
-
+  // 🔹 Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
+      console.log("📤 Enviando datos:", form);
       await createJob(form);
       setLoading(false);
       navigate("/home/company", { state: { jobCreated: true } });
@@ -48,6 +49,7 @@ export default function JobForm({ onClose, onJobCreated }) {
     } catch (err) {
       setLoading(false);
       alert("❌ Error al publicar trabajo");
+      console.error("Error creando trabajo:", err);
     }
   };
 
@@ -58,6 +60,7 @@ export default function JobForm({ onClose, onJobCreated }) {
           <div className="modal-content">⏳ Publicando trabajo...</div>
         </div>
       )}
+
       {/* -------- FORMULARIO -------- */}
       <form className="jobform" onSubmit={handleSubmit}>
         <h2>Publicar Trabajo</h2>
@@ -81,7 +84,7 @@ export default function JobForm({ onClose, onJobCreated }) {
           required
         />
 
-        <label>URL del proyecto asociado*</label>
+        <label>URL del proyecto asociado *</label>
         <input
           type="url"
           name="projectUrl"
@@ -126,7 +129,6 @@ export default function JobForm({ onClose, onJobCreated }) {
               <option value="">Selecciona un tipo</option>
               <option value="FULL-TIME">Full-time</option>
               <option value="PART-TIME">Part-time</option>
-              {/* Freelance eliminado 👋 */}
             </select>
           </div>
 
@@ -161,6 +163,7 @@ export default function JobForm({ onClose, onJobCreated }) {
               <option value="Presencial">Presencial</option>
             </select>
           </div>
+
           <div>
             <label>Ubicación *</label>
             <input
@@ -176,9 +179,9 @@ export default function JobForm({ onClose, onJobCreated }) {
         <label>Rango salarial *</label>
         <input
           type="number"
-          name="salaryRange"
+          name="remuneration" // ✅ corregido
           placeholder="Ej: $30000"
-          value={form.salaryRange}
+          value={form.remuneration}
           onChange={handleChange}
           required
         />
@@ -208,7 +211,7 @@ export default function JobForm({ onClose, onJobCreated }) {
           contractType={form.contractType || "Contrato"}
           modality={form.modality || "Modalidad"}
           location={form.location || "Ubicación"}
-          salary={form.salaryRange || "Salario"}
+          salary={form.remuneration || "Salario"} // ✅ corregido
           description={form.description || "Descripción..."}
           projectUrl={form.projectUrl}
           isPreview={true}

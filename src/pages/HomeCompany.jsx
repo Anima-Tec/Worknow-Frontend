@@ -247,7 +247,7 @@ export default function HomeCompany() {
           showAllProjects ? (
             <div className="cards">
               {activeProjects.map((p) => (
-                <CardProyecto key={p.id} {...p} />
+                <CardProyecto key={p.id} {...p} isCompanyView={true} />
               ))}
             </div>
           ) : (
@@ -265,7 +265,7 @@ export default function HomeCompany() {
               removeArrowOnDeviceType={["mobile"]}
             >
               {activeProjects.map((p) => (
-                <CardProyecto key={p.id} {...p} />
+                <CardProyecto key={p.id} {...p} isCompanyView={true} />
               ))}
             </Carousel>
           )
@@ -295,7 +295,7 @@ export default function HomeCompany() {
           showAllJobs ? (
             <div className="cards">
               {activeJobs.map((job) => (
-                <CardTrabajo key={job.id} {...job} />
+                <CardTrabajo key={job.id} {...job} isCompanyView={true} />
               ))}
             </div>
           ) : (
@@ -313,7 +313,7 @@ export default function HomeCompany() {
               removeArrowOnDeviceType={["mobile"]}
             >
               {activeJobs.map((job) => (
-                <CardTrabajo key={job.id} {...job} />
+                <CardTrabajo key={job.id} {...job} isCompanyView={true} />
               ))}
             </Carousel>
           )

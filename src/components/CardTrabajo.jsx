@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./CardTrabajo.css";
-import ApplyModal from "./ApplyModal"; // ✅ usamos el mismo modal
+import ApplyModal from "./ApplyModal";
+import DetailModal from "./DetailModalJob";
 
 export default function CardTrabajo({
   id,
@@ -12,10 +13,13 @@ export default function CardTrabajo({
   modality,
   location,
   salary,
+  remuneration, // ✅ añadimos compatibilidad
   projectUrl,
   isPreview = false,
+  isCompanyView = false, // 🟣 prop para detectar si es vista empresa
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [showDetail, setShowDetail] = useState(false); // 🟣 nuevo estado para el detalle
 
   // 🟣 Normalizar el nombre de la empresa
   const companyName =
@@ -43,11 +47,14 @@ export default function CardTrabajo({
       ? "part-time"
       : "";
 
-  // 🟣 Formato de salario
+  // 🟣 Formato de salario (funciona con salary o remuneration)
   const formatSalary = (value) => {
     if (!value || value === "null" || value === "0") return "A convenir";
     return `$${value}`;
   };
+
+  // ✅ Usa el valor correcto según cuál esté disponible
+  const displaySalary = salary || remuneration || null;
 
   return (
     <>
@@ -74,7 +81,7 @@ export default function CardTrabajo({
           {/* ---------- INFO RESUMEN ---------- */}
           <ul className="job-summary">
             <li>
-              <strong>Salario:</strong> {formatSalary(salary)}
+              <strong>Salario:</strong> {formatSalary(displaySalary)}
             </li>
             <li>
               <strong>Contrato:</strong> {contractType || "Contrato indefinido"}
@@ -102,32 +109,36 @@ export default function CardTrabajo({
 
           {/* ---------- BOTONES ---------- */}
           <div className="job-actions">
-            <button
-              className="secondary-btn"
-              onClick={() => console.log(`🟣 Ver detalles de ${title}`)}
-            >
-              Ver detalles
-            </button>
+            {!isCompanyView && (
+              <button
+                className="primary-btn"
+                onClick={() => {
+                  console.log(`🟢 Postular a ${title}`);
+                  setShowModal(true);
+                }}
+              >
+                Postular
+              </button>
+            )}
 
             <button
-              className="primary-btn"
-              onClick={() => {
-                console.log(`🟢 Postular a ${title}`);
-                setShowModal(true);
-              }}
+              className="secondary-btn"
+              onClick={() => setShowDetail(true)}
             >
-              Postular
+              Ver detalle
             </button>
           </div>
         </div>
       </div>
 
       {/* ---------- MODAL DE POSTULACIÓN ---------- */}
-      {showModal && (
-        <ApplyModal
-          job={{ id, title }}
-          onClose={() => setShowModal(false)}
-        />
+      {showModal && !isCompanyView && (
+        <ApplyModal job={{ id, title }} onClose={() => setShowModal(false)} />
+      )}
+
+      {/* ---------- MODAL DE DETALLE ---------- */}
+      {showDetail && (
+        <DetailModal job={{ id, title }} onClose={() => setShowDetail(false)} />
       )}
     </>
   );

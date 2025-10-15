@@ -1,0 +1,175 @@
+/* =============== BASE OVERLAY ================= */
+.apply-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(3px);
+}
+
+/* =============== MODAL CONTAINER ================= */
+.apply-modal {
+  background: #ffffff;
+  width: 95%;
+  max-width: 600px;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  font-family: "Poppins", sans-serif;
+  animation: fadeIn 0.3s ease-in-out;
+  color: #1f1f1f;
+}
+
+/* =============== HEADER ================= */
+.apply-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #5b21b6;
+  margin-bottom: 0.4rem;
+  text-align: left;
+}
+
+.apply-company {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin-bottom: 1.4rem;
+}
+
+/* =============== CLOSE BUTTON ================= */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: #666;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.close-btn:hover {
+  color: #000;
+}
+
+/* =============== INFO BOX ================= */
+.apply-info-box {
+  background: #f8f5ff;
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.apply-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 0.9rem;
+  line-height: 1.4;
+}
+
+/* =============== ICONS ================= */
+.icon {
+  font-size: 1.05rem;
+  min-width: 18px;
+  margin-top: 2px;
+}
+
+.icon.violet {
+  color: #6d28d9;
+}
+.icon.green {
+  color: #10b981;
+}
+.icon.orange {
+  color: #f97316;
+}
+.icon.blue {
+  color: #2563eb;
+}
+.icon.gray {
+  color: #6b7280;
+}
+.icon.purple {
+  color: #8b5cf6;
+}
+
+/* =============== LINKS ================= */
+.apply-info-item a {
+  color: #6d28d9;
+  text-decoration: none;
+  font-weight: 500;
+}
+.apply-info-item a:hover {
+  text-decoration: underline;
+}
+
+/* =============== SKILLS ================= */
+.skills-list {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.skills-list li {
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ddd6fe;
+}
+
+/* =============== BUTTON ================= */
+.primaryBtn {
+  background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.6rem 2rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 3px 8px rgba(109, 40, 217, 0.3);
+}
+.primaryBtn:hover {
+  background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+  box-shadow: 0 5px 12px rgba(109, 40, 217, 0.4);
+}
+
+/* =============== ANIMATION ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============== RESPONSIVE ================= */
+@media (max-width: 480px) {
+  .apply-modal {
+    padding: 1.3rem;
+  }
+
+  .apply-title {
+    font-size: 1.3rem;
+  }
+
+  .apply-info-item {
+    font-size: 0.85rem;
+  }
+}
