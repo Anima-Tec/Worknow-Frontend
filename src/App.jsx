@@ -19,7 +19,7 @@ export default function App() {
     <Routes>
       {/* Páginas públicas */}
       <Route path="/landing" element={<Landing />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/landing" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/choose" element={<ChooseRole />} />
       <Route path="/register/user" element={<RegisterUser />} />

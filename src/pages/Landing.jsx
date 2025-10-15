@@ -1,10 +1,17 @@
+import React, { useState, useEffect } from "react";
+import { Quote, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { FaQuoteRight, FaUserCircle } from "react-icons/fa";
-import Footer from "../components/Footer";
 import "./Landing.css";
 
 export default function Landing() {
+  const [scrollY, setScrollY] = useState(0);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const testimonials = [
     {
@@ -26,99 +33,144 @@ export default function Landing() {
 
   return (
     <div className="landing">
-      {/* 🟣 HERO */}
+      {/* HERO SECTION */}
       <section className="hero-section">
-        <video autoPlay loop muted playsInline className="hero-video">
-          <source src="/video-banner.mp4" type="video/mp4" />
-        </video>
-        <div className="hero-overlay" />
+        <div className="hero-video">
+          <div className="gradient-overlay"></div>
+          <div className="animated-bg">
+            {[...Array(15)].map((_, i) => (
+              <div key={i} className="particle"></div>
+            ))}
+          </div>
+        </div>
+
         <div className="hero-content">
-          <h1>
-            Conectamos <span>talento</span> con oportunidades reales
+          <h1 className="hero-title">
+            Conectamos <span className="highlight">talento</span> con oportunidades reales
           </h1>
-          <p>
+          <p className="hero-text">
             WorkNow impulsa el futuro laboral uniendo personas y empresas a través de proyectos reales y experiencias verificadas.
           </p>
           <div className="cta-buttons">
-            <button className="btn btn-primary" onClick={() => navigate("/choose")}>
+            <button className="btn-primary" onClick={() => navigate("/choose")}>
               Registrarme
             </button>
-            <button className="btn btn-outline" onClick={() => navigate("/login")}>
+            <button className="btn-outline" onClick={() => navigate("/login")}>
               Iniciar sesión
             </button>
           </div>
         </div>
-      </section>
 
-      {/* 🟣 FUNCIONAMIENTO */}
-      <section className="how-section">
-        <h2>
-          Cómo funciona <span>WorkNow</span>
-        </h2>
-        <div className="steps">
-          <div className="step">
-            <img src="/icons/cv.svg" alt="Perfil" />
-            <h3>Crea tu perfil</h3>
-            <p>Mostrá tus habilidades y experiencia con una huella digital única.</p>
-          </div>
-          <div className="step">
-            <img src="/icons/challenge.svg" alt="Desafíos" />
-            <h3>Participá en proyectos</h3>
-            <p>Demostrá tu talento con desafíos reales de empresas verificadas.</p>
-          </div>
-          <div className="step">
-            <img src="/icons/search.svg" alt="Conecta" />
-            <h3>Conectá y trabajá</h3>
-            <p>Aplicá a oportunidades en segundos y da el siguiente paso en tu carrera.</p>
+        <div className="scroll-indicator">
+          <div className="mouse">
+            <div className="wheel"></div>
           </div>
         </div>
       </section>
 
-      {/* 🟣 BANNER */}
+      {/* CÓMO FUNCIONA */}
+      <section className="how-section">
+        <h2 className="section-title">
+          Cómo funciona <span className="purple-text">WorkNow</span>
+        </h2>
+        <div className="steps">
+         
+          <div className="step">
+            <div className="icon-wrapper">
+              <div className="icon-crop icon-crop--loop">
+                <img
+                  src="/undraw_authentication_1evl.png"
+                  alt="crea tu perfil"
+                  className="icon-image"
+                />
+              </div>
+            </div>
+            <h3 className="step-title">Crea tu perfil</h3>
+            <p className="step-text">
+              Mostrá tus habilidades y experiencia con una huella digital única.
+            </p>
+          </div>
+
+          <div className="step">
+            <div className="icon-wrapper">
+              <img
+                src="/undraw_designer_efwz.png"
+                alt="Participá en proyectos"
+                className="icon-image"
+              />
+            </div>
+            <h3 className="step-title">Participá en proyectos</h3>
+            <p className="step-text">
+              Demostrá tu talento con desafíos reales de empresas verificadas.
+            </p>
+          </div>
+
+         
+          <div className="step">
+            <div className="icon-wrapper">
+              <div className="icon-crop icon-crop--plane">
+                <img
+                  src="undraw_group-project_kow1.png"
+                  alt="conecta y trabaja"
+                  className="icon-image"
+                />
+              </div>
+            </div>
+            <h3 className="step-title">Conectá y trabajá</h3>
+            <p className="step-text">
+              Aplicá a oportunidades en segundos y da el siguiente paso en tu carrera.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* BANNER */}
       <section className="banner-section">
-        <h2>El puente entre talento y oportunidad</h2>
-        <p>Empresas reales, desafíos reales, resultados reales.</p>
-        <button className="btn btn-white" onClick={() => navigate("/choose")}>
+        <h2 className="banner-title">El puente entre talento y oportunidad</h2>
+        <p className="banner-text">
+          Empresas reales, desafíos reales, resultados reales.
+        </p>
+        <button className="btn-white" onClick={() => navigate("/choose")}>
           Crear mi cuenta
         </button>
       </section>
 
-      {/* 🟣 MÉTRICAS */}
+      {/* MÉTRICAS */}
       <section className="metrics-section">
-        <h2>
-          Nuestro <span>impacto</span>
+        <h2 className="section-title">
+          Nuestro <span className="purple-text">impacto</span>
         </h2>
         <div className="metrics-grid">
           <div className="metric-card">
-            <h3>+230</h3>
-            <p>Proyectos completados</p>
+            <h3 className="metric-number">+230</h3>
+            <p className="metric-label">Proyectos completados</p>
           </div>
           <div className="metric-card">
-            <h3>+60%</h3>
-            <p>Mayor inserción laboral</p>
+            <h3 className="metric-number">+60%</h3>
+            <p className="metric-label">Mayor inserción laboral</p>
           </div>
           <div className="metric-card">
-            <h3>+40%</h3>
-            <p>Primer empleo tech</p>
+            <h3 className="metric-number">+40%</h3>
+            <p className="metric-label">Primer empleo tech</p>
           </div>
         </div>
       </section>
 
-      {/* 🟣 TESTIMONIOS */}
+      {/* TESTIMONIOS */}
       <section className="testimonials-section">
-        <h2>
-          Historias que <span>inspiran</span>
+        <h2 className="section-title">
+          Historias que <span className="purple-text">inspiran</span>
         </h2>
         <div className="testimonials-grid">
           {testimonials.map((t, i) => (
-            <div className="testimonial-card" key={i}>
-              <FaQuoteRight className="quote-icon" />
-              <p>{t.text}</p>
+            <div key={i} className="testimonial-card">
+              <Quote className="quote-icon" />
+              <p className="testimonial-text">{t.text}</p>
               <div className="testimonial-footer">
-                <FaUserCircle className="avatar" />
+                <User className="avatar" />
                 <div>
-                  <h4>{t.name}</h4>
-                  <span>{t.role}</span>
+                  <h4 className="testimonial-name">{t.name}</h4>
+                  <span className="testimonial-role">{t.role}</span>
                 </div>
               </div>
             </div>
@@ -126,21 +178,28 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 🟣 CTA FINAL */}
+      {/* CTA FINAL */}
       <section className="cta-section">
-        <h2>¿Listo para crear tu huella digital?</h2>
-        <p>Registrate y empezá a conectar con oportunidades reales hoy mismo.</p>
+        <h2 className="cta-title">¿Listo para crear tu huella digital?</h2>
+        <p className="cta-text">
+          Registrate y empezá a conectar con oportunidades reales hoy mismo.
+        </p>
         <div className="cta-buttons">
-          <button className="btn btn-primary" onClick={() => navigate("/choose")}>
+          <button className="btn-primary" onClick={() => navigate("/choose")}>
             Registrarme
           </button>
-          <button className="btn btn-outline" onClick={() => navigate("/login")}>
+          <button className="btn-outline-light" onClick={() => navigate("/login")}>
             Iniciar sesión
           </button>
         </div>
       </section>
 
-      <Footer />
+      {/* FOOTER */}
+      <footer className="footer">
+        <p className="footer-text">
+          © 2025 WorkNow. Conectando talento con oportunidades.
+        </p>
+      </footer>
     </div>
   );
 }
