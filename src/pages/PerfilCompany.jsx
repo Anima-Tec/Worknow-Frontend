@@ -83,7 +83,10 @@ function PerfilCompany() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/projects");
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:3000/api/projects/company/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -112,15 +115,17 @@ function PerfilCompany() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const jobsData = await getJobs();
-        
-        // ✅ Validar que sea array
-        if (Array.isArray(jobsData)) {
-          setJobs(jobsData);
-        } else {
-          console.warn("Jobs no es array, estableciendo array vacío");
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3000/api/jobs/company/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          console.error("❌ Error del backend al traer trabajos:", res.status);
           setJobs([]);
+          return;
         }
+        const data = await res.json();
+        setJobs(data);
         
       } catch (err) {
         console.error("❌ Error cargando trabajos:", err);
