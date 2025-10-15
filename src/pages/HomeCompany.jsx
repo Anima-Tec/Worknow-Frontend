@@ -183,7 +183,9 @@ export default function HomeCompany() {
             <button className="close-btn" onClick={() => setShowJobForm(false)}>
               ✖
             </button>
-            <JobForm onJobCreated={() => setShowSuccess(true)} />
+            <JobForm 
+              onClose={() => setShowJobForm(false)} 
+              onJobCreated={() => setShowSuccess(true)} />
           </div>
         </div>
       )}

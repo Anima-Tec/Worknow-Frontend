@@ -4,7 +4,7 @@ import { createJob } from "../services/api";
 import CardTrabajo from "../components/CardTrabajo";
 import "./JobForm.css";
 
-export default function JobForm() {
+export default function JobForm({ onClose, onJobCreated }) {
   const [form, setForm] = useState({
     companyName: "",
     companyWebsite: "",
@@ -18,7 +18,6 @@ export default function JobForm() {
     salaryRange: "",
     description: "",
   });
-
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -45,6 +44,7 @@ export default function JobForm() {
       await createJob(form);
       setLoading(false);
       navigate("/home/company", { state: { jobCreated: true } });
+      onClose();
     } catch (err) {
       setLoading(false);
       alert("❌ Error al publicar trabajo");
@@ -58,7 +58,6 @@ export default function JobForm() {
           <div className="modal-content">⏳ Publicando trabajo...</div>
         </div>
       )}
-
       {/* -------- FORMULARIO -------- */}
       <form className="jobform" onSubmit={handleSubmit}>
         <h2>Publicar Trabajo</h2>
