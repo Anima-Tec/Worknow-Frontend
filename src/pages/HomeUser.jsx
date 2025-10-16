@@ -6,8 +6,6 @@ import { AiOutlineHome } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { MdWorkOutline } from "react-icons/md";
 import "./HomeUser.css";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
 import Footer from "../components/Footer";
 
 export default function HomeUser() {
@@ -189,31 +187,11 @@ export default function HomeUser() {
           {loading ? (
             <p className="loading">Cargando...</p>
           ) : activeJobs.length > 0 ? (
-            showAllJobs ? (
-              <div className="cards">
-                {activeJobs.map((job) => (
-                  <CardTrabajo key={job.id} {...job} />
-                ))}
-              </div>
-            ) : (
-              <Carousel
-                responsive={{
-                  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                  tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                  mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-                }}
-                infinite
-                autoPlay={false}
-                keyBoardControl
-                containerClass="carousel-container"
-                itemClass="carousel-card"
-                removeArrowOnDeviceType={["mobile"]}
-              >
-                {activeJobs.map((job) => (
-                  <CardTrabajo key={job.id} {...job} />
-                ))}
-              </Carousel>
-            )
+            <div className="cards">
+              {activeJobs.map((job) => (
+                <CardTrabajo key={job.id} {...job} />
+              ))}
+            </div>
           ) : (
             <p className="no-data">
               {query ? `No hay trabajos que coincidan con "${query}"` : "No hay trabajos disponibles"}
@@ -243,31 +221,11 @@ export default function HomeUser() {
           {loading ? (
             <p className="loading">Cargando...</p>
           ) : activeProjects.length > 0 ? (
-            showAllProjects ? (
-              <div className="cards">
-                {activeProjects.map((p) => (
-                  <CardProyecto key={p.id} {...p} />
-                ))}
-              </div>
-            ) : (
-              <Carousel
-                responsive={{
-                  desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                  tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                  mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-                }}
-                infinite
-                autoPlay={false}
-                keyBoardControl
-                containerClass="carousel-container"
-                itemClass="carousel-card"
-                removeArrowOnDeviceType={["mobile"]}
-              >
-                {activeProjects.map((p) => (
-                  <CardProyecto key={p.id} {...p} />
-                ))}
-              </Carousel>
-            )
+            <div className="cards">
+              {activeProjects.map((p) => (
+                <CardProyecto key={p.id} {...p} />
+              ))}
+            </div>
           ) : (
             <p className="no-data">
               {query ? `No hay proyectos que coincidan con "${query}"` : "No hay proyectos disponibles"}

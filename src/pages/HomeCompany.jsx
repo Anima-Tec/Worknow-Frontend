@@ -11,8 +11,6 @@ import CardProyecto from "../components/CardProyecto";
 import CardTrabajo from "../components/CardTrabajo.jsx";
 import ApplicationsModal from "../components/ApplicationsModal";
 import Footer from "../components/Footer";
-import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
 
 export default function HomeCompany() {
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -244,31 +242,11 @@ export default function HomeCompany() {
         {loading ? (
           <p className="loading">Cargando...</p>
         ) : activeProjects.length > 0 ? (
-          showAllProjects ? (
-            <div className="cards">
-              {activeProjects.map((p) => (
-                <CardProyecto key={p.id} {...p} isCompanyView={true} />
-              ))}
-            </div>
-          ) : (
-            <Carousel
-              responsive={{
-                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-              }}
-              infinite
-              autoPlay={false}
-              keyBoardControl
-              containerClass="carousel-container"
-              itemClass="carousel-card"
-              removeArrowOnDeviceType={["mobile"]}
-            >
-              {activeProjects.map((p) => (
-                <CardProyecto key={p.id} {...p} isCompanyView={true} />
-              ))}
-            </Carousel>
-          )
+          <div className="cards">
+            {activeProjects.map((p) => (
+              <CardProyecto key={p.id} {...p} isCompanyView={true} />
+            ))}
+          </div>
         ) : (
           <p className="no-data">No hay proyectos publicados por ahora</p>
         )}
@@ -292,31 +270,11 @@ export default function HomeCompany() {
         {loading ? (
           <p className="loading">Cargando...</p>
         ) : activeJobs.length > 0 ? (
-          showAllJobs ? (
-            <div className="cards">
-              {activeJobs.map((job) => (
-                <CardTrabajo key={job.id} {...job} isCompanyView={true} />
-              ))}
-            </div>
-          ) : (
-            <Carousel
-              responsive={{
-                desktop: { breakpoint: { max: 3000, min: 1024 }, items: 3 },
-                tablet: { breakpoint: { max: 1024, min: 768 }, items: 2 },
-                mobile: { breakpoint: { max: 768, min: 0 }, items: 1 },
-              }}
-              infinite
-              autoPlay={false}
-              keyBoardControl
-              containerClass="carousel-container"
-              itemClass="carousel-card"
-              removeArrowOnDeviceType={["mobile"]}
-            >
-              {activeJobs.map((job) => (
-                <CardTrabajo key={job.id} {...job} isCompanyView={true} />
-              ))}
-            </Carousel>
-          )
+          <div className="cards">
+            {activeJobs.map((job) => (
+              <CardTrabajo key={job.id} {...job} isCompanyView={true} />
+            ))}
+          </div>
         ) : (
           <p className="no-data">No hay trabajos publicados por ahora</p>
         )}
