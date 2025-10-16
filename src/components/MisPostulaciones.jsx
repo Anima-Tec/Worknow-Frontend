@@ -9,26 +9,26 @@ export default function MisPostulaciones() {
 
   // ✅ Normalizar estados
   const normalizeStatus = (status) => {
-    if (!status) return "PENDING";
+    if (!status) return "PENDIENTE";
     const s = status.toString().toLowerCase();
-    if (s.includes("aceptado") || s.includes("accepted")) return "ACCEPTED";
-    if (s.includes("rechazado") || s.includes("rejected")) return "REJECTED";
+    if (s.includes("aceptado") || s.includes("accepted")) return "ACEPTADO";
+    if (s.includes("rechazado") || s.includes("rejected")) return "RECHAZADO";
     if (s.includes("hecho") || s.includes("done")) return "HECHO";
     if (s.includes("no_hecho") || s.includes("not_done")) return "NO_HECHO";
-    if (s.includes("pendiente") || s.includes("pending")) return "PENDING";
-    return "PENDING";
+    if (s.includes("pendiente") || s.includes("pending")) return "PENDIENTE";
+    return "PENDIENTE";
   };
 
   // ✅ Obtener badge según estado normalizado
   const getEstadoBadge = (estado) => {
     const estados = {
-      PENDING: { class: "estado-pendiente", text: "Pendiente" },
-      ACCEPTED: { class: "estado-revision", text: "Aceptado" },
-      REJECTED: { class: "estado-rechazado", text: "Rechazado" },
+      PENDIENTE: { class: "estado-pendiente", text: "Pendiente" },
+      ACEPTADO: { class: "estado-revision", text: "Aceptado" },
+      RECHAZADO: { class: "estado-rechazado", text: "Rechazado" },
       HECHO: { class: "estado-contratado", text: "Completado" },
       NO_HECHO: { class: "estado-rechazado", text: "No Completado" },
     };
-    return estados[estado] || estados.PENDING;
+    return estados[estado] || estados.PENDIENTE;
   };
 
   // ✅ Cargar postulaciones de proyectos y trabajos
@@ -208,7 +208,7 @@ export default function MisPostulaciones() {
                   </div>
 
                   {/* 🔸 Estado ACEPTADO → comportamiento distinto según tipo */}
-                  {normalized === "ACCEPTED" && (
+                  {normalized === "ACEPTADO" && (
                     <>
                       {postulacion.tipo === "Proyecto" ? (
                         <div className="postulacion-actions">
@@ -244,13 +244,13 @@ export default function MisPostulaciones() {
                   )}
 
                   {/* 🔸 Otros estados */}
-                  {normalized === "PENDING" && (
+                  {normalized === "PENDIENTE" && (
                     <div className="estado-mensaje">
                       <p>⏳ Tu postulación está siendo revisada por la empresa</p>
                     </div>
                   )}
 
-                  {normalized === "REJECTED" && (
+                  {normalized === "RECHAZADO" && (
                     <div className="estado-mensaje">
                       <p>❌ Esta postulación fue rechazada por la empresa</p>
                     </div>

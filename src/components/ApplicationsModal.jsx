@@ -8,97 +8,124 @@ export default function ApplicationsModal({ open, onClose }) {
   const [error, setError] = useState("");
 
   // 🟣 Cargar postulaciones de la empresa
-  useEffect(() => {
-    const loadApplications = async () => {
-      if (!open) return;
-      
-      setLoading(true);
-      setError("");
-      
-      try {
-        console.log("🔍 Cargando postulaciones...");
-        
-        // Intentar cargar desde ambos endpoints
-        const [applicationsRes, jobApplicationsRes] = await Promise.all([
-          fetch("http://localhost:3000/api/applications/company/me", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }),
-          fetch("http://localhost:3000/api/job-applications/company/me", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          })
-        ]);
+  const loadApplications = async () => {
+    if (!open) return;
 
-        let applicationsData = [];
-        let jobApplicationsData = [];
+    setLoading(true);
+    setError("");
 
-        // Procesar postulaciones a proyectos
-        if (applicationsRes.ok) {
-          applicationsData = await applicationsRes.json();
-          console.log("📋 Postulaciones a proyectos:", applicationsData);
-        } else {
-          console.warn("⚠️ No se pudieron cargar postulaciones a proyectos:", applicationsRes.status);
-        }
-        console.log("jobApplicationsRes:", jobApplicationsRes);
+    try {
+      console.log("🔍 Cargando postulaciones...");
 
-        // Procesar postulaciones a trabajos
-        if (jobApplicationsRes.ok) {
-          jobApplicationsData = await jobApplicationsRes.json();
-          console.log("💼 Postulaciones a trabajos:", jobApplicationsData);
-        } else {
-          console.warn("⚠️ No se pudieron cargar postulaciones a trabajos:", jobApplicationsRes.status);
-        }
+      const [applicationsRes, jobApplicationsRes] = await Promise.all([
+        fetch("http://localhost:3000/api/applications/company/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }),
+        fetch("http://localhost:3000/api/job-applications/company/me", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+      ]);
 
-        // Combinar y formatear todas las postulaciones
-        const allApplications = [
-          ...applicationsData.map(app => ({
-            id: app.id,
-            jobTitle: app.projectTitle || "Proyecto",
-            applicantName: app.applicantName,
-            applicantEmail: app.applicantEmail,
-            createdAt: app.createdAt,
-            status: app.status,
-            type: "project"
-          })),
-          ...jobApplicationsData.map(app => ({
-            id: app.id,
-            jobTitle: app.jobTitle || "Trabajo",
-            applicantName: app.applicantName,
-            applicantEmail: app.applicantEmail,
-            createdAt: app.createdAt,
-            status: app.status,
-            type: "job"
-          }))
-        ];
+      let applicationsData = [];
+      let jobApplicationsData = [];
 
-        console.log("📊 Total de postulaciones:", allApplications.length);
-        setApplications(allApplications);
-
-      } catch (err) {
-        console.error("❌ Error cargando postulaciones:", err);
-        setError("Error al cargar las postulaciones");
-      } finally {
-        setLoading(false);
+      if (applicationsRes.ok) {
+        applicationsData = await applicationsRes.json();
+        console.log("📋 Postulaciones a proyectos:", applicationsData);
       }
-    };
 
+      if (jobApplicationsRes.ok) {
+        jobApplicationsData = await jobApplicationsRes.json();
+        console.log("💼 Postulaciones a trabajos:", jobApplicationsData);
+      }
+
+      const allApplications = [
+        ...applicationsData.map(app => ({
+          id: app.id,
+          jobId: app.jobId,
+          jobTitle: app.projectTitle || "Proyecto",
+          applicantName: app.applicantName,
+          applicantEmail: app.applicantEmail,
+          createdAt: app.createdAt,
+          status: app.status,
+          type: "project"
+        })),
+        ...jobApplicationsData.map(app => ({
+          id: app.id,
+          jobId: app.jobId,
+          jobTitle: app.jobTitle || "Trabajo",
+          applicantName: app.applicantName,
+          applicantEmail: app.applicantEmail,
+          createdAt: app.createdAt,
+          status: app.status,
+          type: "job"
+        }))
+      ];
+
+      console.log("📊 Total de postulaciones:", allApplications.length);
+      setApplications(allApplications);
+
+    } catch (err) {
+      console.error("❌ Error cargando postulaciones:", err);
+      setError("Error al cargar las postulaciones");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadApplications();
   }, [open]);
 
   if (!open) return null;
 
-  // 🟣 Actualizar estado de postulación
+  // Actualizar estado de postulación
   const updateStatus = async (id, newStatus, type) => {
     try {
+      const selectedApplication = applications.find(a => a.id === id);
+
+      if (!selectedApplication) {
+        setError("Postulación no encontrada");
+        return;
+      }
+
+      const jobId = selectedApplication.jobId;
+      const currentStatus = selectedApplication.status;
+
+      // Si está aceptada, no se puede modificar
+      if (currentStatus === "ACEPTADO") {
+        console.warn("⚠️ No se puede modificar una postulación ya aceptada");
+        setError("No se puede modificar una postulación ya aceptada");
+        return;
+      } // Si está rechazada, no se puede modificar
+      else if (currentStatus === "RECHAZADO") {
+        console.warn("⚠️ No se puede modificar una postulación ya rechazada");
+        setError("No se puede modificar una postulación ya rechazada");
+        return;
+      }
+
+      // Si se quiere aceptar, verificar que no haya otra ya aceptada para ese jobId
+      if (newStatus === "ACEPTADO") {
+        const alreadyAccepted = applications.find(
+          a => a.status === "ACEPTADO" && a.jobId === jobId
+        );
+
+        if (alreadyAccepted && alreadyAccepted.id !== id) {
+          console.warn("⚠️ Ya hay una postulación aceptada para este trabajo");
+          setError("Ya hay una postulación aceptada para este trabajo");
+          return;
+        }
+      }
+
       console.log(`🔄 Actualizando postulación ${id} a ${newStatus} (tipo: ${type})`);
-      
-      // Determinar el endpoint según el tipo
-      const endpoint = type === "job" 
-        ? `http://localhost:3000/api/job-applications/${id}`
-        : `http://localhost:3000/api/applications/${id}`;
+
+      const endpoint = type === "job"
+        ? `http://localhost:3000/api/job-applications/company/${id}/status`
+        : `http://localhost:3000/api/applications/company/${id}/status`;
 
       const res = await fetch(endpoint, {
         method: "PUT",
@@ -110,9 +137,7 @@ export default function ApplicationsModal({ open, onClose }) {
       });
 
       if (res.ok) {
-        setApplications((prev) =>
-          prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
-        );
+        loadApplications(); // Recargar postulaciones
         console.log("✅ Estado actualizado correctamente");
       } else {
         const errorText = await res.text();
@@ -123,7 +148,7 @@ export default function ApplicationsModal({ open, onClose }) {
       console.error("❌ Error al actualizar estado:", error);
       setError("Error de conexión al actualizar estado");
     }
-  };
+};
 
   // 🟣 Formatear fecha
   const formatDate = (dateString) => {
