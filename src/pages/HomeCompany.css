@@ -96,6 +96,29 @@
   overflow: hidden;
 }
 
+/* Efecto de brillo al hacer hover */
+.card1::before,
+.card2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.card1:hover::before,
+.card2:hover::before {
+  left: 100%;
+}
+
 .card1:hover,
 .card2:hover {
   transform: translateY(-5px);
@@ -166,6 +189,46 @@
   margin-bottom: 1rem;
   color: #4f46e5;
   font-weight: 700;
+}
+
+/* ---------- CARRUSEL DE PROYECTOS ---------- */
+.freelancer-postings {
+  margin-top: 80px;
+  text-align: center;
+  padding: 0 40px;
+}
+
+.freelancer-postings h2 {
+  color: #4f46e5;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Carrusel */
+.carousel {
+  margin-top: 20px;
+}
+
+.carousel-card-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #6d28d9;
+  border-radius: 50%;
+  padding: 10px;
+  filter: invert(1);
 }
 
 /* Botones “Ver todo” y “Volver” */
