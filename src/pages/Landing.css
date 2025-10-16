@@ -15,67 +15,37 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: #fff;
+  color: white;
+
+  /* 🔹 Fondo con imagen */
+  background-image: url("/Diseño sin título.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   overflow: hidden;
 }
 
-.hero-video {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 0;
-}
 
-.gradient-overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(109, 40, 217, 0.92) 0%, rgba(139, 92, 246, 0.88) 100%);
-  z-index: 1;
-}
 
-.animated-bg {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-  animation: float 15s infinite ease-in-out;
-  pointer-events: none;
-}
-
+/* 📝 Texto */
 .hero-content {
   position: relative;
-  z-index: 2;
-  max-width: 900px;
-  padding: 0 2rem;
+  z-index: 1;
+  max-width: 800px;
+  padding: 0 20px;
 }
 
 .hero-title {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  line-height: 1.2;
-  margin-bottom: 1.5rem;
+  font-size: 2.8rem;
   font-weight: 700;
-  color: #fff;
-}
-
-.highlight {
-  color: #a78bfa;
-  font-weight: 800;
+  margin-bottom: 1rem;
 }
 
 .hero-text {
-  font-size: clamp(1rem, 2vw, 1.3rem);
-  margin-bottom: 2.5rem;
-  opacity: 0.95;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
   line-height: 1.6;
+  color: #f0f0f0;
 }
 
 .cta-buttons {
@@ -425,3 +395,41 @@ button:hover {
   box-shadow: 0 10px 35px rgba(109, 40, 217, 0.15) !important;
 }
 
+/* 🔹 Carrusel continuo de logos */
+.logos-slider {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  margin: 3rem auto 0;
+}
+
+.logos-slide-track {
+  display: flex;
+  width: calc(250px * 16); /* 16 logos (8 x 2) */
+  animation: scroll-logos 50s linear infinite;
+}
+
+.company-logo {
+  width: 180px;
+  height: auto;
+  margin: 0 40px;
+  opacity: 0.9;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  filter: grayscale(30%);
+}
+
+.company-logo:hover {
+  transform: scale(1.1);
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+/* 🔮 Animación lenta y fluida */
+@keyframes scroll-logos {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

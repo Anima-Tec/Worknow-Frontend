@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "./PerfilCompanyStyle.css";
-import { AiOutlineHome } from "react-icons/ai";
-import { CgProfile } from "react-icons/cg";
-import { useNavigate } from "react-router-dom";
 import CardTrabajo from "../components/CardTrabajo";
 import CardProyecto from "../components/CardProyecto";
-import { getJobs, getProfile, updateProfile } from "../services/api";
+import { getProfile, updateProfile } from "../services/api";
 import Footer from "../components/Footer";
+import { FiLogOut, FiArrowLeft } from "react-icons/fi";
+import { logout } from "../auth/authContext";
+import { useNavigate } from "react-router-dom";
+
 
 function PerfilCompany() {
-  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [logoImage, setLogoImage] = useState(null);
+
+    const navigate = useNavigate();
 
   const [companyData, setCompanyData] = useState({
     nombreEmpresa: "",
@@ -40,82 +42,70 @@ function PerfilCompany() {
 
   const [editData, setEditData] = useState({ ...companyData });
 
-  // 🟣 Cargar perfil de empresa
+  // Cargar perfil de empresa
   useEffect(() => {
     const loadCompanyData = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.warn("⚠️ No hay token, redirigiendo al login");
-          navigate("/login");
+          console.warn("No hay token");
           return;
         }
 
         setLoading(true);
         const data = await getProfile();
-        console.log("📦 Datos de empresa recibidos:", data);
+        console.log("Datos de empresa:", data);
 
         setCompanyData(data);
         setEditData(data);
         if (data.logoUrl) setLogoImage(data.logoUrl);
         setLoading(false);
       } catch (error) {
-        console.error("❌ Error cargando perfil de empresa:", error);
+        console.error("Error cargando perfil:", error);
         setLoading(false);
-        if (error.message.includes("autenticación")) {
-          navigate("/login");
-        }
       }
     };
     loadCompanyData();
-  }, [navigate]);
+  }, []);
 
-  // 🟣 Cargar proyectos de la empresa
+  // Cargar proyectos
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(
-          "http://localhost:3000/api/projects/company/me",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        if (!response.ok) throw new Error(`Error ${response.status}`);
-
+        const response = await fetch("http://localhost:3000/api/projects/company/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error("Error");
         const data = await response.json();
         setProjects(Array.isArray(data) ? data : []);
       } catch (error) {
-        console.error("❌ Error cargando proyectos:", error);
+        console.error("Error cargando proyectos:", error);
         setProjects([]);
       }
     };
     fetchProjects();
   }, []);
 
-  // 🟣 Cargar trabajos de la empresa
+  // Cargar trabajos
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/jobs/company/me", {
+        const response = await fetch("http://localhost:3000/api/jobs/company/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) {
-          console.error("❌ Error del backend al traer trabajos:", res.status);
-          setJobs([]);
-          return;
-        }
-        const data = await res.json();
-        setJobs(data);
-      } catch (err) {
-        console.error("❌ Error cargando trabajos:", err);
+        if (!response.ok) throw new Error("Error");
+        const data = await response.json();
+        setJobs(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error cargando trabajos:", error);
         setJobs([]);
       }
     };
     fetchJobs();
   }, []);
 
-  // 🟣 Manejo de edición del perfil
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditData((prev) => ({ ...prev, [name]: value }));
@@ -125,14 +115,14 @@ function PerfilCompany() {
     try {
       setLoading(true);
       const response = await updateProfile(editData);
-      console.log("✅ Perfil actualizado:", response);
+      console.log("Perfil actualizado:", response);
 
       setCompanyData(editData);
       setIsEditing(false);
-      alert("✅ Perfil actualizado correctamente");
+      alert("Perfil actualizado correctamente");
     } catch (error) {
-      console.error("❌ Error:", error);
-      alert("Error al actualizar el perfil: " + error.message);
+      console.error("Error:", error);
+      alert("Error al actualizar perfil: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -143,7 +133,6 @@ function PerfilCompany() {
     setIsEditing(false);
   };
 
-  // 🟣 Subida del logo
   const handleLogoUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -160,267 +149,477 @@ function PerfilCompany() {
     }
   };
 
+  // Función para manejar la eliminación del logo
+  const handleRemoveLogo = () => {
+    setLogoImage(null);
+    setEditData((prev) => ({ ...prev, logoUrl: "" }));
+  };
+
+    const handleLogout = () => {
+      logout(); 
+      localStorage.clear(); 
+      navigate("/login"); 
+    };
+    
+    const handleGoBack = () => {
+  navigate("/home/company");
+};
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
         <p>Cargando perfil...</p>
       </div>
     );
   }
 
   return (
-    <div className="perfil-company">
-      {/* 🟣 HEADER */}
-      <header className="header">
-        <div className="header-left">
-          <h1 className="logo">
-            work<span>now</span>
-          </h1>
-          <p className="link">
-            {companyData.sitioWeb || "https://WorkNow.com"}
-          </p>
-        </div>
-        <nav className="nav">
-          <ul>
-            <li onClick={() => navigate("/home/company")}>
-              <AiOutlineHome />
-              <span>Home</span>
-            </li>
-            <li onClick={() => navigate("/PerfilCompany")}>
-              <CgProfile />
-              <span>Perfil</span>
-            </li>
-          </ul>
-        </nav>
-      </header>
+    <div className="company-perfil-container">
+      
+      <div className="company-perfil-wrapper">
+        {/* HEADER CARD - MEJORADO */}
+        <div className="company-perfil-header-card">
+  <div className="company-perfil-header-bg">
+    {/* 🔹 Íconos dentro del área violeta */}
+    <div className="violet-icons-bar">
+      <FiArrowLeft
+        className="violet-icon back"
+        title="Volver al inicio"
+        onClick={handleGoBack}
+      />
+      <FiLogOut
+        className="violet-icon logout"
+        title="Cerrar sesión"
+        onClick={handleLogout}
+      />
+    </div>
+  </div>
 
-      {/* 🟣 CONTENIDO PRINCIPAL */}
-      <main className="main-content">
-        {/* BOTÓN EDITAR PERFIL */}
-        <div className="edit-profile-section">
-          {!isEditing ? (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="edit-profile-btn"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-              Editar Perfil
-            </button>
-          ) : (
-            <div className="edit-actions">
-              <button
-                onClick={handleSaveProfile}
-                className="save-btn"
-                disabled={loading}
-              >
-                {loading ? "Guardando..." : "Guardar Cambios"}
-              </button>
-              <button onClick={handleCancel} className="cancel-btn">
-                Cancelar
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* 🟣 FRAME PRINCIPAL */}
-        <div className="frame">
-          <div className="left-column">
-            {/* LOGO */}
-            <section className="company-logo-section">
-              <div className="company-logo-wrapper">
-                {logoImage ? (
-                  <img
-                    src={logoImage}
-                    alt="Logo empresa"
-                    className="company-logo-img"
-                  />
-                ) : (
-                  <div className="company-logo-placeholder">
-                    <svg
-                      width="60"
-                      height="60"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-                    </svg>
-                  </div>
-                )}
+          
+          <div className="company-perfil-header-content">
+            <div className="company-perfil-header-info">
+              {/* Logo con mejoras */}
+              <div className="company-image-container">
+                <div className="company-image-wrapper">
+                  {logoImage ? (
+                    <img src={logoImage} alt="Logo" className="company-image" />
+                  ) : (
+                    <div className="company-image-placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                      </svg>
+                      
+                    </div>
+                  )}
+                </div>
                 {isEditing && (
-                  <label className="upload-logo-btn">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                      <circle cx="12" cy="13" r="4" />
-                    </svg>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="upload-logo-input"
-                    />
-                  </label>
+                  <div className="company-image-actions">
+                    <label className="company-image-upload">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                      Cambiar
+                      <input type="file" accept="image/*" onChange={handleLogoUpload} className="company-image-input" />
+                    </label>
+                    {logoImage && (
+                      <button onClick={handleRemoveLogo} className="company-image-remove">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                        Eliminar
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
-              <h2 className="company-name-title">
-                {companyData.nombreEmpresa || "Nombre de la Empresa"}
-              </h2>
-            </section>
 
-            {/* PERFIL */}
-            <section className="company-profile">
-              <h2>Perfil de la Empresa</h2>
+              {/* Info básica - MEJORADA Y COMPLETAMENTE EDITABLE */}
+              <div className="company-basic-info">
+                {isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      name="nombreEmpresa"
+                      value={editData.nombreEmpresa || ""}
+                      onChange={handleEditChange}
+                      placeholder="Nombre de la empresa"
+                      className="company-name-input"
+                    />
+                    <input
+                      type="text"
+                      name="sector"
+                      value={editData.sector || ""}
+                      onChange={handleEditChange}
+                      placeholder="Sector de la empresa"
+                      className="company-sector-input"
+                    />
+                    <div className="company-contact-info-editable">
+                      <div className="company-contact-item-editable">
+                        
+                        <input
+                          type="text"
+                          name="ciudad"
+                          value={editData.ciudad || ""}
+                          onChange={handleEditChange}
+                          placeholder="Ciudad"
+                          className="company-contact-input"
+                        />
+                      </div>
+                      <div className="company-contact-item-editable">
+                        
+                        <input
+                          type="email"
+                          name="email"
+                          value={editData.email || ""}
+                          onChange={handleEditChange}
+                          placeholder="Email"
+                          className="company-contact-input"
+                        />
+                      </div>
+                      <div className="company-contact-item-editable">
+                       
+                        <input
+                          type="tel"
+                          name="telefono"
+                          value={editData.telefono || ""}
+                          onChange={handleEditChange}
+                          placeholder="Teléfono"
+                          className="company-contact-input"
+                        />
+                      </div>
+                      <div className="company-contact-item-editable">
+                       
+                        <input
+                          type="url"
+                          name="sitioWeb"
+                          value={editData.sitioWeb || ""}
+                          onChange={handleEditChange}
+                          placeholder="Sitio web"
+                          className="company-contact-input"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="company-name">{companyData.nombreEmpresa || "Nombre Empresa"}</h1>
+                    <p className="company-sector">{companyData.sector || "Sector no especificado"}</p>
+                    <div className="company-contact-info">
+                      <div className="company-contact-item">
+                        📍 <span>{companyData.ciudad || "Ciudad no especificada"}</span>
+                      </div>
+                      <div className="company-contact-item">
+                        📧 <span>{companyData.email || "Email no especificado"}</span>
+                      </div>
+                      <div className="company-contact-item">
+                        📞 <span>{companyData.telefono || "Teléfono no especificado"}</span>
+                      </div>
+                      {companyData.sitioWeb && (
+                        <div className="company-contact-item">
+                          🌐 <a href={companyData.sitioWeb} target="_blank" rel="noopener noreferrer" className="company-website-link">
+                            {companyData.sitioWeb}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Botones de acción */}
+              {!isEditing ? (
+                <button onClick={() => setIsEditing(true)} className="company-edit-btn">
+                  Editar Perfil
+                </button>
+              ) : (
+                <div className="company-edit-actions">
+                  <button onClick={handleSaveProfile} className="company-save-btn" disabled={loading}>
+                    {loading ? "Guardando..." : "Guardar Cambios"}
+                  </button>
+                  <button onClick={handleCancel} className="company-cancel-btn">
+                    Cancelar
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* CONTENIDO PRINCIPAL */}
+        <div className="company-perfil-content-grid">
+          <div className="company-perfil-left">
+            {/* Descripción */}
+            <div className="company-perfil-card">
+              <h2 className="company-perfil-card-title">Acerca de la Empresa</h2>
               {isEditing ? (
-                <>
-                  <div className="edit-field">
-                    <label>Descripción</label>
-                    <textarea
-                      name="descripcion"
-                      value={editData.descripcion || ""}
-                      onChange={handleEditChange}
-                      rows="4"
-                      className="edit-textarea"
-                      placeholder="Describe tu empresa..."
-                    />
-                  </div>
-                  <div className="edit-field">
-                    <label>Misión</label>
-                    <textarea
-                      name="mision"
-                      value={editData.mision || ""}
-                      onChange={handleEditChange}
-                      rows="3"
-                      className="edit-textarea"
-                      placeholder="¿Cuál es la misión de tu empresa?"
-                    />
-                  </div>
-                  <div className="edit-field">
-                    <label>Visión</label>
-                    <textarea
-                      name="vision"
-                      value={editData.vision || ""}
-                      onChange={handleEditChange}
-                      rows="3"
-                      className="edit-textarea"
-                      placeholder="¿Cuál es la visión de tu empresa?"
-                    />
-                  </div>
-                </>
+                <textarea
+                  name="descripcion"
+                  value={editData.descripcion || ""}
+                  onChange={handleEditChange}
+                  placeholder="Describe tu empresa, sus valores, cultura organizacional, etc."
+                  rows="6"
+                  className="company-perfil-textarea"
+                />
               ) : (
-                <>
-                  <p>{companyData.descripcion || "Sin descripción"}</p>
-                  {companyData.mision && (
-                    <p>
-                      <strong>Misión:</strong> {companyData.mision}
-                    </p>
-                  )}
-                  {companyData.vision && (
-                    <p>
-                      <strong>Visión:</strong> {companyData.vision}
-                    </p>
-                  )}
-                </>
+                <p className="company-perfil-text">
+                  {companyData.descripcion || "Agrega una descripción sobre tu empresa."}
+                </p>
               )}
-            </section>
+            </div>
+
+            {/* Información General - MEJORADA */}
+            <div className="company-perfil-card">
+              <h2 className="company-perfil-card-title">Información General</h2>
+              <div className="company-info-list">
+                <div className="company-info-item">
+                  <p className="company-info-label">RUT</p>
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      name="rut" 
+                      value={editData.rut || ""} 
+                      onChange={handleEditChange} 
+                      placeholder="RUT de la empresa"
+                      className="company-perfil-input" 
+                    />
+                  ) : (
+                    <p className="company-info-value">{companyData.rut || "No especificado"}</p>
+                  )}
+                </div>
+                <div className="company-info-item">
+                  <p className="company-info-label">Dirección</p>
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      name="direccion" 
+                      value={editData.direccion || ""} 
+                      onChange={handleEditChange} 
+                      placeholder="Dirección completa"
+                      className="company-perfil-input" 
+                    />
+                  ) : (
+                    <p className="company-info-value">{companyData.direccion || "No especificada"}</p>
+                  )}
+                </div>
+                <div className="company-info-item">
+                  <p className="company-info-label">Tamaño</p>
+                  {isEditing ? (
+                    <select 
+                      name="tamano" 
+                      value={editData.tamano || ""} 
+                      onChange={handleEditChange}
+                      className="company-perfil-input"
+                    >
+                      <option value="">Seleccionar tamaño</option>
+                      <option value="Micro (1-10 empleados)">Micro (1-10 empleados)</option>
+                      <option value="Pequeña (11-50 empleados)">Pequeña (11-50 empleados)</option>
+                      <option value="Mediana (51-200 empleados)">Mediana (51-200 empleados)</option>
+                      <option value="Grande (201+ empleados)">Grande (201+ empleados)</option>
+                    </select>
+                  ) : (
+                    <p className="company-info-value">{companyData.tamano || "No especificado"}</p>
+                  )}
+                </div>
+                <div className="company-info-item">
+                  <p className="company-info-label">Empleados</p>
+                  {isEditing ? (
+                    <input 
+                      type="number" 
+                      name="empleados" 
+                      value={editData.empleados || ""} 
+                      onChange={handleEditChange} 
+                      placeholder="Número de empleados"
+                      className="company-perfil-input" 
+                    />
+                  ) : (
+                    <p className="company-info-value">{companyData.empleados || "No especificado"}</p>
+                  )}
+                </div>
+                <div className="company-info-item">
+                  <p className="company-info-label">Año de fundación</p>
+                  {isEditing ? (
+                    <input 
+                      type="number" 
+                      name="fundada" 
+                      value={editData.fundada || ""} 
+                      onChange={handleEditChange} 
+                      placeholder="Año de fundación"
+                      min="1900"
+                      max={new Date().getFullYear()}
+                      className="company-perfil-input" 
+                    />
+                  ) : (
+                    <p className="company-info-value">{companyData.fundada || "No especificado"}</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="right-column">
-            <section className="benefits-section">
-              <h3>Beneficios</h3>
-              <p style={{ color: "#666", fontSize: "14px" }}>
-                Agrega información sobre los beneficios que ofrece tu empresa a
-                los empleados.
-              </p>
-            </section>
+          <div className="company-perfil-right">
+            {/* Misión */}
+            <div className="company-perfil-card">
+              <h2 className="company-perfil-card-title">Misión</h2>
+              {isEditing ? (
+                <textarea
+                  name="mision"
+                  value={editData.mision || ""}
+                  onChange={handleEditChange}
+                  placeholder="¿Cuál es la misión de tu empresa? ¿Qué haces y para quién?"
+                  rows="4"
+                  className="company-perfil-textarea"
+                />
+              ) : (
+                <p className="company-perfil-text">
+                  {companyData.mision || "Agrega tu misión empresarial."}
+                </p>
+              )}
+            </div>
+
+            {/* Visión */}
+            <div className="company-perfil-card">
+              <h2 className="company-perfil-card-title">Visión</h2>
+              {isEditing ? (
+                <textarea
+                  name="vision"
+                  value={editData.vision || ""}
+                  onChange={handleEditChange}
+                  placeholder="¿Cuál es la visión de tu empresa? ¿A dónde quieres llegar?"
+                  rows="4"
+                  className="company-perfil-textarea"
+                />
+              ) : (
+                <p className="company-perfil-text">
+                  {companyData.vision || "Agrega tu visión empresarial."}
+                </p>
+              )}
+            </div>
+
+            {/* Redes Sociales - MEJORADA */}
+            <div className="company-perfil-card">
+              <h2 className="company-perfil-card-title">Redes Sociales</h2>
+              <div className="company-social-links">
+                {isEditing ? (
+                  <div className="company-social-inputs">
+                    <div className="company-social-input-group">
+                      <span className="company-social-icon">𝕏</span>
+                      <input 
+                        type="url" 
+                        name="twitter" 
+                        value={editData.twitter || ""} 
+                        onChange={handleEditChange} 
+                        placeholder="https://twitter.com/empresa" 
+                        className="company-perfil-input" 
+                      />
+                    </div>
+                    <div className="company-social-input-group">
+                      <span className="company-social-icon">f</span>
+                      <input 
+                        type="url" 
+                        name="facebook" 
+                        value={editData.facebook || ""} 
+                        onChange={handleEditChange} 
+                        placeholder="https://facebook.com/empresa" 
+                        className="company-perfil-input" 
+                      />
+                    </div>
+                    <div className="company-social-input-group">
+                      <span className="company-social-icon">in</span>
+                      <input 
+                        type="url" 
+                        name="linkedin" 
+                        value={editData.linkedin || ""} 
+                        onChange={handleEditChange} 
+                        placeholder="https://linkedin.com/company/empresa" 
+                        className="company-perfil-input" 
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="company-social-display">
+                    {companyData.twitter && (
+                      <a href={companyData.twitter} target="_blank" rel="noopener noreferrer" className="company-social-link">
+                        <span className="company-social-icon">𝕏</span>
+                        Twitter
+                      </a>
+                    )}
+                    {companyData.facebook && (
+                      <a href={companyData.facebook} target="_blank" rel="noopener noreferrer" className="company-social-link">
+                        <span className="company-social-icon">f</span>
+                        Facebook
+                      </a>
+                    )}
+                    {companyData.linkedin && (
+                      <a href={companyData.linkedin} target="_blank" rel="noopener noreferrer" className="company-social-link">
+                        <span className="company-social-icon">in</span>
+                        LinkedIn
+                      </a>
+                    )}
+                    {!companyData.twitter && !companyData.facebook && !companyData.linkedin && (
+                      <p className="company-perfil-empty-text">No hay redes sociales agregadas</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 🟣 SECCIÓN TRABAJOS Y PROYECTOS */}
-        <div className="job-and-projects">
-          {/* 🧩 TRABAJOS */}
-          <section className="job-postings">
-            <h2>Puestos de Trabajo publicados</h2>
-            <div className="carousel-container">
-              {Array.isArray(jobs) && jobs.length > 0 ? (
-                jobs.map((job) => (
-                  <CardTrabajo
-                    key={job.id || job.title}
-                    id={job.id}
-                    title={job.title || "Sin título"}
-                    company={job.company || job.companyName || "Empresa"}
-                    area={job.area}
-                    jobType={job.jobType}
-                    contractType={job.contractType}
-                    modality={job.modality}
-                    location={job.location}
-                    salary={job.salary || job.salaryRange}
-                    description={job.description}
-                    projectUrl={job.projectUrl}
-                    isCompanyView={true}
-                  />
-                ))
-              ) : (
-                <p>No hay trabajos publicados aún.</p>
-              )}
-            </div>
-          </section>
-
-          {/* 💼 PROYECTOS */}
-          <section className="freelancer-postings">
-            <h2>Proyectos publicados</h2>
-            <div className="carousel-container">
-              {Array.isArray(projects) && projects.length > 0 ? (
-                projects.map((p) => (
-                  <CardProyecto
-                    key={p.id || p.title}
-                    id={p.id}
-                    title={p.title || "Sin título"}
-                    description={p.description || "Sin descripción"}
-                    skills={
-                      Array.isArray(p.skills)
-                        ? p.skills.join(", ")
-                        : p.skills || "No especificado"
-                    }
-                    duration={p.duration || "No especificado"}
-                    modality={p.modality || "No especificado"}
-                    remuneration={p.remuneration || "A convenir"}
-                    company={p.company?.nombreEmpresa || "Empresa no disponible"}
-                    isCompanyView={true}
-                  />
-                ))
-              ) : (
-                <p>No hay proyectos publicados todavía.</p>
-              )}
-            </div>
-          </section>
+        
+        {/* PROYECTOS PUBLICADOS */}
+        <div className="company-postings-section">
+          <h2 className="company-section-title">Proyectos Publicados</h2>
+          <div className="company-carousel-container">
+            {Array.isArray(projects) && projects.length > 0 ? (
+              projects.map((p) => (
+                <CardProyecto
+                  key={p.id}
+                  id={p.id}
+                  title={p.title || "Sin título"}
+                  description={p.description || "Sin descripción"}
+                  skills={Array.isArray(p.skills) ? p.skills.join(", ") : p.skills || "No especificado"}
+                  duration={p.duration || "No especificado"}
+                  modality={p.modality || "No especificado"}
+                  remuneration={p.remuneration || "A convenir"}
+                  company={companyData.nombreEmpresa}
+                  isCompanyView={true}
+                />
+              ))
+            ) : (
+              <p className="company-empty-message">No hay proyectos publicados aún.</p>
+            )}
+          </div>
         </div>
-      </main>
+
+        {/* TRABAJOS PUBLICADOS */}
+        <div className="company-postings-section">
+          <h2 className="company-section-title">Puestos de Trabajo</h2>
+          <div className="company-carousel-container">
+            {Array.isArray(jobs) && jobs.length > 0 ? (
+              jobs.map((job) => (
+                <CardTrabajo
+                  key={job.id}
+                  id={job.id}
+                  title={job.title || "Sin título"}
+                  company={companyData.nombreEmpresa}
+                  area={job.area}
+                  jobType={job.jobType}
+                  contractType={job.contractType}
+                  modality={job.modality}
+                  location={job.location}
+                  salary={job.salary || job.remuneration}
+                  description={job.description}
+                  isCompanyView={true}
+                />
+              ))
+            ) : (
+              <p className="company-empty-message">No hay puestos de trabajo publicados aún.</p>
+            )}
+          </div>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );

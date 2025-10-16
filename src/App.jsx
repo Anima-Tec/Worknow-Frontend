@@ -14,6 +14,7 @@ import RegisterUser from "./pages/RegisterUser.jsx";
 import RegisterCompany from "./pages/RegisterCompany.jsx";
 import MisPostulaciones from './components/MisPostulaciones';
 
+
 export default function App() {
   return (
     <Routes>

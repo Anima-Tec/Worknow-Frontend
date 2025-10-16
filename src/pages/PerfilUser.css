@@ -498,3 +498,46 @@
     margin-top: -4rem;
   }
 }
+.violet-icons-bar {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  z-index: 3;
+}
+
+.violet-icon {
+  font-size: 1.9rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover violeta suave */
+.violet-icon.back:hover {
+  color: #e0e7ff;
+  transform: scale(1.1);
+}
+
+/* Hover rojo elegante para logout */
+.violet-icon.logout:hover {
+  color: #ef4444;
+  transform: scale(1.2);
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .violet-icons-bar {
+    top: 12px;
+    padding: 0 18px;
+  }
+
+  .violet-icon {
+    font-size: 1.6rem;
+  }
+}

@@ -10,6 +10,9 @@ export function getRememberedEmail() {
 }
 
 export function logout() {
-  localStorage.removeItem('token');
+ localStorage.removeItem('token');
   localStorage.removeItem('user');
+  localStorage.removeItem('rememberEmail');
+  localStorage.removeItem('role');
+  localStorage.clear();
 }

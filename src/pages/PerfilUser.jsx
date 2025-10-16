@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./PerfilUser.css";
 import Footer from "../components/Footer";
 import ProyectosCompletados from "../components/ProyectosCompletados";
+import { useNavigate } from "react-router-dom";
+import { FiLogOut, FiArrowLeft } from "react-icons/fi";
+import { logout } from "../auth/authContext";
 
 const PerfilUser = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -23,6 +26,20 @@ const PerfilUser = () => {
   });
 
   const [editData, setEditData] = useState({ ...userData });
+
+  const navigate = useNavigate(); // 🟣 necesario para redirigir
+
+// 🔹 Cerrar sesión
+const handleLogout = () => {
+  logout();              // borra token, user, etc.
+  localStorage.clear();  // limpia todo
+  navigate("/login");  // redirige al Landing
+};
+
+// 🔹 Volver al home de usuario
+const handleGoBack = () => {
+  navigate("/home/user");
+};
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -199,7 +216,21 @@ const PerfilUser = () => {
       <div className="perfil-wrapper">
         {/* HEADER */}
         <div className="perfil-header-card">
-          <div className="perfil-header-bg"></div>
+  <div className="perfil-header-bg">
+    {/* 🔹 Íconos dentro del área violeta */}
+    <div className="violet-icons-bar">
+      <FiArrowLeft
+        className="violet-icon back"
+        title="Volver al inicio"
+        onClick={handleGoBack}
+      />
+      <FiLogOut
+        className="violet-icon logout"
+        title="Cerrar sesión"
+        onClick={handleLogout}
+      />
+    </div>
+  </div>
           <div className="perfil-header-content">
             <div className="perfil-header-info">
               {/* Imagen */}
@@ -234,26 +265,86 @@ const PerfilUser = () => {
                 </label>
               </div>
 
-              {/* Info básica */}
-              <div className="perfil-basic-info">
-                <h1 className="perfil-name">
-                  {userData.nombre && userData.apellido 
-                    ? `${userData.nombre} ${userData.apellido}` 
-                    : "Usuario"}
-                </h1>
-                <p className="perfil-profession">{userData.profesion || "Profesión no especificada"}</p>
-                <div className="perfil-contact-info">
-                  <div className="perfil-contact-item">
-                    📍 <span>{userData.ciudad || "Ciudad no especificada"}</span>
-                  </div>
-                  <div className="perfil-contact-item">
-                    📧 <span>{userData.email || "Email no especificado"}</span>
-                  </div>
-                  <div className="perfil-contact-item">
-                    📞 <span>{userData.telefono || "Teléfono no especificado"}</span>
-                  </div>
-                </div>
+                 <div className="perfil-basic-info">
+        {isEditing ? (
+          // MODO EDICIÓN - Campos editables
+          <div className="perfil-edit-fields">
+            <div className="perfil-name-edit">
+              <input
+                type="text"
+                name="nombre"
+                value={editData.nombre}
+                onChange={handleEditChange}
+                className="perfil-input-large"
+                placeholder="Nombre"
+              />
+              <input
+                type="text"
+                name="apellido"
+                value={editData.apellido}
+                onChange={handleEditChange}
+                className="perfil-input-large"
+                placeholder="Apellido"
+              />
+            </div>
+            <input
+              type="text"
+              name="profesion"
+              value={editData.profesion}
+              onChange={handleEditChange}
+              className="perfil-input-medium"
+              placeholder="Tu profesión"
+            />
+            <div className="perfil-contact-edit">
+              <input
+                type="text"
+                name="ciudad"
+                value={editData.ciudad}
+                onChange={handleEditChange}
+                className="perfil-input-small"
+                placeholder="Ciudad"
+              />
+              <input
+                type="email"
+                name="email"
+                value={editData.email}
+                onChange={handleEditChange}
+                className="perfil-input-medium"
+                placeholder="Email"
+              />
+              <input
+                type="tel"
+                name="telefono"
+                value={editData.telefono}
+                onChange={handleEditChange}
+                className="perfil-input-small"
+                placeholder="Teléfono"
+              />
+            </div>
+          </div>
+        ) : (
+          // MODO VISUALIZACIÓN - Texto normal
+          <>
+            <h1 className="perfil-name">
+              {userData.nombre && userData.apellido 
+                ? `${userData.nombre} ${userData.apellido}` 
+                : "Usuario"}
+            </h1>
+            <p className="perfil-profession">{userData.profesion || "Profesión no especificada"}</p>
+            <div className="perfil-contact-info">
+              <div className="perfil-contact-item">
+                📍 <span>{userData.ciudad || "Ciudad no especificada"}</span>
               </div>
+              <div className="perfil-contact-item">
+                📧 <span>{userData.email || "Email no especificado"}</span>
+              </div>
+              <div className="perfil-contact-item">
+                📞 <span>{userData.telefono || "Teléfono no especificado"}</span>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
 
               {/* Botones editar */}
               {!isEditing ? (
