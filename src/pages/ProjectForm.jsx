@@ -6,17 +6,17 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
   const [formData, setFormData] = useState({
     title: "",
     duration: "",
+    deliveryFormat: "",
+    evaluation: "",
     remuneration: "",
-    description: "",
-    modality: "Freelance",
     skills: "",
-    location: "",
+    description: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Si el campo es remuneración, forzamos solo números
+    // Solo números en remuneración
     if (name === "remuneration") {
       if (/^\d*$/.test(value)) {
         setFormData({ ...formData, [name]: value });
@@ -37,7 +37,7 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
         return;
       }
 
-      // ✅ Transformamos habilidades en array JSON
+      // ✅ Transformar habilidades en array JSON
       const skillsArray = formData.skills
         .split(",")
         .map((s) => s.trim())
@@ -94,59 +94,46 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
               required
             />
 
-            <div className="form-row">
-              <div>
-                <label>Duración estimada *</label>
-                <input
-                  type="text"
-                  name="duration"
-                  placeholder="Ej. 3 semanas"
-                  value={formData.duration}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Remuneración *</label>
-                <input
-                  type="number"
-                  name="remuneration"
-                  placeholder="Ej. $25.000"
-                  value={formData.remuneration}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
+            <label>Duración estimada *</label>
+            <input
+              type="text"
+              name="duration"
+              placeholder="Ej. 3 semanas"
+              value={formData.duration}
+              onChange={handleChange}
+              required
+            />
 
-            <div className="form-row">
-              <div>
-                <label>Modalidad *</label>
-                <select
-                  name="modality"
-                  value={formData.modality}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="Freelance">Freelance</option>
-                  <option value="Remoto">Remoto</option>
-                  <option value="Híbrido">Híbrido</option>
-                  <option value="Presencial">Presencial</option>
-                </select>
-              </div>
+            <label>Formato de entrega *</label>
+            <input
+              type="text"
+              name="deliveryFormat"
+              placeholder="Ej. Repositorio GitHub, PDF, video demo..."
+              value={formData.deliveryFormat}
+              onChange={handleChange}
+              required
+            />
 
-              <div>
-                <label>Ubicación *</label>
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="Ej. Montevideo, Uruguay"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
+            <label>Criterios a evaluar *</label>
+<input
+  type="text"
+  name="evaluation"
+  placeholder="Ej. Cumplimiento, diseño, creatividad..."
+  value={formData.evaluation}
+  onChange={handleChange}
+  required
+/>
+
+
+            <label>Remuneración *</label>
+            <input
+              type="number"
+              name="remuneration"
+              placeholder="Ej. $25.000"
+              value={formData.remuneration}
+              onChange={handleChange}
+              required
+            />
 
             <label>Habilidades requeridas *</label>
             <input
@@ -177,10 +164,12 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
             <h3>Vista previa</h3>
             <CardProyecto
               title={formData.title || "Título del proyecto"}
-              skills={formData.skills || "Habilidades"}
               duration={formData.duration || "Tiempo estimado"}
-              modality={formData.modality || "Freelance"}
+              deliveryFormat={formData.deliveryFormat || "Formato de entrega"}
+              evaluation={formData.evaluation || "Criterios a evaluar"}
               remuneration={formData.remuneration || "A convenir"}
+              skills={formData.skills || "Habilidades requeridas"}
+              description={formData.description || "Descripción del proyecto"}
               company="WorkNow"
             />
           </div>
