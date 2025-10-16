@@ -168,46 +168,6 @@
   font-weight: 700;
 }
 
-/* ---------- CARRUSEL DE PROYECTOS ---------- */
-.freelancer-postings {
-  margin-top: 80px;
-  text-align: center;
-  padding: 0 40px;
-}
-
-.freelancer-postings h2 {
-  color: #4f46e5;
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-/* Carrusel */
-.carousel {
-  margin-top: 20px;
-}
-
-.carousel-card-wrapper {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
-
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  background-color: #6d28d9;
-  border-radius: 50%;
-  padding: 10px;
-  filter: invert(1);
-}
-
 /* Botones “Ver todo” y “Volver” */
 .view-more-btn,
 .back-btn {
