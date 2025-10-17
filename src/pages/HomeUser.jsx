@@ -15,17 +15,13 @@ export default function HomeUser() {
   const [notificationCount, setNotificationCount] = useState(0);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
-  const [showAllProjects, setShowAllProjects] = useState(false);
-  const [showAllJobs, setShowAllJobs] = useState(false);
 
-  // 🔍 Buscar trabajos y proyectos
   const handleSearch = async () => {
     setLoading(true);
     try {
-      console.log("🔍 Buscando con:", { query, type }); // Para debug
       
       const filters = { 
-        query: query.trim(), // Limpiar espacios
+        query: query.trim(), 
         type 
       };
 
@@ -53,7 +49,6 @@ export default function HomeUser() {
     }
   };
 
-  // 🔔 Cargar notificaciones
   const loadNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -77,30 +72,25 @@ export default function HomeUser() {
     }
   };
 
-  // 🎯 Cargar datos iniciales
   useEffect(() => {
     handleSearch();
     loadNotifications();
   }, []);
 
-  // 🎯 Filtrar cuando cambie el tipo
   useEffect(() => {
     handleSearch();
   }, [type]);
 
-  // ✅ Filtrar solo trabajos activos
   const activeJobs = jobs.filter(
     (job) => job.userStatus === "NONE" || job.userStatus === "RECHAZADO" || job.userStatus === "PENDIENTE"
   );
 
-  // ✅ Filtrar solo proyectos activos
   const activeProjects = projects.filter(
     (project) => project.userStatus === "NONE" || project.userStatus === "RECHAZADO" || project.userStatus === "PENDIENTE"
   );
 
   return (
     <div className="home-user">
-      {/* 🟣 HEADER */}
       <header className="header">
         <h1 className="h1">
           work<span>now</span>
@@ -132,14 +122,12 @@ export default function HomeUser() {
         </nav>
       </header>
 
-      {/* 🎬 VIDEO BANNER */}
       <section className="hero">
         <video className="hero-video" autoPlay loop muted playsInline>
           <source src="/video-banner.mp4" type="video/mp4" />
         </video>
       </section>
 
-      {/* 🔍 FILTROS CON ESTILO ORIGINAL - CORREGIDO */}
       <div className="search-box">
         <div className="filter">
           <label>Buscar</label>
@@ -166,22 +154,31 @@ export default function HomeUser() {
         </button>
       </div>
 
-      {/* 💼 TRABAJOS - Solo se muestra si type no es "projects" */}
+      {(type === "" || type === "projects") && (
+        <section className="featured">
+          <div className="header">
+            <h3>Proyectos {activeProjects.length > 0 && `(${activeProjects.length})`}</h3>
+          </div>
+
+          {loading ? (
+            <p className="loading">Cargando...</p>
+          ) : activeProjects.length > 0 ? (
+            <div className="cards">
+              {activeProjects.map((p) => (
+                <CardProyecto key={p.id} {...p} />
+              ))}
+            </div>
+          ) : (
+            <p className="no-data">
+              {query ? `No hay proyectos que coincidan con "${query}"` : "No hay proyectos disponibles"}
+            </p>
+          )}
+        </section>
+      )}
       {(type === "" || type === "jobs") && (
         <section className="featured">
           <div className="header">
-            <h3>Featured jobs {activeJobs.length > 0 && `(${activeJobs.length})`}</h3>
-            {activeJobs.length > 0 && (
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowAllJobs(!showAllJobs);
-                }}
-              >
-                {showAllJobs ? "Ver menos ↑" : "View all →"}
-              </a>
-            )}
+            <h3>Trabajos {activeJobs.length > 0 && `(${activeJobs.length})`}</h3>
           </div>
 
           {loading ? (
@@ -200,39 +197,6 @@ export default function HomeUser() {
         </section>
       )}
 
-      {/* 💡 PROYECTOS - Solo se muestra si type no es "jobs" */}
-      {(type === "" || type === "projects") && (
-        <section className="featured">
-          <div className="header">
-            <h3>Featured projects {activeProjects.length > 0 && `(${activeProjects.length})`}</h3>
-            {activeProjects.length > 0 && (
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowAllProjects(!showAllProjects);
-                }}
-              >
-                {showAllProjects ? "Ver menos ↑" : "View all →"}
-              </a>
-            )}
-          </div>
-
-          {loading ? (
-            <p className="loading">Cargando...</p>
-          ) : activeProjects.length > 0 ? (
-            <div className="cards">
-              {activeProjects.map((p) => (
-                <CardProyecto key={p.id} {...p} />
-              ))}
-            </div>
-          ) : (
-            <p className="no-data">
-              {query ? `No hay proyectos que coincidan con "${query}"` : "No hay proyectos disponibles"}
-            </p>
-          )}
-        </section>
-      )}
 
       <Footer />
     </div>
