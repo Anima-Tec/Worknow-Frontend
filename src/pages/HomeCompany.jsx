@@ -21,7 +21,6 @@ export default function HomeCompany() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
-  const [showAllJobs, setShowAllJobs] = useState(false);
   const [loading, setLoading] = useState(false);
   const location = useLocation();
 
@@ -227,16 +226,7 @@ export default function HomeCompany() {
       {/* PROYECTOS */}
       <section className="featured">
         <div className="header">
-          <h3>Proyectos publicados</h3>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowAllProjects(!showAllProjects);
-            }}
-          >
-            {showAllProjects ? "Ver menos ↑" : "View all →"}
-          </a>
+          <h3>Proyectos {activeProjects.length > 0 && `(${activeProjects.length})`}</h3>
         </div>
 
         {loading ? (
@@ -255,16 +245,7 @@ export default function HomeCompany() {
       {/* TRABAJOS */}
       <section className="featured">
         <div className="header">
-          <h3>Trabajos publicados</h3>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowAllJobs(!showAllJobs);
-            }}
-          >
-            {showAllJobs ? "Ver menos ↑" : "View all →"}
-          </a>
+          <h3>Trabajos {activeJobs.length > 0 && `(${activeJobs.length})`}</h3>
         </div>
 
         {loading ? (
