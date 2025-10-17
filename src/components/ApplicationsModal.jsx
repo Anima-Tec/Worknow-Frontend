@@ -81,9 +81,7 @@ export default function ApplicationsModal({ open, onClose }) {
     loadApplications();
   }, [open]);
 
-  if (!open) return null;
-
-  // Actualizar estado de postulación
+  // ✅ VERSIÓN CORRECTA - Solo permite cambios desde PENDIENTE
   const updateStatus = async (id, newStatus, type) => {
     try {
       const selectedApplication = applications.find(a => a.id === id);
@@ -96,59 +94,64 @@ export default function ApplicationsModal({ open, onClose }) {
       const jobId = selectedApplication.jobId;
       const currentStatus = selectedApplication.status;
 
-      // Si está aceptada, no se puede modificar
-      if (currentStatus === "ACEPTADO") {
-        console.warn("⚠️ No se puede modificar una postulación ya aceptada");
-        setError("No se puede modificar una postulación ya aceptada");
-        return;
-      } // Si está rechazada, no se puede modificar
-      else if (currentStatus === "RECHAZADO") {
-        console.warn("⚠️ No se puede modificar una postulación ya rechazada");
-        setError("No se puede modificar una postulación ya rechazada");
+      // ❌ BLOQUEAR si ya está ACEPTADO o RECHAZADO
+      if (currentStatus === "ACEPTADO" || currentStatus === "RECHAZADO") {
+        console.warn(`⚠️ No se puede modificar una postulación ya ${currentStatus.toLowerCase()}`);
+        setError(`No se puede modificar una postulación ya ${currentStatus.toLowerCase()}`);
         return;
       }
 
-      // Si se quiere aceptar, verificar que no haya otra ya aceptada para ese jobId
-      if (newStatus === "ACEPTADO") {
-        const alreadyAccepted = applications.find(
-          a => a.status === "ACEPTADO" && a.jobId === jobId
-        );
+      // ✅ Solo permitir cambios si está PENDIENTE
+      if (currentStatus === "PENDIENTE") {
+        // Si se quiere ACEPTAR, verificar que no haya otra ya aceptada
+        if (newStatus === "ACEPTADO") {
+          const alreadyAccepted = applications.find(
+            a => a.status === "ACEPTADO" && a.jobId === jobId
+          );
 
-        if (alreadyAccepted && alreadyAccepted.id !== id) {
-          console.warn("⚠️ Ya hay una postulación aceptada para este trabajo");
-          setError("Ya hay una postulación aceptada para este trabajo");
-          return;
+          if (alreadyAccepted) {
+            console.warn("⚠️ Ya hay una postulación aceptada para este trabajo");
+            setError("Ya hay una postulación aceptada para este trabajo");
+            return;
+          }
+
+          // Confirmar antes de aceptar
+          const confirmAccept = confirm(
+            "¿Estás seguro de aceptar esta postulación?\n\nTodas las demás postulaciones a este puesto serán automáticamente rechazadas."
+          );
+          if (!confirmAccept) return;
         }
-      }
 
-      console.log(`🔄 Actualizando postulación ${id} a ${newStatus} (tipo: ${type})`);
+        console.log(`🔄 Actualizando postulación ${id} a ${newStatus} (tipo: ${type})`);
 
-      const endpoint = type === "job"
-        ? `http://localhost:3000/api/job-applications/company/${id}/status`
-        : `http://localhost:3000/api/applications/company/${id}/status`;
+        const endpoint = type === "job"
+          ? `http://localhost:3000/api/job-applications/company/${id}/status`
+          : `http://localhost:3000/api/applications/company/${id}/status`;
 
-      const res = await fetch(endpoint, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+        const res = await fetch(endpoint, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
+        });
 
-      if (res.ok) {
-        loadApplications(); // Recargar postulaciones
-        console.log("✅ Estado actualizado correctamente");
-      } else {
-        const errorText = await res.text();
-        console.error("❌ Error al actualizar estado:", res.status, errorText);
-        setError("Error al actualizar el estado");
+        if (res.ok) {
+          setError(""); // Limpiar errores
+          loadApplications(); // Recargar postulaciones
+          console.log("✅ Estado actualizado correctamente");
+        } else {
+          const errorText = await res.text();
+          console.error("❌ Error al actualizar estado:", res.status, errorText);
+          setError("Error al actualizar el estado");
+        }
       }
     } catch (error) {
       console.error("❌ Error al actualizar estado:", error);
       setError("Error de conexión al actualizar estado");
     }
-};
+  };
 
   // 🟣 Formatear fecha
   const formatDate = (dateString) => {
@@ -162,6 +165,8 @@ export default function ApplicationsModal({ open, onClose }) {
       return "Fecha inválida";
     }
   };
+
+  if (!open) return null;
 
   return (
     <div className="applications-modal-overlay">
@@ -225,21 +230,31 @@ export default function ApplicationsModal({ open, onClose }) {
                     {a.status || "PENDIENTE"}
                   </td>
                   <td className="actions">
-                    <FaCheckCircle
-                      className="icon accept"
-                      title="Aceptar"
-                      onClick={() => updateStatus(a.id, "ACEPTADO", a.type)}
-                    />
-                    <FaTimesCircle
-                      className="icon reject"
-                      title="Rechazar"
-                      onClick={() => updateStatus(a.id, "RECHAZADO", a.type)}
-                    />
-                    <FaHourglassHalf
-                      className="icon review"
-                      title="En revisión"
-                      onClick={() => updateStatus(a.id, "PENDIENTE", a.type)}
-                    />
+                    {/* 🟢 SOLO MOSTRAR BOTONES SI ESTÁ PENDIENTE */}
+                    {a.status === "PENDIENTE" ? (
+                      <>
+                        <FaCheckCircle
+                          className="icon accept"
+                          title="Aceptar"
+                          onClick={() => updateStatus(a.id, "ACEPTADO", a.type)}
+                        />
+                        <FaTimesCircle
+                          className="icon reject"
+                          title="Rechazar"
+                          onClick={() => updateStatus(a.id, "RECHAZADO", a.type)}
+                        />
+                        <FaHourglassHalf
+                          className="icon review"
+                          title="En revisión"
+                          onClick={() => updateStatus(a.id, "PENDIENTE", a.type)}
+                        />
+                      </>
+                    ) : (
+                      // 🟡 MOSTRAR SOLO EL ESTADO ACTUAL SI NO ESTÁ PENDIENTE
+                      <span className={`status-badge ${a.status.toLowerCase()}`}>
+                        {a.status === "ACEPTADO" ? "✅ Aceptado" : "❌ Rechazado"}
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))
