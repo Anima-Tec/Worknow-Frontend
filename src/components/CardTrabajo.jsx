@@ -109,6 +109,12 @@ export default function CardTrabajo({
 
           {/* ---------- BOTONES ---------- */}
           <div className="job-actions">
+            <button
+              className="secondary-btn"
+              onClick={() => setShowDetail(true)}
+            >
+              Ver detalle
+            </button>
             {!isCompanyView && (
               <button
                 className="primary-btn"
@@ -117,16 +123,10 @@ export default function CardTrabajo({
                   setShowModal(true);
                 }}
               >
-                Postular
+                Postularse
               </button>
             )}
 
-            <button
-              className="secondary-btn"
-              onClick={() => setShowDetail(true)}
-            >
-              Ver detalle
-            </button>
           </div>
         </div>
       </div>

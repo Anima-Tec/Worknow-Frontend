@@ -4,7 +4,6 @@ import { AiOutlineHome } from "react-icons/ai";
 import { IoIosContacts } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import { useLocation } from "react-router-dom";
-import { getJobs } from "../services/api";
 import ProjectForm from "./ProjectForm";
 import JobForm from "./JobForm.jsx";
 import CardProyecto from "../components/CardProyecto";
@@ -19,12 +18,55 @@ export default function HomeCompany() {
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showAllProjects, setShowAllProjects] = useState(false);
   const [showApplications, setShowApplications] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+
   const location = useLocation();
 
-  // 🔹 Obtener proyectos de la empresa logueada
+  // 🔔 Cargar notificaciones de empresa
+  useEffect(() => {
+    async function loadNotifications() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3000/api/applications/notifications/company", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        setNotificationCount(data.count || 0);
+      } catch (err) {
+        console.error("❌ Error cargando notificaciones empresa:", err);
+      }
+    }
+
+    loadNotifications();
+  }, []);
+
+  // 🔁 Marcar como leídas cuando abre modal
+  useEffect(() => {
+    if (!showApplications) return;
+
+    async function markAsRead() {
+      try {
+        const token = localStorage.getItem("token");
+        await fetch("http://localhost:3000/api/applications/notifications/company/read", {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setNotificationCount(0);
+      } catch (err) {
+        console.error("❌ Error marcando como leídas las notificaciones:", err);
+      }
+    }
+
+    markAsRead();
+  }, [showApplications]);
+
+  // 🔹 Obtener proyectos
   useEffect(() => {
     async function fetchCompanyProjects() {
       try {
@@ -47,7 +89,7 @@ export default function HomeCompany() {
     fetchCompanyProjects();
   }, []);
 
-  // 🔹 Obtener trabajos del backend (solo de la empresa)
+  // 🔹 Obtener trabajos
   useEffect(() => {
     async function fetchCompanyJobs() {
       try {
@@ -70,21 +112,13 @@ export default function HomeCompany() {
     fetchCompanyJobs();
   }, []);
 
-  // ✅ Filtrar proyectos y trabajos activos (no completados ni “no hechos”)
   const activeProjects = projects.filter(
-    (p) =>
-      p.status !== "HECHO" &&
-      p.status !== "NO_HECHO" &&
-      p.isCompleted !== true
+    (p) => p.status !== "HECHO" && p.status !== "NO_HECHO" && p.isCompleted !== true
   );
   const activeJobs = jobs.filter(
-    (j) =>
-      j.status !== "HECHO" &&
-      j.status !== "NO_HECHO" &&
-      j.isCompleted !== true
+    (j) => j.status !== "HECHO" && j.status !== "NO_HECHO" && j.isCompleted !== true
   );
 
-  // 🔹 Cargar postulaciones cuando abrís el modal
   useEffect(() => {
     if (!showApplications) return;
     async function fetchApplications() {
@@ -109,7 +143,6 @@ export default function HomeCompany() {
     fetchApplications();
   }, [showApplications]);
 
-  // 🔹 Mostrar modal éxito tras publicar
   useEffect(() => {
     if (location.state?.jobCreated) {
       setShowSuccess(true);
@@ -119,7 +152,6 @@ export default function HomeCompany() {
 
   return (
     <div>
-      {/* HEADER */}
       <header className="header">
         <h1 className="h1">
           work<span>now</span>
@@ -137,6 +169,9 @@ export default function HomeCompany() {
             >
               <IoIosContacts />
               <span>Postulados</span>
+              {notificationCount > 0 && (
+                <span className="notification-badge">{notificationCount}</span>
+              )}
             </li>
             <li
               className="nav-item"
@@ -149,12 +184,10 @@ export default function HomeCompany() {
         </nav>
       </header>
 
-      {/* VIDEO */}
       <div className="video-container">
         <video src="/EMPRESA.mp4" autoPlay loop muted />
       </div>
 
-      {/* PUBLICAR */}
       <div className="cards-container">
         <div className="card1">
           <h2>Publicar proyecto Freelance</h2>
@@ -173,16 +206,11 @@ export default function HomeCompany() {
         </div>
       </div>
 
-      {/* MODALES */}
       {showJobForm && (
         <div className="modal">
           <div className="modal-content">
-            <button className="close-btn" onClick={() => setShowJobForm(false)}>
-              ✖
-            </button>
-            <JobForm 
-              onClose={() => setShowJobForm(false)} 
-              onJobCreated={() => setShowSuccess(true)} />
+            <button className="close-btn" onClick={() => setShowJobForm(false)}>✖</button>
+            <JobForm onClose={() => setShowJobForm(false)} onJobCreated={() => setShowSuccess(true)} />
           </div>
         </div>
       )}
@@ -190,9 +218,7 @@ export default function HomeCompany() {
       {showProjectForm && (
         <div className="modal">
           <div className="modal-content">
-            <button className="close-btn" onClick={() => setShowProjectForm(false)}>
-              ✖
-            </button>
+            <button className="close-btn" onClick={() => setShowProjectForm(false)}>✖</button>
             <ProjectForm
               onClose={() => setShowProjectForm(false)}
               onProjectCreated={(newProject) => {
@@ -223,12 +249,10 @@ export default function HomeCompany() {
         />
       )}
 
-      {/* PROYECTOS */}
       <section className="featured">
         <div className="header">
           <h3>Proyectos {activeProjects.length > 0 && `(${activeProjects.length})`}</h3>
         </div>
-
         {loading ? (
           <p className="loading">Cargando...</p>
         ) : activeProjects.length > 0 ? (
@@ -242,12 +266,10 @@ export default function HomeCompany() {
         )}
       </section>
 
-      {/* TRABAJOS */}
       <section className="featured">
         <div className="header">
           <h3>Trabajos {activeJobs.length > 0 && `(${activeJobs.length})`}</h3>
         </div>
-
         {loading ? (
           <p className="loading">Cargando...</p>
         ) : activeJobs.length > 0 ? (

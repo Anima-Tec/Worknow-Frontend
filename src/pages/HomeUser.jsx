@@ -16,29 +16,23 @@ export default function HomeUser() {
   const [query, setQuery] = useState("");
   const [type, setType] = useState("");
 
+  // 🔍 Buscar trabajos/proyectos
   const handleSearch = async () => {
     setLoading(true);
     try {
-      
-      const filters = { 
-        query: query.trim(), 
-        type 
-      };
+      const filters = { query: query.trim(), type };
 
       if (type === "jobs") {
         const jobsData = await searchJobs(filters);
-        console.log("📊 Jobs encontrados:", jobsData);
         setJobs(jobsData);
         setProjects([]);
       } else if (type === "projects") {
         const projectsData = await searchProjects(filters);
-        console.log("📊 Projects encontrados:", projectsData);
         setProjects(projectsData);
         setJobs([]);
       } else {
         const jobsData = await searchJobs(filters);
         const projectsData = await searchProjects(filters);
-        console.log("📊 Todos encontrados - Jobs:", jobsData, "Projects:", projectsData);
         setJobs(jobsData);
         setProjects(projectsData);
       }
@@ -49,26 +43,41 @@ export default function HomeUser() {
     }
   };
 
+  // 🔔 Cargar notificaciones del backend
   const loadNotifications = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:3000/api/applications/user/me", {
+      const res = await fetch("http://localhost:3000/api/applications/notifications/count", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data)) {
-          const count = data.filter(
-            (app) => app.status !== "Pendiente" && !app.visto
-          ).length;
-          setNotificationCount(count);
-        }
+        setNotificationCount(data.count || 0);
       }
     } catch (err) {
       console.error("❌ Error cargando notificaciones:", err);
+    }
+  };
+
+  // 🟣 Marcar notificaciones como leídas al entrar a Mis Postulaciones
+  const handlePostulacionesClick = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      await fetch("http://localhost:3000/api/applications/notifications/user/read", {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setNotificationCount(0); // eliminar badge
+      window.location.href = "/mis-postulaciones";
+    } catch (err) {
+      console.error("❌ Error marcando notificaciones como leídas:", err);
+      window.location.href = "/mis-postulaciones"; // redirigir igual
     }
   };
 
@@ -82,11 +91,17 @@ export default function HomeUser() {
   }, [type]);
 
   const activeJobs = jobs.filter(
-    (job) => job.userStatus === "NONE" || job.userStatus === "RECHAZADO" || job.userStatus === "PENDIENTE"
+    (job) =>
+      job.userStatus === "NONE" ||
+      job.userStatus === "RECHAZADO" ||
+      job.userStatus === "PENDIENTE"
   );
 
   const activeProjects = projects.filter(
-    (project) => project.userStatus === "NONE" || project.userStatus === "RECHAZADO" || project.userStatus === "PENDIENTE"
+    (project) =>
+      project.userStatus === "NONE" ||
+      project.userStatus === "RECHAZADO" ||
+      project.userStatus === "PENDIENTE"
   );
 
   return (
@@ -101,20 +116,16 @@ export default function HomeUser() {
               <AiOutlineHome />
               <span>Home</span>
             </li>
-            <li
-              className="nav-item"
-              onClick={() => (window.location.href = "/mis-postulaciones")}
-            >
+
+            <li className="nav-item" onClick={handlePostulacionesClick}>
               <MdWorkOutline />
               <span>Mis Postulaciones</span>
               {notificationCount > 0 && (
                 <span className="notification-badge">{notificationCount}</span>
               )}
             </li>
-            <li
-              className="nav-item"
-              onClick={() => (window.location.href = "/PerfilUser")}
-            >
+
+            <li className="nav-item" onClick={() => (window.location.href = "/PerfilUser")}>
               <CgProfile />
               <span>Perfil</span>
             </li>
@@ -136,7 +147,7 @@ export default function HomeUser() {
             placeholder="Escribe palabras clave..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           />
         </div>
 
@@ -157,7 +168,9 @@ export default function HomeUser() {
       {(type === "" || type === "projects") && (
         <section className="featured">
           <div className="header">
-            <h3>Proyectos {activeProjects.length > 0 && `(${activeProjects.length})`}</h3>
+            <h3>
+              Proyectos {activeProjects.length > 0 && `(${activeProjects.length})`}
+            </h3>
           </div>
 
           {loading ? (
@@ -170,11 +183,14 @@ export default function HomeUser() {
             </div>
           ) : (
             <p className="no-data">
-              {query ? `No hay proyectos que coincidan con "${query}"` : "No hay proyectos disponibles"}
+              {query
+                ? `No hay proyectos que coincidan con "${query}"`
+                : "No hay proyectos disponibles"}
             </p>
           )}
         </section>
       )}
+
       {(type === "" || type === "jobs") && (
         <section className="featured">
           <div className="header">
@@ -191,12 +207,13 @@ export default function HomeUser() {
             </div>
           ) : (
             <p className="no-data">
-              {query ? `No hay trabajos que coincidan con "${query}"` : "No hay trabajos disponibles"}
+              {query
+                ? `No hay trabajos que coincidan con "${query}"`
+                : "No hay trabajos disponibles"}
             </p>
           )}
         </section>
       )}
-
 
       <Footer />
     </div>
