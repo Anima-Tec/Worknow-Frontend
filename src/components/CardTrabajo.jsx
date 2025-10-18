@@ -17,6 +17,7 @@ export default function CardTrabajo({
   projectUrl,
   isPreview = false,
   isCompanyView = false, // 🟣 prop para detectar si es vista empresa
+  isFormPreview = false, // 🟣 prop para detectar si es vista previa de formulario
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showDetail, setShowDetail] = useState(false); // 🟣 nuevo estado para el detalle
@@ -108,26 +109,27 @@ export default function CardTrabajo({
           )}
 
           {/* ---------- BOTONES ---------- */}
-          <div className="job-actions">
-            <button
-              className="secondary-btn"
-              onClick={() => setShowDetail(true)}
-            >
-              Ver detalle
-            </button>
-            {!isCompanyView && (
+          {!isFormPreview && (
+            <div className="job-actions">
               <button
-                className="primary-btn"
-                onClick={() => {
-                  console.log(`🟢 Postular a ${title}`);
-                  setShowModal(true);
-                }}
+                className="secondary-btn"
+                onClick={() => setShowDetail(true)}
               >
-                Postularse
+                Ver detalle
               </button>
-            )}
-
-          </div>
+              {!isCompanyView && (
+                <button
+                  className="primary-btn"
+                  onClick={() => {
+                    console.log(`🟢 Postular a ${title}`);
+                    setShowModal(true);
+                  }}
+                >
+                  Postularse
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

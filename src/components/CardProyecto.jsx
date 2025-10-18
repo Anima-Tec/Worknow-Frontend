@@ -13,6 +13,7 @@ export default function CardProyecto({
   remuneration,
   company,
   isCompanyView = false, // 🟣 detecta si es vista empresa
+  isFormPreview = false, // 🟣 prop para detectar si es vista previa de formulario
 }) {
   const [showModal, setShowModal] = useState(false);
   const [showDetail, setShowDetail] = useState(false); // 🟣 nuevo estado
@@ -55,23 +56,25 @@ export default function CardProyecto({
         </div>
 
         {/* ---------- BOTONES ---------- */}
-        <div className="project-actions">
-          <button
-            className="secondary-btn"
-            onClick={() => setShowDetail(true)}
-          >
-            Ver detalle
-          </button>
-
-          {!isCompanyView && (
+        {!isFormPreview && (
+          <div className="project-actions">
             <button
-              className="primary-btn"
-              onClick={() => setShowModal(true)}
+              className="secondary-btn"
+              onClick={() => setShowDetail(true)}
             >
-              Postularse
+              Ver detalle
             </button>
-          )}
-        </div>
+
+            {!isCompanyView && (
+              <button
+                className="primary-btn"
+                onClick={() => setShowModal(true)}
+              >
+                Postularse
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ---------- MODAL DE POSTULACIÓN ---------- */}
