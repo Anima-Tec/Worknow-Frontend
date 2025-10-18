@@ -433,3 +433,101 @@ button:hover {
     transform: translateX(-50%);
   }
 }
+/* ========================= PLANES ========================= */
+.plans-section {
+  background: #a17bf3;
+  color: white;
+  text-align: center;
+  padding: 6rem 10%;
+}
+
+.plans-subtitle {
+  color: #cfcfcf;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.plans-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 4rem;
+}
+
+.plan-card {
+  background: #161622;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  width: 300px;
+  padding: 2.5rem 2rem;
+  transition: all 0.4s ease;
+  position: relative;
+  text-align: center;
+}
+
+.plan-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 0 30px rgba(109,40,217,0.3);
+}
+
+.plan-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.plan-price {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #8b5cf6;
+}
+
+.plan-price span {
+  font-size: 1rem;
+  color: #cfcfcf;
+}
+
+.plan-desc {
+  font-size: 1rem;
+  color: #bfbfbf;
+  margin-bottom: 1.5rem;
+}
+
+.plan-features {
+  list-style: none;
+  text-align: left;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.plan-features li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: #eaeaea;
+  font-size: 0.95rem;
+}
+
+.plan-card.plus {
+  background: linear-gradient(180deg, #2a1747 0%, #1d1a33 100%);
+  border: 2px solid rgba(139,92,246,0.5);
+}
+
+.plan-card.pro {
+  background: #11111d;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+.popular-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #6d28d9, #8b5cf6);
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 3px 10px rgba(109,40,217,0.4);
+}

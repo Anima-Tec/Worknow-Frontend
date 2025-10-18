@@ -35,30 +35,29 @@ export default function Landing() {
     <div className="landing">
       {/* HERO SECTION */}
       <section className="hero-section">
-  <div className="hero-content">
-    <h1 className="hero-title">
-      Conectamos <span className="highlight">talento</span> con oportunidades reales
-    </h1>
-    <p className="hero-text">
-      WorkNow impulsa el futuro laboral uniendo personas y empresas a través de proyectos reales y experiencias verificadas.
-    </p>
-    <div className="cta-buttons">
-      <button className="btn-primary" onClick={() => navigate("/choose")}>
-        Registrarme
-      </button>
-      <button className="btn-outline" onClick={() => navigate("/login")}>
-        Iniciar sesión
-      </button>
-    </div>
-  </div>
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Conectamos <span className="highlight">talento</span> con oportunidades reales
+          </h1>
+          <p className="hero-text">
+            WorkNow impulsa el futuro laboral uniendo personas y empresas a través de proyectos reales y experiencias verificadas.
+          </p>
+          <div className="cta-buttons">
+            <button className="btn-primary" onClick={() => navigate("/choose")}>
+              Registrarme
+            </button>
+            <button className="btn-outline" onClick={() => navigate("/login")}>
+              Iniciar sesión
+            </button>
+          </div>
+        </div>
 
-  <div className="scroll-indicator">
-    <div className="mouse">
-      <div className="wheel"></div>
-    </div>
-  </div>
-</section>
-
+        <div className="scroll-indicator">
+          <div className="mouse">
+            <div className="wheel"></div>
+          </div>
+        </div>
+      </section>
 
       {/* CÓMO FUNCIONA */}
       <section className="how-section">
@@ -66,16 +65,9 @@ export default function Landing() {
           Cómo funciona <span className="purple-text">WorkNow</span>
         </h2>
         <div className="steps">
-         
           <div className="step">
             <div className="icon-wrapper">
-              <div className="icon-crop icon-crop--loop">
-                <img
-                  src="/undraw_authentication_1evl.png"
-                  alt="crea tu perfil"
-                  className="icon-image"
-                />
-              </div>
+              <img src="/undraw_authentication_1evl.png" alt="crea tu perfil" className="icon-image" />
             </div>
             <h3 className="step-title">Crea tu perfil</h3>
             <p className="step-text">
@@ -85,11 +77,7 @@ export default function Landing() {
 
           <div className="step">
             <div className="icon-wrapper">
-              <img
-                src="/undraw_designer_efwz.png"
-                alt="Participá en proyectos"
-                className="icon-image"
-              />
+              <img src="/undraw_designer_efwz.png" alt="Participá en proyectos" className="icon-image" />
             </div>
             <h3 className="step-title">Participá en proyectos</h3>
             <p className="step-text">
@@ -97,16 +85,9 @@ export default function Landing() {
             </p>
           </div>
 
-         
           <div className="step">
             <div className="icon-wrapper">
-              <div className="icon-crop icon-crop--plane">
-                <img
-                  src="undraw_group-project_kow1.png"
-                  alt="conecta y trabaja"
-                  className="icon-image"
-                />
-              </div>
+              <img src="/undraw_group-project_kow1.png" alt="conecta y trabaja" className="icon-image" />
             </div>
             <h3 className="step-title">Conectá y trabajá</h3>
             <p className="step-text">
@@ -116,41 +97,93 @@ export default function Landing() {
         </div>
       </section>
 
-    {/* BANNER */}
-<section className="banner-section">
-  <h2 className="banner-title">El puente entre talento y oportunidad</h2>
-  <p className="banner-text">
-    Empresas reales, desafíos reales, resultados reales.
-  </p>
+      {/* 🔮 PLANES WORKNOW */}
+      <section className="plans-section">
+        <h2 className="section-title">Planes <span className="purple-text">WorkNow</span></h2>
+        <p className="plans-subtitle">
+          Elegí el plan que se adapta mejor a tus objetivos profesionales
+        </p>
 
-  <div className="logos-slider">
-    <div className="logos-slide-track">
-      {/* 8 logos (duplicados para que la animación sea continua) */}
-      <img src="/globant.png" alt="Empresa 1" className="company-logo" />
-      <img src="/empresas/empresa2.png" alt="Empresa 2" className="company-logo" />
-      <img src="/empresas/empresa3.png" alt="Empresa 3" className="company-logo" />
-      <img src="/empresas/empresa4.png" alt="Empresa 4" className="company-logo" />
-      <img src="/empresas/empresa5.png" alt="Empresa 5" className="company-logo" />
-      <img src="/empresas/empresa6.png" alt="Empresa 6" className="company-logo" />
-      <img src="/empresas/empresa7.png" alt="Empresa 7" className="company-logo" />
-      <img src="/empresas/empresa8.png" alt="Empresa 8" className="company-logo" />
+        <div className="plans-grid">
+          {/* PLAN GRATIS */}
+          <div className="plan-card free">
+            <h3 className="plan-title">Gratis</h3>
+            <p className="plan-price">$0 <span>/ mes</span></p>
+            <p className="plan-desc">Ideal para comenzar a explorar WorkNow</p>
+            <ul className="plan-features">
+              <li>✔ Acceso a proyectos públicos</li>
+              <li>✔ Perfil visible para empresas</li>
+              <li>✔ Aplicaciones limitadas por mes</li>
+              <li>✖ Sin métricas avanzadas</li>
+            </ul>
+            <button className="btn-outline-light" onClick={() => navigate("/choose")}>
+              Tu plan actual
+            </button>
+          </div>
 
-      {/* 🔁 Duplicamos para efecto continuo */}
-      <img src="/empresas/empresa1.png" alt="Empresa 1" className="company-logo" />
-      <img src="/empresas/empresa2.png" alt="Empresa 2" className="company-logo" />
-      <img src="/empresas/empresa3.png" alt="Empresa 3" className="company-logo" />
-      <img src="/empresas/empresa4.png" alt="Empresa 4" className="company-logo" />
-      <img src="/empresas/empresa5.png" alt="Empresa 5" className="company-logo" />
-      <img src="/empresas/empresa6.png" alt="Empresa 6" className="company-logo" />
-      <img src="/empresas/empresa7.png" alt="Empresa 7" className="company-logo" />
-      <img src="/empresas/empresa8.png" alt="Empresa 8" className="company-logo" />
-    </div>
-  </div>
+          {/* PLAN PLUS */}
+          <div className="plan-card plus popular">
+            <div className="popular-badge">POPULAR</div>
+            <h3 className="plan-title">Plus</h3>
+            <p className="plan-price">$20 <span>USD / mes</span></p>
+            <p className="plan-desc">Más visibilidad y herramientas para destacar</p>
+            <ul className="plan-features">
+              <li>✔ Todo del plan Gratis</li>
+              <li>✔ Aplicaciones ilimitadas</li>
+              <li>✔ Feedback de empresas</li>
+              <li>✔ Métricas de rendimiento</li>
+            </ul>
+            <button className="btn-white" onClick={() => navigate("/choose")}>
+              Obtener Plus
+            </button>
+          </div>
 
-  <button className="btn-white mt-4" onClick={() => navigate("/choose")}>
-    Crear mi cuenta
-  </button>
-</section>
+          {/* PLAN PRO */}
+          <div className="plan-card pro">
+            <h3 className="plan-title">Pro</h3>
+            <p className="plan-price">$200 <span>USD / mes</span></p>
+            <p className="plan-desc">Para empresas y profesionales que buscan lo máximo</p>
+            <ul className="plan-features">
+              <li>✔ Acceso total a WorkNow</li>
+              <li>✔ Publicación de empleos y proyectos</li>
+              <li>✔ Análisis de talento con IA</li>
+              <li>✔ Soporte prioritario</li>
+            </ul>
+            <button className="btn-outline-light" onClick={() => navigate("/choose")}>
+              Obtener Pro
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* BANNER */}
+      <section className="banner-section">
+        <h2 className="banner-title">El puente entre talento y oportunidad</h2>
+        <p className="banner-text">
+          Empresas reales, desafíos reales, resultados reales.
+        </p>
+
+        <div className="logos-slider">
+          <div className="logos-slide-track">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <React.Fragment key={i}>
+                <img src="/globant.png" alt="Empresa 1" className="company-logo" />
+                <img src="/empresas/empresa2.png" alt="Empresa 2" className="company-logo" />
+                <img src="/empresas/empresa3.png" alt="Empresa 3" className="company-logo" />
+                <img src="/empresas/empresa4.png" alt="Empresa 4" className="company-logo" />
+                <img src="/empresas/empresa5.png" alt="Empresa 5" className="company-logo" />
+                <img src="/empresas/empresa6.png" alt="Empresa 6" className="company-logo" />
+                <img src="/empresas/empresa7.png" alt="Empresa 7" className="company-logo" />
+                <img src="/empresas/empresa8.png" alt="Empresa 8" className="company-logo" />
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        <button className="btn-white mt-4" onClick={() => navigate("/choose")}>
+          Crear mi cuenta
+        </button>
+      </section>
 
       {/* MÉTRICAS */}
       <section className="metrics-section">
