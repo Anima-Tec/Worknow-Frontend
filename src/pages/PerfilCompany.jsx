@@ -7,6 +7,9 @@ import Footer from "../components/Footer";
 import { FiLogOut, FiArrowLeft } from "react-icons/fi";
 import { logout } from "../auth/authContext";
 import { useNavigate } from "react-router-dom";
+import { useNotification, NotificationContainer } from "../utils/notifications.jsx";
+import { LoadingSpinner } from "../components/LoadingSpinner.jsx";
+import Select from 'react-select';
 
 
 function PerfilCompany() {
@@ -15,6 +18,30 @@ function PerfilCompany() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [logoImage, setLogoImage] = useState(null);
+  const { notifications, showSuccess, showError, removeNotification, handleApiError } = useNotification();
+
+  // Opciones de departamentos de Uruguay
+  const departamentosOptions = [
+    { value: 'Artigas', label: 'Artigas' },
+    { value: 'Canelones', label: 'Canelones' },
+    { value: 'Cerro Largo', label: 'Cerro Largo' },
+    { value: 'Colonia', label: 'Colonia' },
+    { value: 'Durazno', label: 'Durazno' },
+    { value: 'Flores', label: 'Flores' },
+    { value: 'Florida', label: 'Florida' },
+    { value: 'Lavalleja', label: 'Lavalleja' },
+    { value: 'Maldonado', label: 'Maldonado' },
+    { value: 'Montevideo', label: 'Montevideo' },
+    { value: 'Paysandú', label: 'Paysandú' },
+    { value: 'Río Negro', label: 'Río Negro' },
+    { value: 'Rivera', label: 'Rivera' },
+    { value: 'Rocha', label: 'Rocha' },
+    { value: 'Salto', label: 'Salto' },
+    { value: 'San José', label: 'San José' },
+    { value: 'Soriano', label: 'Soriano' },
+    { value: 'Tacuarembó', label: 'Tacuarembó' },
+    { value: 'Treinta y Tres', label: 'Treinta y Tres' }
+  ];
 
     const navigate = useNavigate();
 
@@ -46,27 +73,33 @@ function PerfilCompany() {
   useEffect(() => {
     const loadCompanyData = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.warn("No hay token");
-          return;
-        }
-
         setLoading(true);
         const data = await getProfile();
         console.log("Datos de empresa:", data);
 
-        setCompanyData(data);
-        setEditData(data);
+        // Limpiar el prefijo +598 del teléfono para mostrar solo los números
+        let telefonoLimpio = data.telefono || "";
+        if (telefonoLimpio.startsWith("+598")) {
+          telefonoLimpio = telefonoLimpio.replace("+598", "").trim();
+        }
+
+        const companyProfileData = {
+          ...data,
+          telefono: telefonoLimpio
+        };
+
+        setCompanyData(companyProfileData);
+        setEditData(companyProfileData);
         if (data.logoUrl) setLogoImage(data.logoUrl);
         setLoading(false);
       } catch (error) {
         console.error("Error cargando perfil:", error);
+        handleApiError(error, "No se pudo cargar el perfil de la empresa. Revisá tu conexión e intentá nuevamente.");
         setLoading(false);
       }
     };
     loadCompanyData();
-  }, []);
+  }, [handleApiError]);
 
   // Cargar proyectos
   useEffect(() => {
@@ -108,23 +141,74 @@ function PerfilCompany() {
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditData((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === 'telefono') {
+      const numericValue = value.replace(/\D/g, '').slice(0, 8);
+      setEditData((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
+      setEditData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleDepartamentoChange = (selectedOption) => {
+    setEditData((prev) => ({ 
+      ...prev, 
+      ciudad: selectedOption ? selectedOption.value : '' 
+    }));
   };
 
   const handleSaveProfile = async () => {
     try {
-      setLoading(true);
-      const response = await updateProfile(editData);
-      console.log("Perfil actualizado:", response);
+      // Validación básica de teléfono
+      if (editData.telefono && editData.telefono.length !== 8) {
+        showError(
+          "Teléfono inválido",
+          "El teléfono debe tener exactamente 8 dígitos.",
+          4000
+        );
+        return;
+      }
 
-      setCompanyData(editData);
+      // Agregar prefijo +598 al teléfono antes de enviar
+      let telefonoConPrefijo = editData.telefono;
+      if (telefonoConPrefijo && !telefonoConPrefijo.startsWith("+598")) {
+        telefonoConPrefijo = "+598" + telefonoConPrefijo;
+      }
+
+      const dataToSend = {
+        ...editData,
+        telefono: telefonoConPrefijo
+      };
+
+      const responseData = await updateProfile(dataToSend);
+      console.log("Perfil actualizado:", responseData);
+
+      if (responseData.updated) {
+        // Limpiar prefijo +598 del teléfono en la respuesta
+        let telefonoLimpio = responseData.updated.telefono || "";
+        if (telefonoLimpio.startsWith("+598")) {
+          telefonoLimpio = telefonoLimpio.replace("+598", "").trim();
+        }
+        responseData.updated.telefono = telefonoLimpio;
+        
+        setCompanyData(responseData.updated);
+        setEditData(responseData.updated);
+        localStorage.setItem("user", JSON.stringify(responseData.updated));
+      } else {
+        setCompanyData(editData);
+        setEditData(editData);
+        localStorage.setItem("user", JSON.stringify(editData));
+      }
+
       setIsEditing(false);
-      alert("Perfil actualizado correctamente");
+      showSuccess(
+        "¡Perfil actualizado!",
+        "Los datos de la empresa se han guardado correctamente.",
+        4000
+      );
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error al actualizar perfil: " + error.message);
-    } finally {
-      setLoading(false);
+      console.error("Error al actualizar perfil:", error);
+      handleApiError(error, "No se pudo actualizar el perfil de la empresa. Intentá nuevamente.");
     }
   };
 
@@ -166,8 +250,10 @@ function PerfilCompany() {
 };
   if (loading) {
     return (
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <p>Cargando perfil...</p>
+      <div className="company-perfil-container">
+        <div className="company-perfil-wrapper">
+          <LoadingSpinner size="large" text="Cargando perfil de empresa..." />
+        </div>
       </div>
     );
   }
@@ -219,7 +305,7 @@ function PerfilCompany() {
                         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                         <circle cx="12" cy="13" r="4" />
                       </svg>
-                      Cambiar
+                      <span className="company-upload-text">Cambiar</span>
                       <input type="file" accept="image/*" onChange={handleLogoUpload} className="company-image-input" />
                     </label>
                     {logoImage && (
@@ -246,28 +332,40 @@ function PerfilCompany() {
                       placeholder="Nombre de la empresa"
                       className="company-name-input"
                     />
-                    <input
-                      type="text"
-                      name="sector"
-                      value={editData.sector || ""}
-                      onChange={handleEditChange}
-                      placeholder="Sector de la empresa"
-                      className="company-sector-input"
-                    />
-                    <div className="company-contact-info-editable">
-                      <div className="company-contact-item-editable">
-                        
-                        <input
-                          type="text"
-                          name="ciudad"
-                          value={editData.ciudad || ""}
-                          onChange={handleEditChange}
-                          placeholder="Ciudad"
-                          className="company-contact-input"
+                    <div className="company-contact-edit-grid">
+                      <div className="company-contact-edit-item">
+                        <Select
+                          options={departamentosOptions}
+                          value={departamentosOptions.find(option => option.value === editData.ciudad) || null}
+                          onChange={handleDepartamentoChange}
+                          placeholder="Seleccionar departamento"
+                          isSearchable={true}
+                          isClearable={true}
+                          className="company-departamento-select"
+                          classNamePrefix="company-select"
+                          noOptionsMessage={() => "No se encontraron departamentos"}
+                          loadingMessage={() => "Cargando departamentos..."}
+                          styles={{
+                            control: (base) => ({
+                              ...base,
+                              minHeight: '3rem',
+                              border: '2px solid rgba(124, 58, 237, 0.2)',
+                              borderRadius: '12px',
+                              boxShadow: '0 4px 8px -2px rgba(124, 58, 237, 0.15)',
+                              '&:hover': {
+                                borderColor: 'rgba(124, 58, 237, 0.3)',
+                              },
+                            }),
+                            menu: (base) => ({
+                              ...base,
+                              borderRadius: '12px',
+                              boxShadow: '0 8px 16px -4px rgba(124, 58, 237, 0.2)',
+                              border: '1px solid rgba(124, 58, 237, 0.1)',
+                            }),
+                          }}
                         />
                       </div>
-                      <div className="company-contact-item-editable">
-                        
+                      <div className="company-contact-edit-item">
                         <input
                           type="email"
                           name="email"
@@ -277,19 +375,21 @@ function PerfilCompany() {
                           className="company-contact-input"
                         />
                       </div>
-                      <div className="company-contact-item-editable">
-                       
-                        <input
-                          type="tel"
-                          name="telefono"
-                          value={editData.telefono || ""}
-                          onChange={handleEditChange}
-                          placeholder="Teléfono"
-                          className="company-contact-input"
-                        />
+                      <div className="company-contact-edit-item">
+                        <div className="company-phone-input">
+                          <span className="company-phone-prefix">+598</span>
+                          <input
+                            type="tel"
+                            name="telefono"
+                            value={editData.telefono || ""}
+                            onChange={handleEditChange}
+                            placeholder="12345678"
+                            maxLength="8"
+                            className="company-contact-input"
+                          />
+                        </div>
                       </div>
-                      <div className="company-contact-item-editable">
-                       
+                      <div className="company-contact-edit-item">
                         <input
                           type="url"
                           name="sitioWeb"
@@ -303,22 +403,22 @@ function PerfilCompany() {
                   </>
                 ) : (
                   <>
-                    <h1 className="company-name">{companyData.nombreEmpresa || "Nombre Empresa"}</h1>
-                    <p className="company-sector">{companyData.sector || "Sector no especificado"}</p>
+                    <h1 className="company-name">{String(companyData.nombreEmpresa || "Nombre Empresa")}</h1>
+                    <p className="company-sector">{String(companyData.sector || "Sector no especificado")}</p>
                     <div className="company-contact-info">
                       <div className="company-contact-item">
-                        📍 <span>{companyData.ciudad || "Ciudad no especificada"}</span>
+                        📍 <span>{String(companyData.ciudad || "Ciudad no especificada")}</span>
                       </div>
                       <div className="company-contact-item">
-                        📧 <span>{companyData.email || "Email no especificado"}</span>
+                        📧 <span>{String(companyData.email || "Email no especificado")}</span>
                       </div>
                       <div className="company-contact-item">
-                        📞 <span>{companyData.telefono || "Teléfono no especificado"}</span>
+                        📞 <span>{String(companyData.telefono || "Teléfono no especificado")}</span>
                       </div>
                       {companyData.sitioWeb && (
                         <div className="company-contact-item">
-                          🌐 <a href={companyData.sitioWeb} target="_blank" rel="noopener noreferrer" className="company-website-link">
-                            {companyData.sitioWeb}
+                          🌐 <a href={String(companyData.sitioWeb)} target="_blank" rel="noopener noreferrer" className="company-website-link">
+                            {String(companyData.sitioWeb)}
                           </a>
                         </div>
                       )}
@@ -385,6 +485,21 @@ function PerfilCompany() {
                     />
                   ) : (
                     <p className="company-info-value">{companyData.rut || "No especificado"}</p>
+                  )}
+                </div>
+                <div className="company-info-item">
+                  <p className="company-info-label">Sector</p>
+                  {isEditing ? (
+                    <input 
+                      type="text" 
+                      name="sector" 
+                      value={editData.sector || ""} 
+                      onChange={handleEditChange} 
+                      placeholder="Sector de la empresa"
+                      className="company-perfil-input" 
+                    />
+                  ) : (
+                    <p className="company-info-value">{companyData.sector || "No especificado"}</p>
                   )}
                 </div>
                 <div className="company-info-item">
@@ -524,17 +639,6 @@ function PerfilCompany() {
                         className="company-perfil-input" 
                       />
                     </div>
-                    <div className="company-social-input-group">
-                      <span className="company-social-icon">in</span>
-                      <input 
-                        type="url" 
-                        name="linkedin" 
-                        value={editData.linkedin || ""} 
-                        onChange={handleEditChange} 
-                        placeholder="https://linkedin.com/company/empresa" 
-                        className="company-perfil-input" 
-                      />
-                    </div>
                   </div>
                 ) : (
                   <div className="company-social-display">
@@ -550,13 +654,7 @@ function PerfilCompany() {
                         Facebook
                       </a>
                     )}
-                    {companyData.linkedin && (
-                      <a href={companyData.linkedin} target="_blank" rel="noopener noreferrer" className="company-social-link">
-                        <span className="company-social-icon">in</span>
-                        LinkedIn
-                      </a>
-                    )}
-                    {!companyData.twitter && !companyData.facebook && !companyData.linkedin && (
+                    {!companyData.twitter && !companyData.facebook && (
                       <p className="company-perfil-empty-text">No hay redes sociales agregadas</p>
                     )}
                   </div>
@@ -576,13 +674,13 @@ function PerfilCompany() {
                 <CardProyecto
                   key={p.id}
                   id={p.id}
-                  title={p.title || "Sin título"}
-                  description={p.description || "Sin descripción"}
-                  skills={Array.isArray(p.skills) ? p.skills.join(", ") : p.skills || "No especificado"}
-                  duration={p.duration || "No especificado"}
-                  modality={p.modality || "No especificado"}
-                  remuneration={p.remuneration || "A convenir"}
-                  company={companyData.nombreEmpresa}
+                  title={String(p.title || "Sin título")}
+                  description={String(p.description || "Sin descripción")}
+                  skills={Array.isArray(p.skills) ? p.skills.join(", ") : String(p.skills || "No especificado")}
+                  duration={String(p.duration || "No especificado")}
+                  modality={String(p.modality || "No especificado")}
+                  remuneration={String(p.remuneration || "A convenir")}
+                  company={String(companyData.nombreEmpresa)}
                   isCompanyView={true}
                 />
               ))
@@ -601,15 +699,15 @@ function PerfilCompany() {
                 <CardTrabajo
                   key={job.id}
                   id={job.id}
-                  title={job.title || "Sin título"}
-                  company={companyData.nombreEmpresa}
-                  area={job.area}
-                  jobType={job.jobType}
-                  contractType={job.contractType}
-                  modality={job.modality}
-                  location={job.location}
-                  salary={job.salary || job.remuneration}
-                  description={job.description}
+                  title={String(job.title || "Sin título")}
+                  company={String(companyData.nombreEmpresa)}
+                  area={String(job.area || "")}
+                  jobType={String(job.jobType || "")}
+                  contractType={String(job.contractType || "")}
+                  modality={String(job.modality || "")}
+                  location={String(job.location || "")}
+                  salary={String(job.salary || job.remuneration || "")}
+                  description={String(job.description || "")}
                   isCompanyView={true}
                 />
               ))
@@ -621,6 +719,11 @@ function PerfilCompany() {
       </div>
 
       <Footer />
+      
+      <NotificationContainer 
+        notifications={notifications} 
+        onRemove={removeNotification} 
+      />
     </div>
   );
 }

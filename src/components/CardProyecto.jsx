@@ -25,8 +25,9 @@ export default function CardProyecto({
 
   // 🟣 Formateo de salario
   const formatRemuneration = (value) => {
-    if (!value || value === "0" || value === "null") return "A convenir";
-    return `$${value}`;
+    const stringValue = String(value || "");
+    if (!stringValue || stringValue === "0" || stringValue === "null" || stringValue === "undefined") return "A convenir";
+    return `$${stringValue}`;
   };
 
   return (
@@ -35,11 +36,11 @@ export default function CardProyecto({
         {/* ---------- HEADER ---------- */}
         <div className="project-header">
           <div className="avatar">{companyInitial}</div>
-          <span className="project-type">{modality || "Freelance"}</span>
+          <span className="project-type">{String(modality || "Freelance")}</span>
         </div>
 
         {/* ---------- TITULO ---------- */}
-        <h4 className="project-title">{title || "Título del proyecto"}</h4>
+        <h4 className="project-title">{String(title || "Título del proyecto")}</h4>
 
         {/* ---------- DETALLES ---------- */}
         <div className="project-details">
@@ -47,10 +48,10 @@ export default function CardProyecto({
             <strong>Rango salarial:</strong> {formatRemuneration(remuneration)}
           </span>
           <span>
-            <strong>Duración:</strong> {duration || "No especificada"}
+            <strong>Duración:</strong> {String(duration || "No especificada")}
           </span>
           <span>
-            <strong>Skills:</strong> {skills || "No especificadas"}
+            <strong>Skills:</strong> {String(skills || "No especificadas")}
           </span>
         </div>
 
