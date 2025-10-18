@@ -1,96 +1,178 @@
 // ======================= 🌐 CONFIGURACIÓN BASE ==========================
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
+// ======================= 🔧 UTILIDADES DE ERROR ==========================
+class ApiError extends Error {
+  constructor(message, status, code, details = null) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.details = details;
+  }
+}
+
+// Función para manejar errores de API de forma consistente
+async function handleApiResponse(response) {
+  if (response.ok) {
+    return await response.json();
+  }
+
+  let errorData;
+  try {
+    errorData = await response.json();
+  } catch {
+    errorData = { message: 'Error de conexión con el servidor' };
+  }
+
+  // Mapeo de códigos de estado HTTP a mensajes de error específicos
+  const errorMessages = {
+    400: 'Datos inválidos enviados al servidor',
+    401: 'Sesión expirada. Por favor, iniciá sesión nuevamente',
+    403: 'No tenés permisos para realizar esta acción',
+    404: 'El recurso solicitado no fue encontrado',
+    409: 'Conflicto: El recurso ya existe o está en uso',
+    422: 'Datos de validación incorrectos',
+    429: 'Demasiadas solicitudes. Intentá nuevamente en unos minutos',
+    500: 'Error interno del servidor. Intentá nuevamente más tarde',
+    503: 'Servicio temporalmente no disponible'
+  };
+
+  const message = errorData.message || errorMessages[response.status] || 'Error desconocido';
+  
+  throw new ApiError(message, response.status, errorData.code, errorData.details);
+}
+
+// Función para crear headers de autenticación
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+// Función para verificar si el token está expirado
+function isTokenExpired(error) {
+  return error.status === 401 || (error.message && error.message.includes('token'));
+}
+
+// Función para limpiar sesión expirada
+function clearExpiredSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('rememberEmail');
+  localStorage.removeItem('role');
+}
+
+// Función para redirigir al login
+function redirectToLogin() {
+  clearExpiredSession();
+  window.location.href = '/login';
+}
+
 // ============================ 🔐 AUTH =================================
 export async function loginApi({ email, password }) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
+  try {
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || "Credenciales inválidas");
+    const data = await handleApiResponse(res);
+
+    // 🟣 Guardar token y datos de usuario
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      console.log("✅ Token guardado correctamente");
+    } else {
+      console.warn("⚠️ No se recibió token del backend:", data);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("❌ Error en login:", error);
+    throw error;
   }
-
-  const data = await res.json();
-
-  // 🟣 Guardar token y datos de usuario
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    console.log("✅ Token guardado correctamente:", data.token);
-  } else {
-    console.warn("⚠️ No se recibió token del backend:", data);
-  }
-
-  return data;
 }
 
 export async function registerUser(userData) {
-  const res = await fetch(`${API_BASE}/auth/register/user`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userData),
-  });
+  try {
+    const res = await fetch(`${API_BASE}/auth/register/user`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || "Error al registrar usuario");
+    return await handleApiResponse(res);
+  } catch (error) {
+    console.error("❌ Error en registro de usuario:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 export async function registerCompany(companyData) {
-  const res = await fetch(`${API_BASE}/auth/register/company`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(companyData),
-  });
+  try {
+    const res = await fetch(`${API_BASE}/auth/register/company`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(companyData),
+    });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || "Error al registrar empresa");
+    return await handleApiResponse(res);
+  } catch (error) {
+    console.error("❌ Error en registro de empresa:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 // ============================ 👤 PERFIL ================================
 export async function getProfile() {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de autenticación");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  const res = await fetch(`${API_BASE}/auth/profile`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+    const res = await fetch(`${API_BASE}/auth/profile`, {
+      headers: getAuthHeaders(),
+    });
 
-  if (!res.ok) throw new Error("Error obteniendo perfil");
-
-  return res.json();
+    const data = await handleApiResponse(res);
+    return data;
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error obteniendo perfil:", error);
+    throw error;
+  }
 }
 
 export async function updateProfile(profileData) {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de autenticación");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  const res = await fetch(`${API_BASE}/auth/profile`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(profileData),
-  });
+    const res = await fetch(`${API_BASE}/auth/profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(profileData),
+    });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || "Error actualizando perfil");
+    const data = await handleApiResponse(res);
+    return data;
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error actualizando perfil:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 // ======================== 💼 TRABAJOS =================================
@@ -116,72 +198,89 @@ export async function searchJobs(filters) {
     console.log("🔍 URL final jobs:", url);
     
     const res = await fetch(url);
+    const data = await handleApiResponse(res);
     
-    if (!res.ok) {
-      console.error(`❌ Error ${res.status} en jobs:`, await res.text());
-      return [];
-    }
-    
-    const data = await res.json();
     console.log(`✅ ${data.length} trabajos encontrados`);
     return data;
   } catch (error) {
     console.error("❌ Error en searchJobs:", error);
+    // Retornar array vacío en caso de error para no romper la UI
     return [];
   }
 }
 
 export async function getJobs() {
-  const res = await fetch(`${API_BASE}/jobs`);
-  if (!res.ok) throw new Error("Error obteniendo trabajos");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/jobs`);
+    return await handleApiResponse(res);
+  } catch (error) {
+    console.error("❌ Error obteniendo trabajos:", error);
+    throw error;
+  }
 }
 
 export async function createJob(jobData) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_BASE}/jobs`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(jobData),
-  });
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error creando trabajo:", text);
-    throw new Error("Error al crear trabajo");
+    const res = await fetch(`${API_BASE}/jobs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(jobData),
+    });
+
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error creando trabajo:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 export async function getJobById(id) {
-  const res = await fetch(`${API_BASE}/jobs/${id}`);
-  if (!res.ok) throw new Error("Error obteniendo trabajo");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/jobs/${id}`);
+    return await handleApiResponse(res);
+  } catch (error) {
+    console.error("❌ Error obteniendo trabajo:", error);
+    throw error;
+  }
 }
 
 export async function applyToJob(jobId, applicationData) {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  const res = await fetch(`${API_BASE}/applications/job/${jobId}/apply`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(applicationData),
-  });
-  console.log("datos enviados:", applicationData);
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error postulando a trabajo:", res.status, text);
-    throw new Error("Error al postular al trabajo");
+    console.log("datos enviados:", applicationData);
+
+    const res = await fetch(`${API_BASE}/applications/job/${jobId}/apply`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(applicationData),
+    });
+
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error postulando a trabajo:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 // ======================== 🧩 PROYECTOS ================================
@@ -207,139 +306,164 @@ export async function searchProjects(filters) {
     console.log("🔍 URL final projects:", url);
     
     const res = await fetch(url);
+    const data = await handleApiResponse(res);
     
-    if (!res.ok) {
-      console.error(`❌ Error ${res.status} en projects:`, await res.text());
-      return [];
-    }
-    
-    const data = await res.json();
     console.log(`✅ ${data.length} proyectos encontrados`);
     return data;
   } catch (error) {
     console.error("❌ Error en searchProjects:", error);
+    // Retornar array vacío en caso de error para no romper la UI
     return [];
   }
 }
 
 export async function createProject(projectData) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_BASE}/projects`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(projectData),
-  });
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error creando proyecto:", text);
-    throw new Error("Error al crear proyecto");
+    const res = await fetch(`${API_BASE}/projects`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(projectData),
+    });
+
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error creando proyecto:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 export async function getProjectById(id) {
-  const res = await fetch(`${API_BASE}/projects/${id}`);
-  if (!res.ok) throw new Error("Error obteniendo proyecto");
-  return res.json();
+  try {
+    const res = await fetch(`${API_BASE}/projects/${id}`);
+    return await handleApiResponse(res);
+  } catch (error) {
+    console.error("❌ Error obteniendo proyecto:", error);
+    throw error;
+  }
 }
 
 // ==================== 📩 POSTULACIONES ================================
 export async function sendApplication({ projectId, name, email }) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_BASE}/applications/project/${projectId}/apply`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ name, email }),
-  });
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("⚠️ Error en la API de postulación:", res.status, text);
-    throw new Error("Error al enviar postulación");
+    const res = await fetch(`${API_BASE}/applications/project/${projectId}/apply`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify({ name, email }),
+    });
+
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error enviando postulación:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 export async function getCompanyApplications() {
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const companyId = user?.id;
+  try {
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+    const companyId = user?.id;
 
-  if (!token || !companyId) return [];
+    if (!token || !companyId) {
+      throw new ApiError("No hay token de autenticación o ID de empresa", 401, "NO_TOKEN_OR_COMPANY");
+    }
 
-  const res = await fetch(`${API_BASE}/applications/company/${companyId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+    const res = await fetch(`${API_BASE}/applications/company/${companyId}`, {
+      headers: getAuthHeaders(),
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error obteniendo postulaciones:", res.status, text);
-    throw new Error("Error obteniendo postulaciones de la empresa");
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error obteniendo postulaciones:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 export async function updateApplicationStatus(id, status) {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  const res = await fetch(`${API_BASE}/applications/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ status }),
-  });
+    const res = await fetch(`${API_BASE}/applications/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify({ status }),
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error actualizando estado:", res.status, text);
-    throw new Error("Error actualizando estado");
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error actualizando estado:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 // ==================== 📋 MIS POSTULACIONES ============================
 export async function getMyApplications() {
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("No hay token de autenticación");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  const res = await fetch(`${API_BASE}/applications/user/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+    const res = await fetch(`${API_BASE}/applications/user/me`, {
+      headers: getAuthHeaders(),
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error obteniendo mis postulaciones:", res.status, text);
-    throw new Error("Error obteniendo mis postulaciones");
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error obteniendo mis postulaciones:", error);
+    throw error;
   }
-
-  return res.json();
 }
 
 // ==================== 🔔 NOTIFICACIONES ===============================
 export async function getNotificationCount() {
-  const token = localStorage.getItem("token");
-  if (!token) return 0;
-
   try {
+    const token = localStorage.getItem("token");
+    if (!token) return 0;
+
     const res = await fetch(`${API_BASE}/applications/notifications/count`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: getAuthHeaders(),
     });
 
     if (!res.ok) return 0;
-    const data = await res.json();
+    const data = await handleApiResponse(res);
     return data.count || 0;
   } catch (error) {
     console.error("❌ Error obteniendo notificaciones:", error);
@@ -348,18 +472,23 @@ export async function getNotificationCount() {
 }
 
 export async function markApplicationAsRead(applicationId) {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
+    }
 
-  const res = await fetch(`${API_BASE}/applications/${applicationId}/mark-read`, {
-    method: "PUT",
-    headers: { Authorization: `Bearer ${token}` },
-  });
+    const res = await fetch(`${API_BASE}/applications/${applicationId}/mark-read`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+    });
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("❌ Error marcando como leído:", res.status, text);
-    throw new Error("Error marcando notificación como leída");
+    return await handleApiResponse(res);
+  } catch (error) {
+    if (isTokenExpired(error)) {
+      redirectToLogin();
+    }
+    console.error("❌ Error marcando como leído:", error);
+    throw error;
   }
-
-  return res.json();
 }

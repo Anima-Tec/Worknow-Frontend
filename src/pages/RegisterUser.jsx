@@ -52,8 +52,11 @@ const Register = () => {
         }
       }
       
+      // Limpiar espacios para validación
+      const telefonoLimpio = value.replace(/\s/g, '');
+      
       // Validar que después del código solo haya números
-      const telefonoValue = value.replace('+598 ', '');
+      const telefonoValue = telefonoLimpio.replace('+598', '');
       const telefonoRegex = /^[0-9]*$/;
       if (telefonoValue && !telefonoRegex.test(telefonoValue)) {
         setErrors(prev => ({
@@ -63,8 +66,8 @@ const Register = () => {
         return;
       }
       
-      // Limitar longitud total (código + 8 dígitos + espacios)
-      if (value.length > 15) {
+      // Limitar longitud total (código + 8 dígitos)
+      if (telefonoLimpio.length > 12) { // +598 + 8 dígitos = 12 caracteres
         setErrors(prev => ({
           ...prev,
           telefono: 'El teléfono no puede tener más de 8 dígitos después del código +598'
@@ -105,8 +108,12 @@ const Register = () => {
       newErrors.telefono = 'El teléfono es requerido';
     } else if (!formData.telefono.startsWith('+598')) {
       newErrors.telefono = 'El teléfono debe comenzar con +598 (Uruguay)';
-    } else if (!/^\+598 [0-9]{7,8}$/.test(formData.telefono.replace(/\s/g, '').replace('+598', '+598 '))) {
-      newErrors.telefono = 'Formato inválido. Debe ser: +598 seguido de 7 u 8 dígitos';
+    } else {
+      // Limpiar espacios y validar que tenga exactamente 8 dígitos después de +598
+      const telefonoLimpio = formData.telefono.replace(/\s/g, '');
+      if (!/^\+598\d{8}$/.test(telefonoLimpio)) {
+        newErrors.telefono = 'El teléfono debe tener el formato +598XXXXXXXX (8 dígitos después del código de país)';
+      }
     }
     
     if (!formData.fechaNacimiento) newErrors.fechaNacimiento = 'La fecha de nacimiento es requerida';
@@ -134,7 +141,7 @@ const Register = () => {
       nombre: formData.nombre.trim(),
       apellido: formData.apellido.trim(),
       email: formData.email.trim().toLowerCase(),
-      telefono: formData.telefono.trim(),
+      telefono: formData.telefono.trim().replace(/\s/g, ''), // Limpiar espacios del teléfono
       fechaNacimiento: formData.fechaNacimiento,
       ciudad: formData.ciudad.trim(),
       profesion: formData.profesion.trim(),

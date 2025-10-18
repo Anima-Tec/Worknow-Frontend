@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { loginApi } from "../services/api";
 import { saveSession, getRememberedEmail } from "../auth/authContext";
 import { useNavigate } from "react-router-dom";
+import { validateLogin } from "../utils/simpleValidation";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 import "./Login.css";
 import { IoEyeOutline } from "react-icons/io5";
 import { FaRegEyeSlash } from "react-icons/fa";
@@ -14,6 +16,7 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const saved = getRememberedEmail();
@@ -23,6 +26,15 @@ export default function Login() {
   async function onSubmit(e) {
     e.preventDefault();
     setErr("");
+    setErrors({});
+    
+    // Validación básica
+    const validation = validateLogin(email, password);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
+    }
+    
     setLoading(true);
     try {
       const data = await loginApi({ email, password });

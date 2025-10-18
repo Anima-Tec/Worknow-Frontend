@@ -1,0 +1,243 @@
+/* ======================= 🔄 ESTILOS DE LOADING ========================== */
+
+/* Spinner principal */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.loading-spinner-circle {
+  position: relative;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top: 3px solid currentColor;
+  animation: spin 1s linear infinite reverse;
+}
+
+/* Tamaños */
+.loading-spinner-small {
+  font-size: 0.875rem;
+}
+
+.loading-spinner-small .loading-spinner-circle {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.loading-spinner-medium {
+  font-size: 1rem;
+}
+
+.loading-spinner-medium .loading-spinner-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.loading-spinner-large {
+  font-size: 1.25rem;
+}
+
+.loading-spinner-large .loading-spinner-circle {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+/* Colores */
+.loading-spinner-primary {
+  color: #7c3aed;
+}
+
+.loading-spinner-secondary {
+  color: #6b7280;
+}
+
+.loading-spinner-white {
+  color: #ffffff;
+}
+
+/* Texto */
+.loading-spinner-text {
+  margin: 0;
+  font-weight: 500;
+  text-align: center;
+  opacity: 0.8;
+}
+
+/* Overlay */
+.loading-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Loading de página */
+.page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 2rem;
+}
+
+/* Loading de lista */
+.list-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.list-loading-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.list-loading-avatar {
+  width: 3rem;
+  height: 3rem;
+  background: #e5e7eb;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.list-loading-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.list-loading-line {
+  height: 0.75rem;
+  background: #e5e7eb;
+  border-radius: 0.375rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.list-loading-line-title {
+  width: 60%;
+}
+
+.list-loading-line-subtitle {
+  width: 40%;
+}
+
+.list-loading-line-text {
+  width: 80%;
+}
+
+/* Loading de cards */
+.card-loading-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.card-loading-item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.card-loading-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-loading-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #e5e7eb;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.card-loading-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-loading-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-loading-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.card-loading-button {
+  width: 5rem;
+  height: 2rem;
+  background: #e5e7eb;
+  border-radius: 0.375rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.card-loading-line-small {
+  width: 50%;
+}
+
+/* Animaciones */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-loading-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .list-loading-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .list-loading-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

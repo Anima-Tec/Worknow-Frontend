@@ -50,6 +50,39 @@ export const useNotification = () => {
     return showNotification({ type: 'info', title, message, duration });
   }, [showNotification]);
 
+  // Función para manejar errores de API de forma automática
+  const handleApiError = useCallback((error, defaultMessage = 'Error inesperado') => {
+    let title = 'Error';
+    let message = defaultMessage;
+    let duration = 7000;
+
+    if (error.name === 'ApiError') {
+      title = 'Error del servidor';
+      message = error.message;
+      
+      // Ajustar duración según el tipo de error
+      if (error.status === 401) {
+        title = 'Sesión expirada';
+        duration = 5000;
+      } else if (error.status === 403) {
+        title = 'Sin permisos';
+        duration = 6000;
+      } else if (error.status === 404) {
+        title = 'No encontrado';
+        duration = 5000;
+      } else if (error.status >= 500) {
+        title = 'Error del servidor';
+        duration = 8000;
+      }
+    } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      title = 'Error de conexión';
+      message = 'No se pudo conectar con el servidor. Verificá tu conexión a internet.';
+      duration = 8000;
+    }
+
+    return showError(title, message, duration);
+  }, [showError]);
+
   const clearAll = useCallback(() => {
     setNotifications([]);
   }, []);
@@ -61,6 +94,7 @@ export const useNotification = () => {
     showError,
     showWarning,
     showInfo,
+    handleApiError,
     removeNotification,
     clearAll
   };

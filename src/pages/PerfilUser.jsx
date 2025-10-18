@@ -6,13 +6,15 @@ import { useNavigate } from "react-router-dom";
 import { FiLogOut, FiArrowLeft } from "react-icons/fi";
 import { logout } from "../auth/authContext";
 import { useNotification, NotificationContainer } from "../utils/notifications.jsx";
+import { getProfile, updateProfile } from "../services/api.js";
+import { LoadingSpinner } from "../components/LoadingSpinner.jsx";
 import Select from 'react-select';
 
 const PerfilUser = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { notifications, showSuccess, showError, showWarning, removeNotification } = useNotification();
+  const { notifications, showSuccess, showError, showWarning, removeNotification, handleApiError } = useNotification();
 
   // Opciones de departamentos de Uruguay
   const departamentosOptions = [
@@ -85,47 +87,10 @@ const handleGoBack = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          showError(
-            "Sesión expirada",
-            "No hay sesión activa. Iniciá sesión nuevamente.",
-            4000
-          );
-          setTimeout(() => {
-          window.location.href = "/login";
-          }, 2000);
-          return;
-        }
-
-        const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+        setLoading(true);
+        const data = await getProfile();
         
-        const res = await fetch(`${API_BASE}/auth/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          if (res.status === 401) {
-            showError(
-              "Sesión expirada",
-              "Por favor, iniciá sesión nuevamente.",
-              4000
-            );
-            localStorage.removeItem("token");
-            localStorage.removeItem("user");
-            setTimeout(() => {
-            window.location.href = "/login";
-            }, 2000);
-            return;
-          }
-          
-          const errorText = await res.text();
-          throw new Error(`Error ${res.status}: ${res.statusText} - ${errorText}`);
-        }
-
-        const data = await res.json();
+        // Formatear fecha de nacimiento si existe
         if (data.fechaNacimiento) {
           if (typeof data.fechaNacimiento === 'object') {
             data.fechaNacimiento = new Date(data.fechaNacimiento).toISOString().split('T')[0];
@@ -134,11 +99,17 @@ const handleGoBack = () => {
           }
         }
 
+        // Limpiar el prefijo +598 del teléfono para mostrar solo los números
+        let telefonoLimpio = data.telefono || "";
+        if (telefonoLimpio.startsWith("+598")) {
+          telefonoLimpio = telefonoLimpio.replace("+598", "").trim();
+        }
+
         const profileData = {
           nombre: data.nombre || "",
           apellido: data.apellido || "",
           email: data.email || "",
-          telefono: data.telefono || "",
+          telefono: telefonoLimpio,
           fechaNacimiento: data.fechaNacimiento || "",
           ciudad: data.ciudad || "",
           profesion: data.profesion || "",
@@ -154,17 +125,13 @@ const handleGoBack = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error al cargar el perfil:", error);
-        showError(
-          "Error al cargar perfil",
-          "No se pudo cargar tu perfil. Revisá tu conexión e intentá nuevamente.",
-          5000
-        );
+        handleApiError(error, "No se pudo cargar tu perfil. Revisá tu conexión e intentá nuevamente.");
         setLoading(false);
       }
     };
 
     fetchUserProfile();
-  }, []);
+  }, [handleApiError]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -230,17 +197,7 @@ const handleGoBack = () => {
 
   const handleSaveProfile = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        showError(
-          "Sesión expirada",
-          "No hay sesión activa. Iniciá sesión nuevamente.",
-          4000
-        );
-        return;
-      }
-
-
+      // Validación básica de teléfono
       if (editData.telefono && editData.telefono.length !== 8) {
         showError(
           "Teléfono inválido",
@@ -250,10 +207,16 @@ const handleGoBack = () => {
         return;
       }
 
+      // Agregar prefijo +598 al teléfono antes de enviar
+      let telefonoConPrefijo = editData.telefono;
+      if (telefonoConPrefijo && !telefonoConPrefijo.startsWith("+598")) {
+        telefonoConPrefijo = "+598" + telefonoConPrefijo;
+      }
+
       const dataToSend = {
         nombre: editData.nombre,
         apellido: editData.apellido,
-        telefono: editData.telefono,
+        telefono: telefonoConPrefijo,
         fechaNacimiento: editData.fechaNacimiento,
         ciudad: editData.ciudad,
         profesion: editData.profesion,
@@ -269,42 +232,10 @@ const handleGoBack = () => {
         }
       };
 
-      const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
-
-      const formData = new FormData();
-      
-      Object.keys(dataToSend).forEach(key => {
-        if (key === 'formacionAcademica') {
-          formData.append('formacionAcademica', JSON.stringify(dataToSend[key]));
-        } else {
-          formData.append(key, dataToSend[key]);
-        }
-      });
-
-      educationFiles.forEach((file, index) => {
-        formData.append(`educationFiles`, file);
-      });
-
-      if (curriculumFile) {
-        formData.append('curriculumFile', curriculumFile);
-      }
-
-      const res = await fetch(`${API_BASE}/auth/profile`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Error al actualizar perfil");
-      }
-
-      const responseData = await res.json();
+      const responseData = await updateProfile(dataToSend);
 
       if (responseData.updated) {
+        // Formatear fecha si es necesario
         if (responseData.updated.fechaNacimiento) {
           if (typeof responseData.updated.fechaNacimiento === 'object') {
             responseData.updated.fechaNacimiento = new Date(responseData.updated.fechaNacimiento)
@@ -314,6 +245,13 @@ const handleGoBack = () => {
             responseData.updated.fechaNacimiento = responseData.updated.fechaNacimiento.split('T')[0];
           }
         }
+        
+        // Limpiar prefijo +598 del teléfono en la respuesta
+        let telefonoLimpio = responseData.updated.telefono || "";
+        if (telefonoLimpio.startsWith("+598")) {
+          telefonoLimpio = telefonoLimpio.replace("+598", "").trim();
+        }
+        responseData.updated.telefono = telefonoLimpio;
         
         setUserData(responseData.updated);
         setEditData(initializeEditData(responseData.updated));
@@ -325,31 +263,14 @@ const handleGoBack = () => {
       }
 
       setIsEditing(false);
-      
-      const filesMessage = [];
-      if (educationFiles.length > 0) {
-        filesMessage.push(`${educationFiles.length} certificado(s) de formación`);
-      }
-      if (curriculumFile) {
-        filesMessage.push("1 curriculum vitae");
-      }
-      
-      const successMessage = filesMessage.length > 0 
-        ? `Tus datos y archivos (${filesMessage.join(', ')}) se han guardado correctamente.`
-        : "Tus datos se han guardado correctamente.";
-      
       showSuccess(
         "¡Perfil actualizado!",
-        successMessage,
+        "Tus datos se han guardado correctamente.",
         4000
       );
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
-      showError(
-        "Error al actualizar",
-        error.message || "No se pudo actualizar tu perfil. Intentá nuevamente.",
-        5000
-      );
+      handleApiError(error, "No se pudo actualizar tu perfil. Intentá nuevamente.");
     }
   };
 
@@ -362,9 +283,7 @@ const handleGoBack = () => {
     return (
       <div className="perfil-container">
         <div className="perfil-wrapper">
-          <div style={{ textAlign: 'center', padding: '50px' }}>
-            <p>Cargando perfil...</p>
-          </div>
+          <LoadingSpinner size="large" text="Cargando perfil..." />
         </div>
       </div>
     );
