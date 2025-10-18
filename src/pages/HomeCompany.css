@@ -1,3 +1,6 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 /* ---------- HEADER ---------- */
 .header {
   display: flex;
@@ -6,13 +9,17 @@
   padding: 20px 40px;
   background-color: white;
   border-bottom: 1px solid #e5e5e5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .h1 {
+  font-family: 'Poppins', sans-serif;
   font-size: 32px;
-  font-weight: bold;
+  font-weight: 700;
   margin: 0;
   color: black;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 
 .h1 span {
@@ -35,6 +42,8 @@
   font-weight: 500;
   color: #333;
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.01em;
 }
 
 .nav-item {
@@ -44,6 +53,8 @@
   font-weight: 500;
   color: #333;
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.01em;
   cursor: pointer;
   transition: transform 0.2s ease, color 0.2s ease;
 }
@@ -96,6 +107,29 @@
   overflow: hidden;
 }
 
+/* Tipografía para títulos y texto de las cards */
+.card1 h2,
+.card2 h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+
+.card1 p,
+.card2 p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
 /* Efecto de brillo al hacer hover */
 .card1::before,
 .card2::before {
@@ -131,6 +165,7 @@
   border: none;
   padding: 10px 5px;
   border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
@@ -138,6 +173,7 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
   margin-top: 20px;
   width: 200px;
+  letter-spacing: 0.01em;
 }
 
 .primaryBtn:hover {
@@ -186,9 +222,13 @@
 }
 
 .job-postings h2 {
+  font-family: 'Poppins', sans-serif;
   margin-bottom: 1rem;
   color: #4f46e5;
   font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
 }
 
 /* ---------- CARRUSEL DE PROYECTOS ---------- */
@@ -199,10 +239,13 @@
 }
 
 .freelancer-postings h2 {
+  font-family: 'Poppins', sans-serif;
   color: #4f46e5;
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 20px;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
 }
 
 .section-header {
@@ -307,22 +350,29 @@
 }
 
 .project-title {
+  font-family: 'Poppins', sans-serif;
   font-size: 18px;
   margin-bottom: 6px;
   color: #4f46e5;
   font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 
 .project-description {
+  font-family: 'Inter', sans-serif;
   font-size: 14px;
   color: #555;
   margin-bottom: 10px;
   line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
 .project-info p {
+  font-family: 'Inter', sans-serif;
   margin: 3px 0;
   font-size: 14px;
+  letter-spacing: 0.01em;
 }
 
 .project-skills {
@@ -330,19 +380,24 @@
 }
 
 .skill-tag {
+  font-family: 'Inter', sans-serif;
   background-color: #ede9fe;
   color: #6d28d9;
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 12px;
+  font-weight: 500;
   margin: 3px;
   display: inline-block;
+  letter-spacing: 0.01em;
 }
 
 .project-company {
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   margin-top: 10px;
   color: #555;
+  letter-spacing: 0.01em;
 }
 .notification-badge {
   background-color: red;

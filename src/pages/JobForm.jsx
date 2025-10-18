@@ -215,6 +215,7 @@ export default function JobForm({ onClose, onJobCreated }) {
           description={form.description || "Descripción..."}
           projectUrl={form.projectUrl}
           isPreview={true}
+          isFormPreview={true}
         />
       </div>
     </div>

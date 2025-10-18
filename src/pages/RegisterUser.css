@@ -1,3 +1,6 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 /* Register Container */
 .register-container {
   min-height: 100vh;
@@ -6,6 +9,7 @@
   justify-content: center;
   padding: 1rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .register-card {
@@ -46,27 +50,43 @@
 }
 
 .register-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  line-height: 1.2;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #ffffff 0%, #f3e8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 @media (min-width: 768px) {
   .register-title {
-    font-size: 2.5rem;
+    font-size: 3rem;
+    letter-spacing: -0.05em;
   }
 }
 
 .register-brand {
   color: #c084fc;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(192, 132, 252, 0.3);
+  background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .register-subtitle {
   color: #e9d5ff;
   font-size: 1.125rem;
-  line-height: 1.75;
-  margin-bottom: 2rem;
+  font-weight: 400;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.01em;
+  opacity: 0.95;
 }
 
 .register-features {
@@ -93,7 +113,10 @@
 }
 
 .register-feature-item span {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: #f3e8ff;
 }
 
 /* Panel Derecho */
@@ -113,14 +136,21 @@
 }
 
 .register-form-title {
-  font-size: 2rem;
-  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
   color: #1f2937;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 
 .register-form-subtitle {
   color: #6b7280;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
 }
 
 /* Formulario */
@@ -149,10 +179,11 @@
 
 .register-label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   color: #374151;
   margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
 }
 
 .register-input-wrapper {
@@ -170,13 +201,15 @@
 
 .register-input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   padding-left: 2.5rem;
   border: 1px solid #d1d5db;
   border-radius: 12px;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  font-weight: 400;
   transition: all 0.2s;
   outline: none;
+  letter-spacing: 0.01em;
 }
 
 .register-input:focus {
@@ -220,14 +253,17 @@
   width: 100%;
   background: linear-gradient(to right, #7c3aed, #6b21a8);
   color: white;
-  padding: 0.75rem;
+  padding: 0.875rem;
   border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
   font-weight: 600;
+  font-size: 1rem;
   border: none;
   cursor: pointer;
   box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.3);
   transition: all 0.3s;
   margin-top: 0.5rem;
+  letter-spacing: 0.01em;
 }
 
 .register-submit-btn:hover {
@@ -238,9 +274,12 @@
 
 .register-login-link {
   text-align: center;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: #6b7280;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
 }
 
 .register-link {
@@ -248,6 +287,7 @@
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s;
+  letter-spacing: 0.01em;
 }
 
 .register-link:hover {

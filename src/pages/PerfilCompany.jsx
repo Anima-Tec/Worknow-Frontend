@@ -148,6 +148,7 @@ function PerfilCompany() {
     } else {
       setEditData((prev) => ({ ...prev, [name]: value }));
     }
+<<<<<<< HEAD
   };
 
   const handleDepartamentoChange = (selectedOption) => {
@@ -155,6 +156,8 @@ function PerfilCompany() {
       ...prev, 
       ciudad: selectedOption ? selectedOption.value : '' 
     }));
+=======
+>>>>>>> 583d9d1efc6cfdee3b133436928a4ebd0beeed72
   };
 
   const handleSaveProfile = async () => {
@@ -375,7 +378,11 @@ function PerfilCompany() {
                           className="company-contact-input"
                         />
                       </div>
+<<<<<<< HEAD
                       <div className="company-contact-edit-item">
+=======
+                      <div className="company-contact-item-editable">
+>>>>>>> 583d9d1efc6cfdee3b133436928a4ebd0beeed72
                         <div className="company-phone-input">
                           <span className="company-phone-prefix">+598</span>
                           <input

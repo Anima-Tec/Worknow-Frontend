@@ -1,3 +1,6 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 .applications-modal-overlay {
   position: fixed;
   top: 0;
@@ -9,6 +12,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .applications-modal {
@@ -31,19 +35,26 @@
 }
 
 .modal-header h2 {
+  font-family: 'Poppins', sans-serif;
   margin: 0;
-  color: #333;
+  color: #1f2937;
   font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
 }
 
 .close-btn {
+  font-family: 'Inter', sans-serif;
   background: none;
   border: none;
   font-size: 1.2rem;
+  font-weight: 500;
   cursor: pointer;
   color: #666;
   padding: 5px;
   border-radius: 4px;
+  letter-spacing: 0.01em;
 }
 
 .close-btn:hover {
@@ -52,23 +63,32 @@
 }
 
 .applications-table {
+  font-family: 'Inter', sans-serif;
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
+  letter-spacing: 0.01em;
 }
 
 .applications-table th {
+  font-family: 'Poppins', sans-serif;
   background: #f8f9fa;
   padding: 12px 8px;
   text-align: left;
   font-weight: 600;
-  color: #333;
+  color: #1f2937;
   border-bottom: 2px solid #e0e0e0;
+  letter-spacing: 0.01em;
+  font-size: 0.9rem;
 }
 
 .applications-table td {
+  font-family: 'Inter', sans-serif;
   padding: 10px 8px;
   border-bottom: 1px solid #f0f0f0;
+  font-weight: 400;
+  color: #374151;
+  letter-spacing: 0.01em;
 }
 
 .applications-table tbody tr:hover {
@@ -77,11 +97,13 @@
 
 /* Estilos para estados */
 .status {
+  font-family: 'Inter', sans-serif;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .status.aceptado, .status.accepted {
@@ -106,10 +128,12 @@
 
 /* Estilos para badges de tipo */
 .type-badge {
+  font-family: 'Inter', sans-serif;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .type-badge.job {
@@ -165,10 +189,15 @@
 }
 
 .modal-footer {
+  font-family: 'Inter', sans-serif;
   padding: 15px 20px;
   border-top: 1px solid #e0e0e0;
   background: #f8f9fa;
   text-align: center;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #6b7280;
+  letter-spacing: 0.01em;
 }
 
 /* Responsive */

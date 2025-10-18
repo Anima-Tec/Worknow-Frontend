@@ -171,6 +171,7 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
               skills={formData.skills || "Habilidades requeridas"}
               description={formData.description || "Descripción del proyecto"}
               company="WorkNow"
+              isFormPreview={true}
             />
           </div>
         </div>
