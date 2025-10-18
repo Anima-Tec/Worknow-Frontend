@@ -74,8 +74,13 @@ function PerfilCompany() {
     const loadCompanyData = async () => {
       try {
         setLoading(true);
-        const data = await getProfile();
-        console.log("Datos de empresa:", data);
+        const response = await getProfile();
+        console.log("📊 Datos de empresa recibidos:", response);
+        console.log("🔑 Token actual:", localStorage.getItem("token"));
+
+        // Extraer los datos del objeto data anidado
+        const data = response.data || response;
+        console.log("📋 Datos extraídos:", data);
 
         // Limpiar el prefijo +598 del teléfono para mostrar solo los números
         let telefonoLimpio = data.telefono || "";
@@ -88,6 +93,7 @@ function PerfilCompany() {
           telefono: telefonoLimpio
         };
 
+        console.log("✅ Datos procesados para mostrar:", companyProfileData);
         setCompanyData(companyProfileData);
         setEditData(companyProfileData);
         if (data.logoUrl) setLogoImage(data.logoUrl);

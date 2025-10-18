@@ -165,10 +165,10 @@ const NotificationToast = ({ notification, onRemove }) => {
 };
 
 // Contenedor de notificaciones
-export const NotificationContainer = ({ notifications, onRemove }) => {
+export const NotificationContainer = ({ notifications = [], onRemove }) => {
   return (
     <div className="notification-container">
-      {notifications.map(notification => (
+      {notifications && notifications.map(notification => (
         <NotificationToast
           key={notification.id}
           notification={notification}

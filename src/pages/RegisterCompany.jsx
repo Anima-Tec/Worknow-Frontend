@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './RegisterCompany.css';
+import { useNotification, NotificationContainer } from '../utils/notifications';
 
 const RegisterCompany = () => {
+  const { notifications, showSuccess, showError, removeNotification } = useNotification();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -198,7 +200,7 @@ const RegisterCompany = () => {
         nombreEmpresa: formData.nombreEmpresa,
         rut: formData.rut,
         email: formData.email,
-        telefono: formData.telefono,
+        telefono: formData.telefono.replace(/\s/g, ''), // Remover espacios del teléfono
         direccion: formData.direccion,
         ciudad: formData.ciudad,
         sector: formData.sector,
@@ -209,22 +211,32 @@ const RegisterCompany = () => {
       };
       
       try {
+        console.log("Datos enviados:", companyData);
+        
         const res = await fetch("http://localhost:3000/api/auth/register/company", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(companyData),
         });
 
-        if (!res.ok) throw new Error("Error al registrar empresa");
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Error del backend:", errorData);
+          throw new Error(`Error ${res.status}: ${errorData.message || "Error al registrar empresa"}`);
+        }
+        
         const data = await res.json();
-        alert("✅ Registro de empresa exitoso!");
+        console.log("Respuesta exitosa:", data);
+        showSuccess("¡Registro de empresa exitoso!");
 
-        // opcional: guardar token o redirigir
+        // Guardar token y redirigir al perfil de la empresa después de un breve delay
         localStorage.setItem("token", data.token);
-        window.location.href = "/home/company";
+        setTimeout(() => {
+          window.location.href = "/perfilcompany";
+        }, 1500); // 1.5 segundos para que el usuario vea la notificación
       } catch (error) {
-        console.error(error);
-        alert("❌ Error al registrar empresa");
+        console.error("Error completo:", error);
+        showError(error.message);
       }
     }
   };
@@ -560,6 +572,10 @@ const RegisterCompany = () => {
           </div>
         </div>
       </div>
+      <NotificationContainer 
+        notifications={notifications} 
+        onRemove={removeNotification} 
+      />
     </div>
   );
 };
