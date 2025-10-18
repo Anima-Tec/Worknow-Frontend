@@ -50,12 +50,15 @@
   background: #f3f3f3;
 }
 
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 /* Layout formulario + preview */
 .projectform-container {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 3rem;
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Formulario */
@@ -66,28 +69,38 @@
 }
 
 .projectform h2 {
+  font-family: 'Poppins', sans-serif;
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 1rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  color: #4c1d95;
 }
 
 .projectform label {
-  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
   margin-bottom: 0.3rem;
   display: block;
-  color: #333;
+  color: #374151;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
 }
 
 .projectform input,
 .projectform select,
 .projectform textarea {
+  font-family: 'Inter', sans-serif;
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 0.95rem;
-  transition: all 0.2s ease-in-out;
-  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 1rem;
+  font-weight: 400;
+  transition: all 0.25s ease;
+  background: #f9fafb;
+  letter-spacing: 0.01em;
 }
 
 .projectform input:focus,
@@ -96,6 +109,7 @@
   outline: none;
   border-color: #7c3aed;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+  background: #fff;
 }
 
 .projectform textarea {
@@ -111,6 +125,7 @@
 
 /* Botón publicar */
 .btn-publicar-proyecto {
+  font-family: 'Poppins', sans-serif;
   background: linear-gradient(90deg, #7c3aed, #9333ea);
   color: #fff;
   border: none;
@@ -120,12 +135,15 @@
   font-weight: 600;
   font-size: 1rem;
   align-self: flex-start;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.2);
+  letter-spacing: 0.01em;
 }
 
 .btn-publicar-proyecto:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   background: linear-gradient(90deg, #6d28d9, #7c3aed);
+  box-shadow: 0 8px 22px rgba(109, 40, 217, 0.25);
 }
 
 /* Preview */
@@ -135,7 +153,11 @@
 }
 
 .project-preview h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: #4c1d95;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
 }
