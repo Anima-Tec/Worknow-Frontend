@@ -5,16 +5,42 @@ import ProyectosCompletados from "../components/ProyectosCompletados";
 import { useNavigate } from "react-router-dom";
 import { FiLogOut, FiArrowLeft } from "react-icons/fi";
 import { logout } from "../auth/authContext";
+import { useNotification, NotificationContainer } from "../utils/notifications.jsx";
+import Select from 'react-select';
 
 const PerfilUser = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { notifications, showSuccess, showError, showWarning, removeNotification } = useNotification();
+
+  // Opciones de departamentos de Uruguay
+  const departamentosOptions = [
+    { value: 'Artigas', label: 'Artigas' },
+    { value: 'Canelones', label: 'Canelones' },
+    { value: 'Cerro Largo', label: 'Cerro Largo' },
+    { value: 'Colonia', label: 'Colonia' },
+    { value: 'Durazno', label: 'Durazno' },
+    { value: 'Flores', label: 'Flores' },
+    { value: 'Florida', label: 'Florida' },
+    { value: 'Lavalleja', label: 'Lavalleja' },
+    { value: 'Maldonado', label: 'Maldonado' },
+    { value: 'Montevideo', label: 'Montevideo' },
+    { value: 'Paysandú', label: 'Paysandú' },
+    { value: 'Río Negro', label: 'Río Negro' },
+    { value: 'Rivera', label: 'Rivera' },
+    { value: 'Rocha', label: 'Rocha' },
+    { value: 'Salto', label: 'Salto' },
+    { value: 'San José', label: 'San José' },
+    { value: 'Soriano', label: 'Soriano' },
+    { value: 'Tacuarembó', label: 'Tacuarembó' },
+    { value: 'Treinta y Tres', label: 'Treinta y Tres' }
+  ];
 
   const [userData, setUserData] = useState({
     nombre: "",
     apellido: "",
-    email: "",
+    email: "", // Solo para mostrar, no editable
     telefono: "",
     fechaNacimiento: "",
     ciudad: "",
@@ -25,18 +51,33 @@ const PerfilUser = () => {
     habilidades: "",
   });
 
-  const [editData, setEditData] = useState({ ...userData });
+  // Estados para archivos
+  const [educationFiles, setEducationFiles] = useState([]);
+  const [curriculumFile, setCurriculumFile] = useState(null);
 
-  const navigate = useNavigate(); // 🟣 necesario para redirigir
+  // Estado para Formación Académica
+  const [educationData, setEducationData] = useState({
+    institucion: "",
+    titulo: "",
+    periodo: "",
+    descripcion: ""
+  });
 
-// 🔹 Cerrar sesión
+  const initializeEditData = (data) => {
+    const { email, ...editableFields } = data;
+    return editableFields;
+  };
+
+  const [editData, setEditData] = useState(initializeEditData(userData));
+
+  const navigate = useNavigate();
+
 const handleLogout = () => {
-  logout();              // borra token, user, etc.
-  localStorage.clear();  // limpia todo
-  navigate("/login");  // redirige al Landing
-};
+    logout();
+    localStorage.clear();
+    navigate("/login");
+  };
 
-// 🔹 Volver al home de usuario
 const handleGoBack = () => {
   navigate("/home/user");
 };
@@ -46,12 +87,20 @@ const handleGoBack = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          alert("No hay sesión activa. Iniciá sesión nuevamente.");
+          showError(
+            "Sesión expirada",
+            "No hay sesión activa. Iniciá sesión nuevamente.",
+            4000
+          );
+          setTimeout(() => {
           window.location.href = "/login";
+          }, 2000);
           return;
         }
 
-        const res = await fetch("http://localhost:3000/api/auth/profile", {
+        const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+        
+        const res = await fetch(`${API_BASE}/auth/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,32 +108,33 @@ const handleGoBack = () => {
 
         if (!res.ok) {
           if (res.status === 401) {
-            alert("Sesión expirada. Por favor, iniciá sesión nuevamente.");
+            showError(
+              "Sesión expirada",
+              "Por favor, iniciá sesión nuevamente.",
+              4000
+            );
             localStorage.removeItem("token");
             localStorage.removeItem("user");
+            setTimeout(() => {
             window.location.href = "/login";
+            }, 2000);
             return;
           }
-          throw new Error("Error al obtener perfil");
+          
+          const errorText = await res.text();
+          throw new Error(`Error ${res.status}: ${res.statusText} - ${errorText}`);
         }
 
         const data = await res.json();
-
-        // ✅ La fecha ya viene en formato YYYY-MM-DD desde el backend
-        // Solo validar que exista y sea válida
         if (data.fechaNacimiento) {
-          // Si viene como objeto Date, convertir
           if (typeof data.fechaNacimiento === 'object') {
             data.fechaNacimiento = new Date(data.fechaNacimiento).toISOString().split('T')[0];
-          }
-          // Si viene con T (ISO string), extraer solo la fecha
-          else if (data.fechaNacimiento.includes('T')) {
+          } else if (data.fechaNacimiento.includes('T')) {
             data.fechaNacimiento = data.fechaNacimiento.split('T')[0];
           }
         }
 
-        // ✅ Asegurar que campos vacíos sean strings y no null
-        const sanitizedData = {
+        const profileData = {
           nombre: data.nombre || "",
           apellido: data.apellido || "",
           email: data.email || "",
@@ -98,13 +148,17 @@ const handleGoBack = () => {
           habilidades: data.habilidades || "",
         };
 
-        setUserData(sanitizedData);
-        setEditData(sanitizedData);
+        setUserData(profileData);
+        setEditData(initializeEditData(profileData));
+        localStorage.setItem("user", JSON.stringify(data));
         setLoading(false);
-        console.log("✅ Perfil cargado correctamente:", sanitizedData);
       } catch (error) {
-        console.error("❌ Error al cargar el perfil:", error);
-        alert("No se pudo cargar tu perfil. Revisá tu conexión e intentá nuevamente.");
+        console.error("Error al cargar el perfil:", error);
+        showError(
+          "Error al cargar perfil",
+          "No se pudo cargar tu perfil. Revisá tu conexión e intentá nuevamente.",
+          5000
+        );
         setLoading(false);
       }
     };
@@ -121,20 +175,81 @@ const handleGoBack = () => {
     }
   };
 
+  // Handlers para archivos
+  const handleEducationFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    setEducationFiles(prev => [...prev, ...files]);
+  };
+
+  const handleCurriculumFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCurriculumFile(file);
+    }
+  };
+
+  const downloadFile = (file, filename) => {
+    const url = URL.createObjectURL(file);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadEducationFile = (file) => {
+    downloadFile(file, file.name);
+  };
+
+  const handleDownloadCurriculumFile = () => {
+    if (curriculumFile) {
+      downloadFile(curriculumFile, curriculumFile.name);
+    }
+  };
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
+    
+    if (name === 'telefono') {
+      const numericValue = value.replace(/\D/g, '').slice(0, 8);
+      setEditData((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
     setEditData((prev) => ({ ...prev, [name]: value }));
+    }
   };
+
+  const handleDepartamentoChange = (selectedOption) => {
+    setEditData((prev) => ({ 
+      ...prev, 
+      ciudad: selectedOption ? selectedOption.value : '' 
+    }));
+  };
+
 
   const handleSaveProfile = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("No hay sesión activa");
+        showError(
+          "Sesión expirada",
+          "No hay sesión activa. Iniciá sesión nuevamente.",
+          4000
+        );
         return;
       }
 
-      // ✅ Preparar datos para enviar (sin email, password, role)
+
+      if (editData.telefono && editData.telefono.length !== 8) {
+        showError(
+          "Teléfono inválido",
+          "El teléfono debe tener exactamente 8 dígitos.",
+          4000
+        );
+        return;
+      }
+
       const dataToSend = {
         nombre: editData.nombre,
         apellido: editData.apellido,
@@ -146,17 +261,40 @@ const handleGoBack = () => {
         experiencia: editData.experiencia,
         educacion: editData.educacion,
         habilidades: editData.habilidades,
+        formacionAcademica: {
+          institucion: educationData.institucion,
+          titulo: educationData.titulo,
+          periodo: educationData.periodo,
+          descripcion: educationData.descripcion
+        }
       };
 
-      console.log("📤 Enviando datos de actualización:", dataToSend);
+      const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
-      const res = await fetch("http://localhost:3000/api/auth/profile", {
+      const formData = new FormData();
+      
+      Object.keys(dataToSend).forEach(key => {
+        if (key === 'formacionAcademica') {
+          formData.append('formacionAcademica', JSON.stringify(dataToSend[key]));
+        } else {
+          formData.append(key, dataToSend[key]);
+        }
+      });
+
+      educationFiles.forEach((file, index) => {
+        formData.append(`educationFiles`, file);
+      });
+
+      if (curriculumFile) {
+        formData.append('curriculumFile', curriculumFile);
+      }
+
+      const res = await fetch(`${API_BASE}/auth/profile`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(dataToSend),
+        body: formData,
       });
 
       if (!res.ok) {
@@ -165,11 +303,8 @@ const handleGoBack = () => {
       }
 
       const responseData = await res.json();
-      console.log("✅ Respuesta del servidor:", responseData);
 
-      // ✅ Actualizar el estado local con los datos actualizados
       if (responseData.updated) {
-        // Asegurar formato de fecha
         if (responseData.updated.fechaNacimiento) {
           if (typeof responseData.updated.fechaNacimiento === 'object') {
             responseData.updated.fechaNacimiento = new Date(responseData.updated.fechaNacimiento)
@@ -181,21 +316,45 @@ const handleGoBack = () => {
         }
         
         setUserData(responseData.updated);
-        setEditData(responseData.updated);
+        setEditData(initializeEditData(responseData.updated));
+        localStorage.setItem("user", JSON.stringify(responseData.updated));
       } else {
         setUserData(editData);
+        setEditData(initializeEditData(editData));
+        localStorage.setItem("user", JSON.stringify(editData));
       }
 
       setIsEditing(false);
-      alert("✅ Perfil actualizado correctamente");
+      
+      const filesMessage = [];
+      if (educationFiles.length > 0) {
+        filesMessage.push(`${educationFiles.length} certificado(s) de formación`);
+      }
+      if (curriculumFile) {
+        filesMessage.push("1 curriculum vitae");
+      }
+      
+      const successMessage = filesMessage.length > 0 
+        ? `Tus datos y archivos (${filesMessage.join(', ')}) se han guardado correctamente.`
+        : "Tus datos se han guardado correctamente.";
+      
+      showSuccess(
+        "¡Perfil actualizado!",
+        successMessage,
+        4000
+      );
     } catch (error) {
-      console.error("❌ Error al actualizar perfil:", error);
-      alert(`❌ Error: ${error.message}`);
+      console.error("Error al actualizar perfil:", error);
+      showError(
+        "Error al actualizar",
+        error.message || "No se pudo actualizar tu perfil. Intentá nuevamente.",
+        5000
+      );
     }
   };
 
   const handleCancel = () => {
-    setEditData({ ...userData });
+    setEditData(initializeEditData(userData));
     setIsEditing(false);
   };
 
@@ -214,10 +373,8 @@ const handleGoBack = () => {
   return (
     <div className="perfil-container">
       <div className="perfil-wrapper">
-        {/* HEADER */}
         <div className="perfil-header-card">
   <div className="perfil-header-bg">
-    {/* 🔹 Íconos dentro del área violeta */}
     <div className="violet-icons-bar">
       <FiArrowLeft
         className="violet-icon back"
@@ -233,7 +390,6 @@ const handleGoBack = () => {
   </div>
           <div className="perfil-header-content">
             <div className="perfil-header-info">
-              {/* Imagen */}
               <div className="perfil-image-container">
                 <div className="perfil-image-wrapper">
                   {profileImage ? (
@@ -267,7 +423,6 @@ const handleGoBack = () => {
 
                  <div className="perfil-basic-info">
         {isEditing ? (
-          // MODO EDICIÓN - Campos editables
           <div className="perfil-edit-fields">
             <div className="perfil-name-edit">
               <input
@@ -296,36 +451,73 @@ const handleGoBack = () => {
               placeholder="Tu profesión"
             />
             <div className="perfil-contact-edit">
-              <input
-                type="text"
-                name="ciudad"
-                value={editData.ciudad}
-                onChange={handleEditChange}
-                className="perfil-input-small"
-                placeholder="Ciudad"
+              <Select
+                options={departamentosOptions}
+                value={departamentosOptions.find(option => option.value === editData.ciudad) || null}
+                onChange={handleDepartamentoChange}
+                placeholder="Seleccionar departamento"
+                isSearchable={true}
+                isClearable={true}
+                className="perfil-departamento-select"
+                classNamePrefix="perfil-select"
+                noOptionsMessage={() => "No se encontraron departamentos"}
+                loadingMessage={() => "Cargando departamentos..."}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    minHeight: '3rem',
+                    border: '2px solid rgba(124, 58, 237, 0.1)',
+                    borderRadius: '14px',
+                    boxShadow: '0 4px 8px -2px rgba(124, 58, 237, 0.1)',
+                    '&:hover': {
+                      borderColor: 'rgba(124, 58, 237, 0.2)',
+                    },
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 16px -4px rgba(124, 58, 237, 0.2)',
+                    border: '1px solid rgba(124, 58, 237, 0.1)',
+                  }),
+                }}
               />
-              <input
-                type="email"
-                name="email"
-                value={editData.email}
-                onChange={handleEditChange}
-                className="perfil-input-medium"
-                placeholder="Email"
-              />
+              <div className="perfil-phone-input">
+                <span className="perfil-phone-prefix">+598</span>
               <input
                 type="tel"
                 name="telefono"
                 value={editData.telefono}
                 onChange={handleEditChange}
                 className="perfil-input-small"
-                placeholder="Teléfono"
-              />
+                  placeholder="12345678"
+                  maxLength="8"
+                />
+              </div>
+            </div>
+            
+            <div className="perfil-edit-actions">
+              <button onClick={handleSaveProfile} className="perfil-save-btn">
+                Guardar
+              </button>
+              <button onClick={handleCancel} className="perfil-cancel-btn">
+                Cancelar
+              </button>
             </div>
           </div>
         ) : (
-          // MODO VISUALIZACIÓN - Texto normal
           <>
-            <h1 className="perfil-name">
+            <h1 
+              className={`perfil-name ${userData.nombre && userData.apellido 
+                ? `${userData.nombre} ${userData.apellido}`.length > 20 
+                  ? 'perfil-name-large' 
+                  : `${userData.nombre} ${userData.apellido}`.length > 15 
+                    ? 'perfil-name-medium' 
+                    : 'perfil-name-small'
+                : 'perfil-name-small'}`}
+              title={userData.nombre && userData.apellido 
+                ? `${userData.nombre} ${userData.apellido}` 
+                : "Usuario"}
+            >
               {userData.nombre && userData.apellido 
                 ? `${userData.nombre} ${userData.apellido}` 
                 : "Usuario"}
@@ -336,9 +528,6 @@ const handleGoBack = () => {
                 📍 <span>{userData.ciudad || "Ciudad no especificada"}</span>
               </div>
               <div className="perfil-contact-item">
-                📧 <span>{userData.email || "Email no especificado"}</span>
-              </div>
-              <div className="perfil-contact-item">
                 📞 <span>{userData.telefono || "Teléfono no especificado"}</span>
               </div>
             </div>
@@ -346,32 +535,35 @@ const handleGoBack = () => {
         )}
       </div>
 
-              {/* Botones editar */}
-              {!isEditing ? (
+      {!isEditing && (
+        <div className="perfil-edit-btn-container">
                 <button onClick={() => setIsEditing(true)} className="perfil-edit-btn">
                   Editar Perfil
-                </button>
-              ) : (
-                <div className="perfil-edit-actions">
-                  <button onClick={handleSaveProfile} className="perfil-save-btn">
-                    Guardar
-                  </button>
-                  <button onClick={handleCancel} className="perfil-cancel-btn">
-                    Cancelar
                   </button>
                 </div>
               )}
+
             </div>
           </div>
         </div>
 
-        {/* CONTENIDO */}
+
         <div className="perfil-content-grid">
           <div className="perfil-left-column">
-            {/* Info personal */}
             <div className="perfil-card">
               <h2 className="perfil-card-title">Información Personal</h2>
               <div className="perfil-info-list">
+                <div className="perfil-info-item">
+                  <p className="perfil-info-label">Email de Login</p>
+                  <div className="perfil-email-display">
+                    <p className="perfil-email-text">
+                      📧 {userData.email || "Email no especificado"}
+                    </p>
+                    <p className="perfil-email-note">
+                      Credencial de login - No editable
+                    </p>
+                  </div>
+                </div>
                 <div className="perfil-info-item">
                   <p className="perfil-info-label">Fecha de Nacimiento</p>
                   {isEditing ? (
@@ -388,40 +580,12 @@ const handleGoBack = () => {
                     </p>
                   )}
                 </div>
-                <div className="perfil-info-item">
-                  <p className="perfil-info-label">Ciudad</p>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="ciudad"
-                      value={editData.ciudad}
-                      onChange={handleEditChange}
-                      className="perfil-input"
-                      placeholder="Ingresá tu ciudad"
-                    />
-                  ) : (
-                    <p className="perfil-info-value">{userData.ciudad || "No especificada"}</p>
-                  )}
-                </div>
-                <div className="perfil-info-item">
-                  <p className="perfil-info-label">Teléfono</p>
-                  {isEditing ? (
-                    <input
-                      type="tel"
-                      name="telefono"
-                      value={editData.telefono}
-                      onChange={handleEditChange}
-                      className="perfil-input"
-                      placeholder="Ingresá tu teléfono"
-                    />
-                  ) : (
-                    <p className="perfil-info-value">{userData.telefono || "No especificado"}</p>
-                  )}
-                </div>
               </div>
             </div>
 
-            {/* Habilidades */}
+
+
+
             <div className="perfil-card">
               <h2 className="perfil-card-title">Habilidades</h2>
               {isEditing ? (
@@ -448,13 +612,11 @@ const handleGoBack = () => {
               )}
             </div>
 
-            {/* 🆕 NUEVA SECCIÓN: Proyectos Realizados */}
             <ProyectosCompletados />
+
           </div>
 
-          {/* Derecha */}
           <div className="perfil-right-column">
-            {/* Biografía */}
             <div className="perfil-card">
               <h2 className="perfil-card-title">Acerca de mí</h2>
               {isEditing ? (
@@ -473,48 +635,216 @@ const handleGoBack = () => {
               )}
             </div>
 
-            {/* Experiencia */}
             <div className="perfil-card">
-              <h2 className="perfil-card-title">Experiencia Laboral</h2>
+              <h2 className="perfil-card-title">Formación Académica</h2>
               {isEditing ? (
+                <div className="perfil-education-form">
+                  <div className="perfil-education-item">
+                    <div className="perfil-education-logo">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                      </svg>
+                    </div>
+                    <div className="perfil-education-content">
+                      <input
+                        type="text"
+                        placeholder="Institución educativa"
+                        className="perfil-input"
+                        value={educationData.institucion}
+                        onChange={(e) => setEducationData(prev => ({...prev, institucion: e.target.value}))}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Título o grado"
+                        className="perfil-input"
+                        value={educationData.titulo}
+                        onChange={(e) => setEducationData(prev => ({...prev, titulo: e.target.value}))}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Período de estudio"
+                        className="perfil-input"
+                        value={educationData.periodo}
+                        onChange={(e) => setEducationData(prev => ({...prev, periodo: e.target.value}))}
+                      />
                 <textarea
-                  name="experiencia"
-                  value={editData.experiencia}
-                  onChange={handleEditChange}
-                  placeholder="Empresa - Cargo (Año inicio - Año fin)..."
-                  rows="6"
+                        placeholder="Descripción de tu formación académica..."
                   className="perfil-textarea"
-                />
+                        rows="3"
+                        value={educationData.descripcion}
+                        onChange={(e) => setEducationData(prev => ({...prev, descripcion: e.target.value}))}
+                      />
+                      <div className="perfil-file-upload">
+                        <label className="perfil-file-label perfil-file-label-custom">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                          </svg>
+                          Subir certificado
+                          <input 
+                            type="file" 
+                            accept=".pdf,.doc,.docx,.jpg,.png" 
+                            className="perfil-file-input"
+                            onChange={handleEducationFileUpload}
+                            multiple
+                          />
+                        </label>
+                        {educationFiles.length > 0 && (
+                          <div className="perfil-file-feedback">
+                            <p className="perfil-file-feedback-title">
+                              Archivos seleccionados:
+                            </p>
+                            {educationFiles.map((file, index) => (
+                              <p key={index} className="perfil-file-feedback-item">
+                                📄 {file.name}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ) : (
-                <p className="perfil-text-multiline">
-                  {userData.experiencia || "Agrega tu experiencia laboral."}
-                </p>
+                <div className="perfil-education-display">
+                  <div className="perfil-education-item">
+                    <div className="perfil-education-logo">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                      </svg>
+                    </div>
+                    <div className="perfil-education-content">
+                      <h3 className="perfil-education-title">{educationData.institucion || "Institución educativa"}</h3>
+                      <p className="perfil-education-degree">{educationData.titulo || "Título o grado"}</p>
+                      <p className="perfil-education-period">{educationData.periodo || "Período de estudio"}</p>
+                      <p className="perfil-education-description">{educationData.descripcion || "Descripción de tu formación académica..."}</p>
+                      <div className="perfil-education-files">
+                        {educationFiles.length > 0 ? (
+                          educationFiles.map((file, index) => (
+                            <button 
+                              key={index} 
+                              onClick={() => handleDownloadEducationFile(file)}
+                              className="perfil-file-download-btn"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <path d="M12 15l-3-3 3-3"></path>
+                                <path d="M9 12h6"></path>
+                              </svg>
+                              📄 {file.name}
+                            </button>
+                          ))
+                        ) : (
+                          <p className="perfil-empty-text">No hay archivos subidos</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
 
-            {/* Educación */}
             <div className="perfil-card">
-              <h2 className="perfil-card-title">Educación</h2>
+              <h2 className="perfil-card-title">Curriculum Vitae</h2>
               {isEditing ? (
-                <textarea
-                  name="educacion"
-                  value={editData.educacion}
-                  onChange={handleEditChange}
-                  placeholder="Institución - Título..."
-                  rows="6"
-                  className="perfil-textarea"
-                />
+                <div className="perfil-education-form">
+                  <div className="perfil-education-item">
+                    <div className="perfil-education-logo">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10,9 9,9 8,9"></polyline>
+                      </svg>
+                    </div>
+                    <div className="perfil-education-content">
+                      <div className="perfil-file-upload">
+                        <label className="perfil-file-label perfil-file-label-custom">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                          </svg>
+                          Subir Curriculum Vitae
+                          <input 
+                            type="file" 
+                            accept=".pdf,.doc,.docx,.jpg,.png" 
+                            className="perfil-file-input"
+                            onChange={handleCurriculumFileUpload}
+                          />
+                        </label>
+                        {curriculumFile && (
+                          <div className="perfil-file-feedback">
+                            <p className="perfil-file-feedback-title">
+                              Archivo seleccionado:
+                            </p>
+                            <p className="perfil-file-feedback-item">
+                              📄 {curriculumFile.name}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               ) : (
-                <p className="perfil-text-multiline">
-                  {userData.educacion || "Agrega tu formación académica."}
-                </p>
+                <div className="perfil-education-display">
+                  <div className="perfil-education-item">
+                    <div className="perfil-education-logo">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10,9 9,9 8,9"></polyline>
+                      </svg>
+                    </div>
+                    <div className="perfil-education-content">
+                      <h3 className="perfil-education-title">Curriculum Vitae</h3>
+                      <p className="perfil-education-degree">Sube tu CV para mostrar tu experiencia profesional</p>
+                      <div className="perfil-education-files">
+                        {curriculumFile ? (
+                          <button 
+                            onClick={handleDownloadCurriculumFile}
+                            className="perfil-file-download-btn"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                              <polyline points="14,2 14,8 20,8"></polyline>
+                              <path d="M12 15l-3-3 3-3"></path>
+                              <path d="M9 12h6"></path>
+                            </svg>
+                            📄 {curriculumFile.name}
+                          </button>
+                        ) : (
+                          <p className="perfil-empty-text">No hay CV subido</p>
               )}
             </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+        
           </div>
         </div>
 
         <Footer />
       </div>
+      
+      <NotificationContainer 
+        notifications={notifications} 
+        onRemove={removeNotification} 
+      />
     </div>
   );
 };

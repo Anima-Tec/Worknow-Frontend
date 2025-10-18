@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './RegisterUser.css';
+import { useNotification, NotificationContainer } from '../utils/notifications.jsx';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,7 @@ const Register = () => {
     confirmPassword: ''
   });
   const [errors, setErrors] = useState({});
+  const { notifications, showSuccess, showError, removeNotification } = useNotification();
 
   // Departamentos de Uruguay CORREGIDOS
   const departamentosUruguay = [
@@ -156,15 +158,89 @@ const Register = () => {
 
       if (res.ok) {
         console.log("✅ Usuario creado exitosamente:", data);
-        alert("✅ Registro exitoso! Ahora podés iniciar sesión.");
-        window.location.href = "/home/user";
+        
+        // 🔹 LOGIN AUTOMÁTICO después del registro exitoso
+        try {
+          console.log("🔄 Iniciando login automático...");
+          
+          const loginRes = await fetch(`${API_BASE}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              email: userData.email,
+              password: userData.password
+            })
+          });
+
+          if (loginRes.ok) {
+            const loginData = await loginRes.json();
+            console.log("✅ Login automático exitoso:", loginData);
+            
+            // 🔹 Guardar token y datos del usuario en localStorage
+            if (loginData.token) {
+              localStorage.setItem("token", loginData.token);
+              localStorage.setItem("user", JSON.stringify(loginData.user));
+              localStorage.setItem("role", "user");
+              console.log("✅ Datos guardados en localStorage");
+              
+              showSuccess(
+                "¡Registro exitoso!",
+                "Ya estás logueado y serás redirigido a tu perfil.",
+                3000
+              );
+              setTimeout(() => {
+                window.location.href = "/PerfilUser";
+              }, 2000);
+            } else {
+              console.warn("⚠️ No se recibió token en el login automático");
+              showSuccess(
+                "Registro exitoso",
+                "Ahora podés iniciar sesión con tus credenciales.",
+                3000
+              );
+              setTimeout(() => {
+                window.location.href = "/login";
+              }, 2000);
+            }
+          } else {
+            console.error("❌ Error en login automático:", await loginRes.text());
+            showSuccess(
+              "Registro exitoso",
+              "Ahora podés iniciar sesión con tus credenciales.",
+              3000
+            );
+            setTimeout(() => {
+              window.location.href = "/login";
+            }, 2000);
+          }
+        } catch (loginError) {
+          console.error("❌ Error en login automático:", loginError);
+          showSuccess(
+            "Registro exitoso",
+            "Ahora podés iniciar sesión con tus credenciales.",
+            3000
+          );
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 2000);
+        }
       } else {
         console.error("❌ Error del backend:", data);
-        alert(data.message || "❌ Error al registrar usuario. Revisá los datos e intentá nuevamente.");
+        showError(
+          "Error al registrar",
+          data.message || "Revisá los datos e intentá nuevamente.",
+          5000
+        );
       }
     } catch (error) {
       console.error("❌ Error de conexión:", error);
-      alert("❌ No se pudo conectar con el servidor. Verificá que el backend esté corriendo en el puerto 3000.");
+      showError(
+        "Error de conexión",
+        "No se pudo conectar con el servidor. Verificá que el backend esté corriendo en el puerto 3000.",
+        6000
+      );
     }
   };
 
@@ -453,6 +529,12 @@ const Register = () => {
           </div>
         </div>
       </div>
+      
+      {/* Contenedor de notificaciones */}
+      <NotificationContainer 
+        notifications={notifications} 
+        onRemove={removeNotification} 
+      />
     </div>
   );
 };

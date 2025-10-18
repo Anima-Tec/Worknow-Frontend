@@ -13,6 +13,7 @@ import JobForm from "./pages/JobForm";
 import RegisterUser from "./pages/RegisterUser.jsx";
 import RegisterCompany from "./pages/RegisterCompany.jsx";
 import MisPostulaciones from './components/MisPostulaciones';
+import { NotificationDemo } from './utils/notifications.jsx';
 
 
 export default function App() {
@@ -35,6 +36,9 @@ export default function App() {
       <Route path="/QuienesSomos" element={<QuienesSomos />} />
       <Route path="/jobs/form" element={<JobForm />} />
       <Route path="/mis-postulaciones" element={<MisPostulaciones />} /> {/* Agregada esta línea */}
+      
+      {/* Demo de notificaciones */}
+      <Route path="/notifications-demo" element={<NotificationDemo />} />
     </Routes>
   );
 }
