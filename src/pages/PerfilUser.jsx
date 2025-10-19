@@ -49,7 +49,7 @@ const PerfilUser = () => {
     profesion: "",
     biografia: "",
     experiencia: "",
-    educacion: "",
+    formacionAcademica: "",
     habilidades: "",
   });
 
