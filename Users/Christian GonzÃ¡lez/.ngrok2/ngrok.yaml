@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 5DngrR1C4jNXKpLTeE7aj_5aboDHUBfiher5r6N3qKk
+tunnels:
+  pocketbase:
+    addr: 8090
+    proto: http
+  n8n:
+    addr: 5678
+    proto: http
