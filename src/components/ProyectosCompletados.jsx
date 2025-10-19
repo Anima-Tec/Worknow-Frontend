@@ -16,12 +16,13 @@ const ProyectosCompletados = () => {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        setProyectos(data);
-      } else {
-        console.error("Error cargando proyectos completados");
-        setProyectos([]);
-      }
+  const data = await res.json();
+  console.log("Respuesta backend:", data); // 👈 Para ver qué devuelve
+  setProyectos(Array.isArray(data) ? data : data.completedProjects || data.projects || []);
+} else {
+  console.error("Error cargando proyectos completados");
+  setProyectos([]);
+}
     } catch (error) {
       console.error("Error:", error);
       setProyectos([]);

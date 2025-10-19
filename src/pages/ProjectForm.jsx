@@ -44,9 +44,13 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
         .filter(Boolean);
 
       const payload = {
-        ...formData,
-        skills: skillsArray,
-      };
+          title: formData.title,
+          description: formData.description,
+          skills: skillsArray,
+          duration: formData.duration,
+          modality: formData.deliveryFormat, // 🔹 lo mapeamos para que el backend lo entienda
+          remuneration: formData.remuneration,
+        };
 
       const res = await fetch("http://localhost:3000/api/projects", {
         method: "POST",
@@ -63,7 +67,8 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
         return;
       }
 
-      const newProject = await res.json();
+      const response = await res.json();
+      const newProject = response.data || response; // 🔹 el backend devuelve { success, data }
       onProjectCreated(newProject);
       onClose();
     } catch (error) {

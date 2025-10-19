@@ -7,7 +7,7 @@ export default function ApplicationsModal({ open, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 🟣 Cargar postulaciones de la empresa
+  // ====================== 🔹 Cargar postulaciones ======================
   const loadApplications = async () => {
     if (!open) return;
 
@@ -17,58 +17,64 @@ export default function ApplicationsModal({ open, onClose }) {
     try {
       console.log("🔍 Cargando postulaciones...");
 
-      const [applicationsRes, jobApplicationsRes] = await Promise.all([
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No hay token de autenticación");
+        return;
+      }
+
+      const [projectRes, jobRes] = await Promise.all([
         fetch("http://localhost:3000/api/applications/company/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }),
         fetch("http://localhost:3000/api/job-applications/company/me", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
-      let applicationsData = [];
-      let jobApplicationsData = [];
+      let projectData = [];
+      let jobData = [];
 
-      if (applicationsRes.ok) {
-        applicationsData = await applicationsRes.json();
-        console.log("📋 Postulaciones a proyectos:", applicationsData);
+      if (projectRes.ok) {
+        const result = await projectRes.json();
+        projectData = result.data || result || [];
+        console.log("📋 Postulaciones a proyectos:", projectData);
       }
 
-      if (jobApplicationsRes.ok) {
-        jobApplicationsData = await jobApplicationsRes.json();
-        console.log("💼 Postulaciones a trabajos:", jobApplicationsData);
+      if (jobRes.ok) {
+        const result = await jobRes.json();
+        jobData = result.data || result || [];
+        console.log("💼 Postulaciones a trabajos:", jobData);
       }
 
+      // 🔹 Combinar ambas listas con identificación por tipo
       const allApplications = [
-        ...applicationsData.map(app => ({
+        ...(Array.isArray(projectData) ? projectData : []).map((app) => ({
           id: app.id,
-          jobId: app.jobId,
-          jobTitle: app.projectTitle || "Proyecto",
+          projectId: app.projectId,
+          jobId: app.jobId || null,
+          title: app.projectTitle || "Proyecto",
           applicantName: app.applicantName,
           applicantEmail: app.applicantEmail,
           createdAt: app.createdAt,
           status: app.status,
-          type: "project"
+          type: "project",
         })),
-        ...jobApplicationsData.map(app => ({
+        ...(Array.isArray(jobData) ? jobData : []).map((app) => ({
           id: app.id,
           jobId: app.jobId,
-          jobTitle: app.jobTitle || "Trabajo",
+          projectId: app.projectId || null,
+          title: app.jobTitle || "Trabajo",
           applicantName: app.applicantName,
           applicantEmail: app.applicantEmail,
           createdAt: app.createdAt,
           status: app.status,
-          type: "job"
-        }))
+          type: "job",
+        })),
       ];
 
       console.log("📊 Total de postulaciones:", allApplications.length);
       setApplications(allApplications);
-
     } catch (err) {
       console.error("❌ Error cargando postulaciones:", err);
       setError("Error al cargar las postulaciones");
@@ -81,52 +87,61 @@ export default function ApplicationsModal({ open, onClose }) {
     loadApplications();
   }, [open]);
 
-  // ✅ VERSIÓN CORRECTA - Solo permite cambios desde PENDIENTE
+  // ====================== 🔹 Actualizar estado ======================
   const updateStatus = async (id, newStatus, type) => {
     try {
-      const selectedApplication = applications.find(a => a.id === id);
-
+      const selectedApplication = applications.find((a) => a.id === id);
       if (!selectedApplication) {
         setError("Postulación no encontrada");
         return;
       }
 
-      const jobId = selectedApplication.jobId;
       const currentStatus = selectedApplication.status;
 
-      // ❌ BLOQUEAR si ya está ACEPTADO o RECHAZADO
-      if (currentStatus === "ACEPTADO" || currentStatus === "RECHAZADO") {
-        console.warn(`⚠️ No se puede modificar una postulación ya ${currentStatus.toLowerCase()}`);
-        setError(`No se puede modificar una postulación ya ${currentStatus.toLowerCase()}`);
+      // Bloquear cambios en postulaciones cerradas
+      if (["ACEPTADO", "RECHAZADO"].includes(currentStatus)) {
+        const msg = `No se puede modificar una postulación ya ${currentStatus.toLowerCase()}`;
+        console.warn("⚠️", msg);
+        setError(msg);
         return;
       }
 
-      // ✅ Solo permitir cambios si está PENDIENTE
+      // Solo permitir cambios si está pendiente
       if (currentStatus === "PENDIENTE") {
-        // Si se quiere ACEPTAR, verificar que no haya otra ya aceptada
         if (newStatus === "ACEPTADO") {
+          // 🔍 Determinar si ya hay otra postulación aceptada en la misma oportunidad
+          const opportunityKey =
+            selectedApplication.type === "job" ? "jobId" : "projectId";
+          const opportunityId = selectedApplication[opportunityKey];
+
           const alreadyAccepted = applications.find(
-            a => a.status === "ACEPTADO" && a.jobId === jobId
+            (a) =>
+              a.status === "ACEPTADO" &&
+              a[opportunityKey] === opportunityId &&
+              a.type === selectedApplication.type
           );
 
           if (alreadyAccepted) {
-            console.warn("⚠️ Ya hay una postulación aceptada para este trabajo");
-            setError("Ya hay una postulación aceptada para este trabajo");
+            const msg = `Ya hay una postulación aceptada para este ${
+              selectedApplication.type === "job" ? "trabajo" : "proyecto"
+            }`;
+            console.warn("⚠️", msg);
+            setError(msg);
             return;
           }
 
-          // Confirmar antes de aceptar
           const confirmAccept = confirm(
-            "¿Estás seguro de aceptar esta postulación?\n\nTodas las demás postulaciones a este puesto serán automáticamente rechazadas."
+            "¿Estás seguro de aceptar esta postulación?\n\nTodas las demás postulaciones a esta oportunidad serán automáticamente rechazadas."
           );
           if (!confirmAccept) return;
         }
 
-        console.log(`🔄 Actualizando postulación ${id} a ${newStatus} (tipo: ${type})`);
+        console.log(`🔄 Actualizando postulación ${id} a ${newStatus} (${type})`);
 
-        const endpoint = type === "job"
-          ? `http://localhost:3000/api/job-applications/company/${id}/status`
-          : `http://localhost:3000/api/applications/company/${id}/status`;
+        const endpoint =
+          type === "job"
+            ? `http://localhost:3000/api/job-applications/company/${id}/status`
+            : `http://localhost:3000/api/applications/company/${id}/status`;
 
         const res = await fetch(endpoint, {
           method: "PUT",
@@ -138,9 +153,9 @@ export default function ApplicationsModal({ open, onClose }) {
         });
 
         if (res.ok) {
-          setError(""); // Limpiar errores
-          loadApplications(); // Recargar postulaciones
           console.log("✅ Estado actualizado correctamente");
+          setError("");
+          loadApplications();
         } else {
           const errorText = await res.text();
           console.error("❌ Error al actualizar estado:", res.status, errorText);
@@ -153,7 +168,7 @@ export default function ApplicationsModal({ open, onClose }) {
     }
   };
 
-  // 🟣 Formatear fecha
+  // ====================== 🔹 Utilidad: formatear fecha ======================
   const formatDate = (dateString) => {
     try {
       return new Date(dateString).toLocaleDateString("es-UY", {
@@ -168,6 +183,7 @@ export default function ApplicationsModal({ open, onClose }) {
 
   if (!open) return null;
 
+  // ====================== 🔹 Render ======================
   return (
     <div className="applications-modal-overlay">
       <div className="applications-modal">
@@ -185,14 +201,16 @@ export default function ApplicationsModal({ open, onClose }) {
         )}
 
         {error && (
-          <div style={{ 
-            color: "red", 
-            textAlign: "center", 
-            padding: "10px",
-            backgroundColor: "#ffe6e6",
-            margin: "10px",
-            borderRadius: "4px"
-          }}>
+          <div
+            style={{
+              color: "red",
+              textAlign: "center",
+              padding: "10px",
+              backgroundColor: "#ffe6e6",
+              margin: "10px",
+              borderRadius: "4px",
+            }}
+          >
             {error}
           </div>
         )}
@@ -218,7 +236,7 @@ export default function ApplicationsModal({ open, onClose }) {
                       {a.type === "job" ? "💼 Trabajo" : "🧩 Proyecto"}
                     </span>
                   </td>
-                  <td>{a.jobTitle}</td>
+                  <td>{a.title}</td>
                   <td>{a.applicantName || "No especificado"}</td>
                   <td>{a.applicantEmail || "No especificado"}</td>
                   <td>{formatDate(a.createdAt)}</td>
@@ -230,29 +248,37 @@ export default function ApplicationsModal({ open, onClose }) {
                     {a.status || "PENDIENTE"}
                   </td>
                   <td className="actions">
-                    {/* 🟢 SOLO MOSTRAR BOTONES SI ESTÁ PENDIENTE */}
                     {a.status === "PENDIENTE" ? (
                       <>
                         <FaCheckCircle
                           className="icon accept"
                           title="Aceptar"
-                          onClick={() => updateStatus(a.id, "ACEPTADO", a.type)}
+                          onClick={() =>
+                            updateStatus(a.id, "ACEPTADO", a.type)
+                          }
                         />
                         <FaTimesCircle
                           className="icon reject"
                           title="Rechazar"
-                          onClick={() => updateStatus(a.id, "RECHAZADO", a.type)}
+                          onClick={() =>
+                            updateStatus(a.id, "RECHAZADO", a.type)
+                          }
                         />
                         <FaHourglassHalf
                           className="icon review"
                           title="En revisión"
-                          onClick={() => updateStatus(a.id, "PENDIENTE", a.type)}
+                          onClick={() =>
+                            updateStatus(a.id, "PENDIENTE", a.type)
+                          }
                         />
                       </>
                     ) : (
-                      // 🟡 MOSTRAR SOLO EL ESTADO ACTUAL SI NO ESTÁ PENDIENTE
-                      <span className={`status-badge ${a.status.toLowerCase()}`}>
-                        {a.status === "ACEPTADO" ? "✅ Aceptado" : "❌ Rechazado"}
+                      <span
+                        className={`status-badge ${a.status.toLowerCase()}`}
+                      >
+                        {a.status === "ACEPTADO"
+                          ? "✅ Aceptado"
+                          : "❌ Rechazado"}
                       </span>
                     )}
                   </td>
@@ -261,7 +287,9 @@ export default function ApplicationsModal({ open, onClose }) {
             ) : (
               <tr>
                 <td colSpan="7" style={{ textAlign: "center", padding: "20px" }}>
-                  {!loading ? "No hay postulaciones aún." : "Cargando..."}
+                  {!loading
+                    ? "No hay postulaciones aún."
+                    : "Cargando..."}
                 </td>
               </tr>
             )}

@@ -133,15 +133,26 @@ export default function CardTrabajo({
         </div>
       </div>
 
-      {/* ---------- MODAL DE POSTULACIÓN ---------- */}
       {showModal && !isCompanyView && (
-        <ApplyModal job={{ id, title }} onClose={() => setShowModal(false)} />
-      )}
+  <ApplyModal
+    job={{
+      id,
+      title: title || "Sin título",
+      company: company || { nombreEmpresa: "WorkNow" },
+      modality: modality || "No especificada",
+      remuneration: remuneration || "A convenir",
+      skills: "No especificadas",
+      location: location || "No especificada",
+      description: "Sin descripción",
+    }}
+    onClose={() => setShowModal(false)}
+  />
+)}
 
-      {/* ---------- MODAL DE DETALLE ---------- */}
-      {showDetail && (
-        <DetailModal job={{ id, title }} onClose={() => setShowDetail(false)} />
-      )}
+{/* ---------- MODAL DE DETALLE ---------- */}
+{showDetail && (
+  <DetailModal job={{ id, title }} onClose={() => setShowDetail(false)} />
+)}
     </>
   );
 }

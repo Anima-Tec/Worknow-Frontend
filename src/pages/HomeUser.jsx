@@ -18,30 +18,30 @@ export default function HomeUser() {
 
   // 🔍 Buscar trabajos/proyectos
   const handleSearch = async () => {
-    setLoading(true);
-    try {
-      const filters = { query: query.trim(), type };
+  setLoading(true);
+  try {
+    const filters = { query: query.trim(), type };
 
-      if (type === "jobs") {
-        const jobsData = await searchJobs(filters);
-        setJobs(jobsData);
-        setProjects([]);
-      } else if (type === "projects") {
-        const projectsData = await searchProjects(filters);
-        setProjects(projectsData);
-        setJobs([]);
-      } else {
-        const jobsData = await searchJobs(filters);
-        const projectsData = await searchProjects(filters);
-        setJobs(jobsData);
-        setProjects(projectsData);
-      }
-    } catch (err) {
-      console.error("❌ Error en búsqueda:", err);
-    } finally {
-      setLoading(false);
+    if (type === "jobs") {
+      const jobsData = await searchJobs(filters);
+      setJobs(Array.isArray(jobsData) ? jobsData : jobsData.data || []);
+      setProjects([]);
+    } else if (type === "projects") {
+      const projectsData = await searchProjects(filters);
+      setProjects(Array.isArray(projectsData) ? projectsData : projectsData.data || []);
+      setJobs([]);
+    } else {
+      const jobsData = await searchJobs(filters);
+      const projectsData = await searchProjects(filters);
+      setJobs(Array.isArray(jobsData) ? jobsData : jobsData.data || []);
+      setProjects(Array.isArray(projectsData) ? projectsData : projectsData.data || []);
     }
-  };
+  } catch (err) {
+    console.error("❌ Error en búsqueda:", err);
+  } finally {
+    setLoading(false);
+  }
+};  
 
   // 🔔 Cargar notificaciones del backend
   const loadNotifications = async () => {

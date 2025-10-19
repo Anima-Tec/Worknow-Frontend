@@ -68,26 +68,35 @@ export default function HomeCompany() {
 
   // 🔹 Obtener proyectos
   useEffect(() => {
-    async function fetchCompanyProjects() {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/projects/company/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) {
-          console.error("❌ Error del backend al traer proyectos:", res.status);
-          setProjects([]);
-          return;
-        }
-        const data = await res.json();
-        setProjects(data);
-      } catch (err) {
-        console.error("❌ Error cargando proyectos de empresa:", err);
+  async function fetchCompanyProjects() {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:3000/api/projects/company/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        console.error("❌ Error del backend al traer proyectos:", res.status);
         setProjects([]);
+        return;
       }
+
+      const result = await res.json();
+
+      // ✅ el backend devuelve { success, data: [...] }
+      const projectsData = result.data || result || [];
+      console.log("📦 Proyectos obtenidos:", projectsData);
+
+      setProjects(projectsData);
+    } catch (err) {
+      console.error("❌ Error cargando proyectos de empresa:", err);
+      setProjects([]);
     }
-    fetchCompanyProjects();
-  }, []);
+  }
+
+  fetchCompanyProjects();
+}, []);
+
 
   // 🔹 Obtener trabajos
   useEffect(() => {
@@ -112,12 +121,24 @@ export default function HomeCompany() {
     fetchCompanyJobs();
   }, []);
 
-  const activeProjects = projects.filter(
-    (p) => p.status !== "HECHO" && p.status !== "NO_HECHO" && p.isCompleted !== true
-  );
-  const activeJobs = jobs.filter(
-    (j) => j.status !== "HECHO" && j.status !== "NO_HECHO" && j.isCompleted !== true
-  );
+  const activeProjects = Array.isArray(projects)
+  ? projects.filter(
+      (p) =>
+        p.status !== "HECHO" &&
+        p.status !== "NO_HECHO" &&
+        p.isCompleted !== true
+    )
+  : [];
+
+const activeJobs = Array.isArray(jobs)
+  ? jobs.filter(
+      (j) =>
+        j.status !== "HECHO" &&
+        j.status !== "NO_HECHO" &&
+        j.isCompleted !== true
+    )
+  : [];
+
 
   useEffect(() => {
     if (!showApplications) return;
@@ -210,7 +231,14 @@ export default function HomeCompany() {
         <div className="modal">
           <div className="modal-content">
             <button className="close-btn" onClick={() => setShowJobForm(false)}>✖</button>
-            <JobForm onClose={() => setShowJobForm(false)} onJobCreated={() => setShowSuccess(true)} />
+           <JobForm
+              onClose={() => setShowJobForm(false)}
+              onJobCreated={(response) => {
+                const newJob = response?.job || response?.data || response;
+                setJobs((prev) => (Array.isArray(prev) ? [newJob, ...prev] : [newJob]));
+                setShowSuccess(true);
+              }}
+            />
           </div>
         </div>
       )}
@@ -221,8 +249,9 @@ export default function HomeCompany() {
             <button className="close-btn" onClick={() => setShowProjectForm(false)}>✖</button>
             <ProjectForm
               onClose={() => setShowProjectForm(false)}
-              onProjectCreated={(newProject) => {
-                setProjects((prev) => [newProject, ...prev]);
+              onProjectCreated={(response) => {
+                const newProject = response?.project || response?.data || response; // ✅ toma el objeto real
+                setProjects((prev) => (Array.isArray(prev) ? [newProject, ...prev] : [newProject]));
                 setShowSuccess(true);
               }}
             />
