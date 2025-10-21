@@ -531,3 +531,119 @@ button:hover {
   color: white;
   box-shadow: 0 3px 10px rgba(109,40,217,0.4);
 }
+
+/* ========================= HERO LOGO BOX (versión estilizada) ========================= */
+.hero-header {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  animation: slideDown 0.8s ease-out;
+}
+
+/* Franja blanca más delgada, larga y con curvas suaves */
+.hero-logo-box {
+  background: linear-gradient(145deg, #ffffff, #fefefe);
+  border-radius: 0 0 35px 35px;   /* curvas más suaves */
+  height: 70px;                   /* más fina */
+  width: 540px;                   /* más alargada */
+  box-shadow:
+    0 6px 18px rgba(109, 40, 217, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Brillo diagonal suave */
+.hero-logo-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(139, 92, 246, 0.05),
+    transparent
+  );
+  animation: shine 4s ease-in-out infinite;
+}
+
+/* Línea inferior sutil */
+.hero-logo-box::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.25),
+    rgba(109, 40, 217, 0.25),
+    rgba(139, 92, 246, 0.25),
+    transparent
+  );
+  border-radius: 1px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.hero-logo-box:hover::after {
+  opacity: 1;
+}
+
+.hero-logo-box:hover {
+  transform: translateY(3px);
+  box-shadow:
+    0 10px 25px rgba(109, 40, 217, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Logo centrado */
+.hero-logo {
+  width: 320px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 5px rgba(109, 40, 217, 0.08));
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.hero-logo:hover {
+  filter: drop-shadow(0 3px 10px rgba(109, 40, 217, 0.2));
+  transform: scale(1.03);
+}
+
+/* Animación de entrada */
+@keyframes slideDown {
+  0% {
+    transform: translateX(-50%) translateY(-50%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Animación del brillo */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}

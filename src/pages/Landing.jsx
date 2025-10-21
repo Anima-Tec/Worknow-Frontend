@@ -35,6 +35,11 @@ export default function Landing() {
     <div className="landing">
       {/* HERO SECTION */}
       <section className="hero-section">
+        <div className="hero-header">
+          <div className="hero-logo-box">
+            <img src="/logo.png" alt="WorkNow" className="hero-logo" />
+          </div>
+        </div>
         <div className="hero-content">
           <h1 className="hero-title">
             Conectamos <span className="highlight">talento</span> con oportunidades reales
@@ -97,6 +102,56 @@ export default function Landing() {
         </div>
       </section>
 
+        {/* BANNER */}
+      <section className="banner-section">
+        <h2 className="banner-title">El puente entre talento y oportunidad</h2>
+        <p className="banner-text">
+          Empresas reales, desafíos reales, resultados reales.
+        </p>
+
+        <div className="logos-slider">
+          <div className="logos-slide-track">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <React.Fragment key={i}>
+                <img src="/globant.png" alt="Empresa 1" className="company-logo" />
+                <img src="/empresas/empresa2.png" alt="Empresa 2" className="company-logo" />
+                <img src="/empresas/empresa3.png" alt="Empresa 3" className="company-logo" />
+                <img src="/empresas/empresa4.png" alt="Empresa 4" className="company-logo" />
+                <img src="/empresas/empresa5.png" alt="Empresa 5" className="company-logo" />
+                <img src="/empresas/empresa6.png" alt="Empresa 6" className="company-logo" />
+                <img src="/empresas/empresa7.png" alt="Empresa 7" className="company-logo" />
+                <img src="/empresas/empresa8.png" alt="Empresa 8" className="company-logo" />
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        <button className="btn-white mt-4" onClick={() => navigate("/choose")}>
+          Crear mi cuenta
+        </button>
+      </section>
+
+      {/* MÉTRICAS */}
+      <section className="metrics-section">
+        <h2 className="section-title">
+          Nuestro <span className="purple-text">impacto</span>
+        </h2>
+        <div className="metrics-grid">
+          <div className="metric-card">
+            <h3 className="metric-number">+230</h3>
+            <p className="metric-label">Proyectos completados</p>
+          </div>
+          <div className="metric-card">
+            <h3 className="metric-number">+60%</h3>
+            <p className="metric-label">Mayor inserción laboral</p>
+          </div>
+          <div className="metric-card">
+            <h3 className="metric-number">+40%</h3>
+            <p className="metric-label">Primer empleo tech</p>
+          </div>
+        </div>
+      </section>
+
       {/* 🔮 PLANES WORKNOW */}
       <section className="plans-section">
         <h2 className="section-title">Planes <span className="purple-text">WorkNow</span></h2>
@@ -152,56 +207,6 @@ export default function Landing() {
             <button className="btn-outline-light" onClick={() => navigate("/choose")}>
               Obtener Pro
             </button>
-          </div>
-        </div>
-      </section>
-
-      {/* BANNER */}
-      <section className="banner-section">
-        <h2 className="banner-title">El puente entre talento y oportunidad</h2>
-        <p className="banner-text">
-          Empresas reales, desafíos reales, resultados reales.
-        </p>
-
-        <div className="logos-slider">
-          <div className="logos-slide-track">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <React.Fragment key={i}>
-                <img src="/globant.png" alt="Empresa 1" className="company-logo" />
-                <img src="/empresas/empresa2.png" alt="Empresa 2" className="company-logo" />
-                <img src="/empresas/empresa3.png" alt="Empresa 3" className="company-logo" />
-                <img src="/empresas/empresa4.png" alt="Empresa 4" className="company-logo" />
-                <img src="/empresas/empresa5.png" alt="Empresa 5" className="company-logo" />
-                <img src="/empresas/empresa6.png" alt="Empresa 6" className="company-logo" />
-                <img src="/empresas/empresa7.png" alt="Empresa 7" className="company-logo" />
-                <img src="/empresas/empresa8.png" alt="Empresa 8" className="company-logo" />
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        <button className="btn-white mt-4" onClick={() => navigate("/choose")}>
-          Crear mi cuenta
-        </button>
-      </section>
-
-      {/* MÉTRICAS */}
-      <section className="metrics-section">
-        <h2 className="section-title">
-          Nuestro <span className="purple-text">impacto</span>
-        </h2>
-        <div className="metrics-grid">
-          <div className="metric-card">
-            <h3 className="metric-number">+230</h3>
-            <p className="metric-label">Proyectos completados</p>
-          </div>
-          <div className="metric-card">
-            <h3 className="metric-number">+60%</h3>
-            <p className="metric-label">Mayor inserción laboral</p>
-          </div>
-          <div className="metric-card">
-            <h3 className="metric-number">+40%</h3>
-            <p className="metric-label">Primer empleo tech</p>
           </div>
         </div>
       </section>
