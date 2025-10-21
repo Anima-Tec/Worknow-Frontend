@@ -7,15 +7,17 @@ export default function MisPostulaciones() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // ✅ Normalizar estados
+  // ✅ Normalizar estados (orden corregido)
   const normalizeStatus = (status) => {
     if (!status) return "PENDIENTE";
     const s = status.toString().toLowerCase();
+
+    if (s.includes("no_hecho") || s.includes("not_done")) return "NO_HECHO";
+    if (s.includes("hecho") || s.includes("done")) return "HECHO";
     if (s.includes("aceptado") || s.includes("accepted")) return "ACEPTADO";
     if (s.includes("rechazado") || s.includes("rejected")) return "RECHAZADO";
-    if (s.includes("hecho") || s.includes("done")) return "HECHO";
-    if (s.includes("no_hecho") || s.includes("not_done")) return "NO_HECHO";
     if (s.includes("pendiente") || s.includes("pending")) return "PENDIENTE";
+
     return "PENDIENTE";
   };
 
@@ -35,6 +37,11 @@ export default function MisPostulaciones() {
   const loadPostulaciones = async () => {
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        console.warn("⚠️ No hay token, redirigiendo a login...");
+        return (window.location.href = "/login");
+      }
+
       console.log("🔄 Cargando postulaciones de proyectos y trabajos...");
 
       const [resProyectos, resTrabajos] = await Promise.all([
@@ -46,10 +53,16 @@ export default function MisPostulaciones() {
         }),
       ]);
 
-      const proyectos = resProyectos.ok ? await resProyectos.json() : [];
-      const trabajos = resTrabajos.ok ? await resTrabajos.json() : [];
+      const proyectosJson = resProyectos.ok ? await resProyectos.json() : {};
+      const trabajosJson = resTrabajos.ok ? await resTrabajos.json() : {};
 
-      // 🔹 Normalizamos formato para unificar ambos tipos
+      const proyectos = Array.isArray(proyectosJson)
+        ? proyectosJson
+        : proyectosJson.data || [];
+      const trabajos = Array.isArray(trabajosJson)
+        ? trabajosJson
+        : trabajosJson.data || [];
+
       const formattedProyectos = proyectos.map((p) => ({
         id: p.id,
         title: p.projectTitle || p.project?.title || "Proyecto sin título",
@@ -91,7 +104,7 @@ export default function MisPostulaciones() {
       const token = localStorage.getItem("token");
       const url = `http://localhost:3000/api/applications/user/${id}/status`;
 
-      console.log(`📤 PUT ${url} - Estado: ${newStatus}`);
+      console.log(`📤 Enviando actualización a ${url} con estado: ${newStatus}`);
 
       const res = await fetch(url, {
         method: "PUT",
@@ -108,10 +121,10 @@ export default function MisPostulaciones() {
       } else {
         setMessage("❌ Error al guardar tu respuesta");
       }
-      setTimeout(() => setMessage(""), 3000);
     } catch (error) {
       console.error("❌ Error de conexión:", error);
-      setMessage("❌ Error de conexión");
+      setMessage("❌ Error de conexión con el servidor");
+    } finally {
       setTimeout(() => setMessage(""), 3000);
     }
   };

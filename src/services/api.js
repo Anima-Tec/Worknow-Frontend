@@ -137,8 +137,11 @@ export async function getProfile() {
       headers: getAuthHeaders(),
     });
 
-    const data = await handleApiResponse(res);
-    return data;
+    const result = await handleApiResponse(res);
+
+    // ✅ Arreglo clave: el backend devuelve { success: true, data: {...} }
+    // así que devolvemos solo la parte "data"
+    return result.data || result;
   } catch (error) {
     if (isTokenExpired(error)) {
       redirectToLogin();
@@ -147,7 +150,6 @@ export async function getProfile() {
     throw error;
   }
 }
-
 export async function updateProfile(profileData) {
   try {
     const token = localStorage.getItem("token");
