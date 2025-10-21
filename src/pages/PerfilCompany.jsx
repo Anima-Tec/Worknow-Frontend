@@ -9,8 +9,7 @@ import { logout } from "../auth/authContext";
 import { useNavigate } from "react-router-dom";
 import { useNotification, NotificationContainer } from "../utils/notifications.jsx";
 import { LoadingSpinner } from "../components/LoadingSpinner.jsx";
-import Select from 'react-select';
-
+import Select from "react-select";
 
 function PerfilCompany() {
   const [projects, setProjects] = useState([]);
@@ -22,28 +21,28 @@ function PerfilCompany() {
 
   // Opciones de departamentos de Uruguay
   const departamentosOptions = [
-    { value: 'Artigas', label: 'Artigas' },
-    { value: 'Canelones', label: 'Canelones' },
-    { value: 'Cerro Largo', label: 'Cerro Largo' },
-    { value: 'Colonia', label: 'Colonia' },
-    { value: 'Durazno', label: 'Durazno' },
-    { value: 'Flores', label: 'Flores' },
-    { value: 'Florida', label: 'Florida' },
-    { value: 'Lavalleja', label: 'Lavalleja' },
-    { value: 'Maldonado', label: 'Maldonado' },
-    { value: 'Montevideo', label: 'Montevideo' },
-    { value: 'Paysandú', label: 'Paysandú' },
-    { value: 'Río Negro', label: 'Río Negro' },
-    { value: 'Rivera', label: 'Rivera' },
-    { value: 'Rocha', label: 'Rocha' },
-    { value: 'Salto', label: 'Salto' },
-    { value: 'San José', label: 'San José' },
-    { value: 'Soriano', label: 'Soriano' },
-    { value: 'Tacuarembó', label: 'Tacuarembó' },
-    { value: 'Treinta y Tres', label: 'Treinta y Tres' }
+    { value: "Artigas", label: "Artigas" },
+    { value: "Canelones", label: "Canelones" },
+    { value: "Cerro Largo", label: "Cerro Largo" },
+    { value: "Colonia", label: "Colonia" },
+    { value: "Durazno", label: "Durazno" },
+    { value: "Flores", label: "Flores" },
+    { value: "Florida", label: "Florida" },
+    { value: "Lavalleja", label: "Lavalleja" },
+    { value: "Maldonado", label: "Maldonado" },
+    { value: "Montevideo", label: "Montevideo" },
+    { value: "Paysandú", label: "Paysandú" },
+    { value: "Río Negro", label: "Río Negro" },
+    { value: "Rivera", label: "Rivera" },
+    { value: "Rocha", label: "Rocha" },
+    { value: "Salto", label: "Salto" },
+    { value: "San José", label: "San José" },
+    { value: "Soriano", label: "Soriano" },
+    { value: "Tacuarembó", label: "Tacuarembó" },
+    { value: "Treinta y Tres", label: "Treinta y Tres" },
   ];
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [companyData, setCompanyData] = useState({
     nombreEmpresa: "",
@@ -55,7 +54,7 @@ function PerfilCompany() {
     sector: "",
     sitioWeb: "",
     tamano: "",
-    fundada: "",
+    anioFundacion: "",
     empleados: "",
     ubicaciones: "",
     descripcion: "",
@@ -69,20 +68,31 @@ function PerfilCompany() {
 
   const [editData, setEditData] = useState({ ...companyData });
 
-  // Cargar perfil de empresa
+  // ===========================
+  // 🔹 CARGAR PERFIL DE EMPRESA
+  // ===========================
   useEffect(() => {
     const loadCompanyData = async () => {
       try {
         setLoading(true);
         const response = await getProfile();
         console.log("📊 Datos de empresa recibidos:", response);
-        console.log("🔑 Token actual:", localStorage.getItem("token"));
 
-        // Extraer los datos del objeto data anidado
         const data = response.data || response;
         console.log("📋 Datos extraídos:", data);
 
-        // Limpiar el prefijo +598 del teléfono para mostrar solo los números
+        // 🔹 Parsear redes sociales si existen
+        let redes = {};
+        try {
+          redes =
+            typeof data.redesSociales === "string"
+              ? JSON.parse(data.redesSociales)
+              : data.redesSociales || {};
+        } catch {
+          redes = {};
+        }
+
+        // Limpiar prefijo +598
         let telefonoLimpio = data.telefono || "";
         if (telefonoLimpio.startsWith("+598")) {
           telefonoLimpio = telefonoLimpio.replace("+598", "").trim();
@@ -90,34 +100,39 @@ function PerfilCompany() {
 
         const companyProfileData = {
           ...data,
-          telefono: telefonoLimpio
+          telefono: telefonoLimpio,
+          twitter: redes.twitter || "",
+          facebook: redes.facebook || "",
+          linkedin: redes.linkedin || "",
+          anioFundacion: data.anioFundacion || "",
         };
 
-        console.log("✅ Datos procesados para mostrar:", companyProfileData);
         setCompanyData(companyProfileData);
         setEditData(companyProfileData);
         if (data.logoUrl) setLogoImage(data.logoUrl);
         setLoading(false);
       } catch (error) {
         console.error("Error cargando perfil:", error);
-        handleApiError(error, "No se pudo cargar el perfil de la empresa. Revisá tu conexión e intentá nuevamente.");
+        handleApiError(error, "No se pudo cargar el perfil de la empresa.");
         setLoading(false);
       }
     };
     loadCompanyData();
   }, [handleApiError]);
-
-  // Cargar proyectos
+  // ===========================
+  // 🔹 CARGAR PROYECTOS
+  // ===========================
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:3000/api/projects/company/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!response.ok) throw new Error("Error");
-        const data = await response.json();
-        setProjects(Array.isArray(data) ? data : []);
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Error al obtener proyectos");
+      const result = await response.json();
+      setProjects(result.data || []);
+
       } catch (error) {
         console.error("Error cargando proyectos:", error);
         setProjects([]);
@@ -126,17 +141,20 @@ function PerfilCompany() {
     fetchProjects();
   }, []);
 
-  // Cargar trabajos
+  // ===========================
+  // 🔹 CARGAR TRABAJOS
+  // ===========================
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:3000/api/jobs/company/me", {
-          headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) throw new Error("Error");
-        const data = await response.json();
-        setJobs(Array.isArray(data) ? data : []);
+      if (!response.ok) throw new Error("Error al obtener trabajos");
+      const result = await response.json();
+      setJobs(result.data || result || []);
+
       } catch (error) {
         console.error("Error cargando trabajos:", error);
         setJobs([]);
@@ -147,9 +165,9 @@ function PerfilCompany() {
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name === 'telefono') {
-      const numericValue = value.replace(/\D/g, '').slice(0, 8);
+
+    if (name === "telefono") {
+      const numericValue = value.replace(/\D/g, "").slice(0, 8);
       setEditData((prev) => ({ ...prev, [name]: numericValue }));
     } else {
       setEditData((prev) => ({ ...prev, [name]: value }));
@@ -157,46 +175,50 @@ function PerfilCompany() {
   };
 
   const handleDepartamentoChange = (selectedOption) => {
-    setEditData((prev) => ({ 
-      ...prev, 
-      ciudad: selectedOption ? selectedOption.value : '' 
+    setEditData((prev) => ({
+      ...prev,
+      ciudad: selectedOption ? selectedOption.value : "",
     }));
   };
 
+  // ===========================
+  // 🔹 GUARDAR PERFIL
+  // ===========================
   const handleSaveProfile = async () => {
     try {
-      // Validación básica de teléfono
       if (editData.telefono && editData.telefono.length !== 8) {
-        showError(
-          "Teléfono inválido",
-          "El teléfono debe tener exactamente 8 dígitos.",
-          4000
-        );
+        showError("Teléfono inválido", "El teléfono debe tener exactamente 8 dígitos.", 4000);
         return;
       }
 
-      // Agregar prefijo +598 al teléfono antes de enviar
       let telefonoConPrefijo = editData.telefono;
       if (telefonoConPrefijo && !telefonoConPrefijo.startsWith("+598")) {
         telefonoConPrefijo = "+598" + telefonoConPrefijo;
       }
 
+      // 🔹 NUEVO: Combinar redes sociales antes de enviar
+      const redesSocialesObj = {
+        twitter: editData.twitter,
+        facebook: editData.facebook,
+        linkedin: editData.linkedin,
+      };
+
       const dataToSend = {
         ...editData,
-        telefono: telefonoConPrefijo
+        telefono: telefonoConPrefijo,
+        redesSociales: JSON.stringify(redesSocialesObj),
       };
 
       const responseData = await updateProfile(dataToSend);
       console.log("Perfil actualizado:", responseData);
 
       if (responseData.updated) {
-        // Limpiar prefijo +598 del teléfono en la respuesta
         let telefonoLimpio = responseData.updated.telefono || "";
         if (telefonoLimpio.startsWith("+598")) {
           telefonoLimpio = telefonoLimpio.replace("+598", "").trim();
         }
         responseData.updated.telefono = telefonoLimpio;
-        
+
         setCompanyData(responseData.updated);
         setEditData(responseData.updated);
         localStorage.setItem("user", JSON.stringify(responseData.updated));
@@ -207,14 +229,10 @@ function PerfilCompany() {
       }
 
       setIsEditing(false);
-      showSuccess(
-        "¡Perfil actualizado!",
-        "Los datos de la empresa se han guardado correctamente.",
-        4000
-      );
+      showSuccess("¡Perfil actualizado!", "Los datos de la empresa se han guardado correctamente.", 4000);
     } catch (error) {
       console.error("Error al actualizar perfil:", error);
-      handleApiError(error, "No se pudo actualizar el perfil de la empresa. Intentá nuevamente.");
+      handleApiError(error, "No se pudo actualizar el perfil de la empresa.");
     }
   };
 
@@ -239,21 +257,21 @@ function PerfilCompany() {
     }
   };
 
-  // Función para manejar la eliminación del logo
   const handleRemoveLogo = () => {
     setLogoImage(null);
     setEditData((prev) => ({ ...prev, logoUrl: "" }));
   };
 
-    const handleLogout = () => {
-      logout(); 
-      localStorage.clear(); 
-      navigate("/login"); 
-    };
-    
-    const handleGoBack = () => {
-  navigate("/home/company");
-};
+  const handleLogout = () => {
+    logout();
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  const handleGoBack = () => {
+    navigate("/home/company");
+  };
+
   if (loading) {
     return (
       <div className="company-perfil-container">
@@ -266,30 +284,19 @@ function PerfilCompany() {
 
   return (
     <div className="company-perfil-container">
-      
       <div className="company-perfil-wrapper">
-        {/* HEADER CARD - MEJORADO */}
+        {/* HEADER CARD */}
         <div className="company-perfil-header-card">
-  <div className="company-perfil-header-bg">
-    {/* 🔹 Íconos dentro del área violeta */}
-    <div className="violet-icons-bar">
-      <FiArrowLeft
-        className="violet-icon back"
-        title="Volver al inicio"
-        onClick={handleGoBack}
-      />
-      <FiLogOut
-        className="violet-icon logout"
-        title="Cerrar sesión"
-        onClick={handleLogout}
-      />
-    </div>
-  </div>
+          <div className="company-perfil-header-bg">
+            <div className="violet-icons-bar">
+              <FiArrowLeft className="violet-icon back" title="Volver al inicio" onClick={handleGoBack} />
+              <FiLogOut className="violet-icon logout" title="Cerrar sesión" onClick={handleLogout} />
+            </div>
+          </div>
 
-          
           <div className="company-perfil-header-content">
             <div className="company-perfil-header-info">
-              {/* Logo con mejoras */}
+              {/* Logo de empresa */}
               <div className="company-image-container">
                 <div className="company-image-wrapper">
                   {logoImage ? (
@@ -300,10 +307,10 @@ function PerfilCompany() {
                         <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
                         <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                       </svg>
-                      
                     </div>
                   )}
                 </div>
+
                 {isEditing && (
                   <div className="company-image-actions">
                     <label className="company-image-upload">
@@ -314,6 +321,7 @@ function PerfilCompany() {
                       <span className="company-upload-text">Cambiar</span>
                       <input type="file" accept="image/*" onChange={handleLogoUpload} className="company-image-input" />
                     </label>
+
                     {logoImage && (
                       <button onClick={handleRemoveLogo} className="company-image-remove">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -326,7 +334,7 @@ function PerfilCompany() {
                 )}
               </div>
 
-              {/* Info básica - MEJORADA Y COMPLETAMENTE EDITABLE */}
+              {/* Info básica */}
               <div className="company-basic-info">
                 {isEditing ? (
                   <>
@@ -342,33 +350,12 @@ function PerfilCompany() {
                       <div className="company-contact-edit-item">
                         <Select
                           options={departamentosOptions}
-                          value={departamentosOptions.find(option => option.value === editData.ciudad) || null}
+                          value={departamentosOptions.find((option) => option.value === editData.ciudad) || null}
                           onChange={handleDepartamentoChange}
                           placeholder="Seleccionar departamento"
-                          isSearchable={true}
-                          isClearable={true}
-                          className="company-departamento-select"
+                          isSearchable
+                          isClearable
                           classNamePrefix="company-select"
-                          noOptionsMessage={() => "No se encontraron departamentos"}
-                          loadingMessage={() => "Cargando departamentos..."}
-                          styles={{
-                            control: (base) => ({
-                              ...base,
-                              minHeight: '3rem',
-                              border: '2px solid rgba(124, 58, 237, 0.2)',
-                              borderRadius: '12px',
-                              boxShadow: '0 4px 8px -2px rgba(124, 58, 237, 0.15)',
-                              '&:hover': {
-                                borderColor: 'rgba(124, 58, 237, 0.3)',
-                              },
-                            }),
-                            menu: (base) => ({
-                              ...base,
-                              borderRadius: '12px',
-                              boxShadow: '0 8px 16px -4px rgba(124, 58, 237, 0.2)',
-                              border: '1px solid rgba(124, 58, 237, 0.1)',
-                            }),
-                          }}
                         />
                       </div>
                       <div className="company-contact-edit-item">
@@ -409,22 +396,17 @@ function PerfilCompany() {
                   </>
                 ) : (
                   <>
-                    <h1 className="company-name">{String(companyData.nombreEmpresa || "Nombre Empresa")}</h1>
-                    <p className="company-sector">{String(companyData.sector || "Sector no especificado")}</p>
+                    <h1 className="company-name">{companyData.nombreEmpresa || "Nombre Empresa"}</h1>
+                    <p className="company-sector">{companyData.sector || "Sector no especificado"}</p>
                     <div className="company-contact-info">
-                      <div className="company-contact-item">
-                        📍 <span>{String(companyData.ciudad || "Ciudad no especificada")}</span>
-                      </div>
-                      <div className="company-contact-item">
-                        📧 <span>{String(companyData.email || "Email no especificado")}</span>
-                      </div>
-                      <div className="company-contact-item">
-                        📞 <span>{String(companyData.telefono || "Teléfono no especificado")}</span>
-                      </div>
+                      <div className="company-contact-item">📍 {companyData.ciudad || "Ciudad no especificada"}</div>
+                      <div className="company-contact-item">📧 {companyData.email || "Email no especificado"}</div>
+                      <div className="company-contact-item">📞 {companyData.telefono || "Teléfono no especificado"}</div>
                       {companyData.sitioWeb && (
                         <div className="company-contact-item">
-                          🌐 <a href={String(companyData.sitioWeb)} target="_blank" rel="noopener noreferrer" className="company-website-link">
-                            {String(companyData.sitioWeb)}
+                          🌐{" "}
+                          <a href={companyData.sitioWeb} target="_blank" rel="noopener noreferrer" className="company-website-link">
+                            {companyData.sitioWeb}
                           </a>
                         </div>
                       )}
@@ -433,7 +415,7 @@ function PerfilCompany() {
                 )}
               </div>
 
-              {/* Botones de acción */}
+              {/* Botones */}
               {!isEditing ? (
                 <button onClick={() => setIsEditing(true)} className="company-edit-btn">
                   Editar Perfil
@@ -452,10 +434,9 @@ function PerfilCompany() {
           </div>
         </div>
 
-        {/* CONTENIDO PRINCIPAL */}
+        {/* ================= CONTENIDO PRINCIPAL ================= */}
         <div className="company-perfil-content-grid">
           <div className="company-perfil-left">
-            {/* Descripción */}
             <div className="company-perfil-card">
               <h2 className="company-perfil-card-title">Acerca de la Empresa</h2>
               {isEditing ? (
@@ -463,75 +444,53 @@ function PerfilCompany() {
                   name="descripcion"
                   value={editData.descripcion || ""}
                   onChange={handleEditChange}
-                  placeholder="Describe tu empresa, sus valores, cultura organizacional, etc."
+                  placeholder="Describe tu empresa, sus valores, cultura, etc."
                   rows="6"
                   className="company-perfil-textarea"
                 />
               ) : (
-                <p className="company-perfil-text">
-                  {companyData.descripcion || "Agrega una descripción sobre tu empresa."}
-                </p>
+                <p className="company-perfil-text">{companyData.descripcion || "Agrega una descripción sobre tu empresa."}</p>
               )}
             </div>
 
-            {/* Información General - MEJORADA */}
             <div className="company-perfil-card">
               <h2 className="company-perfil-card-title">Información General</h2>
               <div className="company-info-list">
+                {/* RUT */}
                 <div className="company-info-item">
                   <p className="company-info-label">RUT</p>
                   {isEditing ? (
-                    <input 
-                      type="text" 
-                      name="rut" 
-                      value={editData.rut || ""} 
-                      onChange={handleEditChange} 
-                      placeholder="RUT de la empresa"
-                      className="company-perfil-input" 
-                    />
+                    <input type="text" name="rut" value={editData.rut || ""} onChange={handleEditChange} className="company-perfil-input" />
                   ) : (
                     <p className="company-info-value">{companyData.rut || "No especificado"}</p>
                   )}
                 </div>
+
+                {/* SECTOR */}
                 <div className="company-info-item">
                   <p className="company-info-label">Sector</p>
                   {isEditing ? (
-                    <input 
-                      type="text" 
-                      name="sector" 
-                      value={editData.sector || ""} 
-                      onChange={handleEditChange} 
-                      placeholder="Sector de la empresa"
-                      className="company-perfil-input" 
-                    />
+                    <input type="text" name="sector" value={editData.sector || ""} onChange={handleEditChange} className="company-perfil-input" />
                   ) : (
                     <p className="company-info-value">{companyData.sector || "No especificado"}</p>
                   )}
                 </div>
+
+                {/* DIRECCIÓN */}
                 <div className="company-info-item">
                   <p className="company-info-label">Dirección</p>
                   {isEditing ? (
-                    <input 
-                      type="text" 
-                      name="direccion" 
-                      value={editData.direccion || ""} 
-                      onChange={handleEditChange} 
-                      placeholder="Dirección completa"
-                      className="company-perfil-input" 
-                    />
+                    <input type="text" name="direccion" value={editData.direccion || ""} onChange={handleEditChange} className="company-perfil-input" />
                   ) : (
                     <p className="company-info-value">{companyData.direccion || "No especificada"}</p>
                   )}
                 </div>
+
+                {/* TAMAÑO */}
                 <div className="company-info-item">
                   <p className="company-info-label">Tamaño</p>
                   {isEditing ? (
-                    <select 
-                      name="tamano" 
-                      value={editData.tamano || ""} 
-                      onChange={handleEditChange}
-                      className="company-perfil-input"
-                    >
+                    <select name="tamano" value={editData.tamano || ""} onChange={handleEditChange} className="company-perfil-input">
                       <option value="">Seleccionar tamaño</option>
                       <option value="Micro (1-10 empleados)">Micro (1-10 empleados)</option>
                       <option value="Pequeña (11-50 empleados)">Pequeña (11-50 empleados)</option>
@@ -542,125 +501,65 @@ function PerfilCompany() {
                     <p className="company-info-value">{companyData.tamano || "No especificado"}</p>
                   )}
                 </div>
+
+                {/* EMPLEADOS */}
                 <div className="company-info-item">
                   <p className="company-info-label">Empleados</p>
                   {isEditing ? (
-                    <input 
-                      type="number" 
-                      name="empleados" 
-                      value={editData.empleados || ""} 
-                      onChange={handleEditChange} 
-                      placeholder="Número de empleados"
-                      className="company-perfil-input" 
-                    />
+                    <input type="number" name="empleados" value={editData.empleados || ""} onChange={handleEditChange} className="company-perfil-input" />
                   ) : (
                     <p className="company-info-value">{companyData.empleados || "No especificado"}</p>
                   )}
                 </div>
+
+                {/* AÑO FUNDACIÓN */}
                 <div className="company-info-item">
                   <p className="company-info-label">Año de fundación</p>
                   {isEditing ? (
-                    <input 
-                      type="number" 
-                      name="fundada" 
-                      value={editData.fundada || ""} 
-                      onChange={handleEditChange} 
-                      placeholder="Año de fundación"
-                      min="1900"
-                      max={new Date().getFullYear()}
-                      className="company-perfil-input" 
-                    />
+                    <input type="number" name="anioFundacion" value={editData.anioFundacion || ""} onChange={handleEditChange} min="1900" max={new Date().getFullYear()} className="company-perfil-input" />
                   ) : (
-                    <p className="company-info-value">{companyData.fundada || "No especificado"}</p>
+                    <p className="company-info-value">{companyData.anioFundacion || "No especificado"}</p>
                   )}
                 </div>
               </div>
             </div>
           </div>
 
+          {/* DERECHA: Misión / Visión / Redes */}
           <div className="company-perfil-right">
-            {/* Misión */}
             <div className="company-perfil-card">
               <h2 className="company-perfil-card-title">Misión</h2>
               {isEditing ? (
-                <textarea
-                  name="mision"
-                  value={editData.mision || ""}
-                  onChange={handleEditChange}
-                  placeholder="¿Cuál es la misión de tu empresa? ¿Qué haces y para quién?"
-                  rows="4"
-                  className="company-perfil-textarea"
-                />
+                <textarea name="mision" value={editData.mision || ""} onChange={handleEditChange} rows="4" className="company-perfil-textarea" />
               ) : (
-                <p className="company-perfil-text">
-                  {companyData.mision || "Agrega tu misión empresarial."}
-                </p>
+                <p className="company-perfil-text">{companyData.mision || "Agrega tu misión empresarial."}</p>
               )}
             </div>
 
-            {/* Visión */}
             <div className="company-perfil-card">
               <h2 className="company-perfil-card-title">Visión</h2>
               {isEditing ? (
-                <textarea
-                  name="vision"
-                  value={editData.vision || ""}
-                  onChange={handleEditChange}
-                  placeholder="¿Cuál es la visión de tu empresa? ¿A dónde quieres llegar?"
-                  rows="4"
-                  className="company-perfil-textarea"
-                />
+                <textarea name="vision" value={editData.vision || ""} onChange={handleEditChange} rows="4" className="company-perfil-textarea" />
               ) : (
-                <p className="company-perfil-text">
-                  {companyData.vision || "Agrega tu visión empresarial."}
-                </p>
+                <p className="company-perfil-text">{companyData.vision || "Agrega tu visión empresarial."}</p>
               )}
             </div>
 
-            {/* Redes Sociales - MEJORADA */}
             <div className="company-perfil-card">
               <h2 className="company-perfil-card-title">Redes Sociales</h2>
               <div className="company-social-links">
                 {isEditing ? (
                   <div className="company-social-inputs">
-                    <div className="company-social-input-group">
-                      <span className="company-social-icon">𝕏</span>
-                      <input 
-                        type="url" 
-                        name="twitter" 
-                        value={editData.twitter || ""} 
-                        onChange={handleEditChange} 
-                        placeholder="https://twitter.com/empresa" 
-                        className="company-perfil-input" 
-                      />
-                    </div>
-                    <div className="company-social-input-group">
-                      <span className="company-social-icon">f</span>
-                      <input 
-                        type="url" 
-                        name="facebook" 
-                        value={editData.facebook || ""} 
-                        onChange={handleEditChange} 
-                        placeholder="https://facebook.com/empresa" 
-                        className="company-perfil-input" 
-                      />
-                    </div>
+                    <input type="url" name="twitter" value={editData.twitter || ""} onChange={handleEditChange} placeholder="https://twitter.com/empresa" className="company-perfil-input" />
+                    <input type="url" name="facebook" value={editData.facebook || ""} onChange={handleEditChange} placeholder="https://facebook.com/empresa" className="company-perfil-input" />
+                    <input type="url" name="linkedin" value={editData.linkedin || ""} onChange={handleEditChange} placeholder="https://linkedin.com/company/empresa" className="company-perfil-input" />
                   </div>
                 ) : (
                   <div className="company-social-display">
-                    {companyData.twitter && (
-                      <a href={companyData.twitter} target="_blank" rel="noopener noreferrer" className="company-social-link">
-                        <span className="company-social-icon">𝕏</span>
-                        Twitter
-                      </a>
-                    )}
-                    {companyData.facebook && (
-                      <a href={companyData.facebook} target="_blank" rel="noopener noreferrer" className="company-social-link">
-                        <span className="company-social-icon">f</span>
-                        Facebook
-                      </a>
-                    )}
-                    {!companyData.twitter && !companyData.facebook && (
+                    {companyData.twitter && <a href={companyData.twitter} target="_blank" rel="noopener noreferrer" className="company-social-link">Twitter</a>}
+                    {companyData.facebook && <a href={companyData.facebook} target="_blank" rel="noopener noreferrer" className="company-social-link">Facebook</a>}
+                    {companyData.linkedin && <a href={companyData.linkedin} target="_blank" rel="noopener noreferrer" className="company-social-link">LinkedIn</a>}
+                    {!companyData.twitter && !companyData.facebook && !companyData.linkedin && (
                       <p className="company-perfil-empty-text">No hay redes sociales agregadas</p>
                     )}
                   </div>
@@ -670,8 +569,7 @@ function PerfilCompany() {
           </div>
         </div>
 
-        
-        {/* PROYECTOS PUBLICADOS */}
+        {/* PROYECTOS */}
         <div className="company-postings-section">
           <h2 className="company-section-title">Proyectos Publicados</h2>
           <div className="company-carousel-container">
@@ -680,14 +578,26 @@ function PerfilCompany() {
                 <CardProyecto
                   key={p.id}
                   id={p.id}
-                  title={String(p.title || "Sin título")}
-                  description={String(p.description || "Sin descripción")}
-                  skills={Array.isArray(p.skills) ? p.skills.join(", ") : String(p.skills || "No especificado")}
-                  duration={String(p.duration || "No especificado")}
-                  modality={String(p.modality || "No especificado")}
-                  remuneration={String(p.remuneration || "A convenir")}
-                  company={String(companyData.nombreEmpresa)}
-                  isCompanyView={true}
+                  title={p.title || "Sin título"}
+                  description={p.description || "Sin descripción"}
+                  skills={
+                    (() => {
+                      try {
+                        const parsed = JSON.parse(p.skills);
+                        if (Array.isArray(parsed)) return parsed.join(", ");
+                        if (typeof parsed === "object") return Object.values(parsed).join(", ");
+                        return parsed || "No especificado";
+                      } catch {
+                        return p.skills || "No especificado";
+                      }
+                    })()
+                  }
+
+                  duration={p.duration || "No especificado"}
+                  modality={p.modality || "No especificado"}
+                  remuneration={p.remuneration || "A convenir"}
+                  company={companyData.nombreEmpresa}
+                  isCompanyView
                 />
               ))
             ) : (
@@ -696,7 +606,7 @@ function PerfilCompany() {
           </div>
         </div>
 
-        {/* TRABAJOS PUBLICADOS */}
+        {/* TRABAJOS */}
         <div className="company-postings-section">
           <h2 className="company-section-title">Puestos de Trabajo</h2>
           <div className="company-carousel-container">
@@ -705,16 +615,16 @@ function PerfilCompany() {
                 <CardTrabajo
                   key={job.id}
                   id={job.id}
-                  title={String(job.title || "Sin título")}
-                  company={String(companyData.nombreEmpresa)}
-                  area={String(job.area || "")}
-                  jobType={String(job.jobType || "")}
-                  contractType={String(job.contractType || "")}
-                  modality={String(job.modality || "")}
-                  location={String(job.location || "")}
-                  salary={String(job.salary || job.remuneration || "")}
-                  description={String(job.description || "")}
-                  isCompanyView={true}
+                  title={job.title || "Sin título"}
+                  company={companyData.nombreEmpresa}
+                  area={job.area || ""}
+                  jobType={job.jobType || ""}
+                  contractType={job.contractType || ""}
+                  modality={job.modality || ""}
+                  location={job.location || ""}
+                  salary={job.salary || job.remuneration || ""}
+                  description={job.description || ""}
+                  isCompanyView
                 />
               ))
             ) : (
@@ -725,11 +635,7 @@ function PerfilCompany() {
       </div>
 
       <Footer />
-      
-      <NotificationContainer 
-        notifications={notifications} 
-        onRemove={removeNotification} 
-      />
+      <NotificationContainer notifications={notifications} onRemove={removeNotification} />
     </div>
   );
 }

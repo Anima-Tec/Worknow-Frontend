@@ -51,9 +51,22 @@ export default function CardProyecto({
           <span>
             <strong>Duración:</strong> {String(duration || "No especificada")}
           </span>
-          <span>
-            <strong>Skills:</strong> {String(skills || "No especificadas")}
-          </span>
+        <span>
+  <strong>Skills:</strong>{" "}
+  {(() => {
+    try {
+      if (!skills) return "No especificadas";
+      if (Array.isArray(skills)) return skills.join(", ");
+      const parsed = JSON.parse(skills);
+      if (Array.isArray(parsed)) return parsed.join(", ");
+      if (typeof parsed === "object") return Object.values(parsed).join(", ");
+      return parsed || "No especificadas";
+    } catch {
+      return String(skills || "No especificadas");
+    }
+  })()}
+</span>
+
         </div>
 
         {/* ---------- BOTONES ---------- */}
