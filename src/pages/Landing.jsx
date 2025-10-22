@@ -179,8 +179,8 @@ export default function Landing() {
           {/* PLAN PLUS */}
           <div className="plan-card plus popular">
             <div className="popular-badge">POPULAR</div>
-            <h3 className="plan-title">Plus</h3>
-            <p className="plan-price">$20 <span>USD / mes</span></p>
+            <h3 className="plan-title">Plus para usuarios</h3>
+            <p className="plan-price">$16,23 <span>USD / mes</span></p>
             <p className="plan-desc">Más visibilidad y herramientas para destacar</p>
             <ul className="plan-features">
               <li>✔ Todo del plan Gratis</li>
@@ -195,8 +195,8 @@ export default function Landing() {
 
           {/* PLAN PRO */}
           <div className="plan-card pro">
-            <h3 className="plan-title">Pro</h3>
-            <p className="plan-price">$200 <span>USD / mes</span></p>
+            <h3 className="plan-title">Pro para empresas</h3>
+            <p className="plan-price">$37,48 <span>USD / mes</span></p>
             <p className="plan-desc">Para empresas y profesionales que buscan lo máximo</p>
             <ul className="plan-features">
               <li>✔ Acceso total a WorkNow</li>
