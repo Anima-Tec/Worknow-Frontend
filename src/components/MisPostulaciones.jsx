@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import "./MisPostulaciones.css";
-
+const API_URL = import.meta.env.VITE_API_URL;
 export default function MisPostulaciones() {
   const [postulaciones, setPostulaciones] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,10 +45,10 @@ export default function MisPostulaciones() {
       console.log("🔄 Cargando postulaciones de proyectos y trabajos...");
 
       const [resProyectos, resTrabajos] = await Promise.all([
-        fetch("http://localhost:3000/api/applications/user/me", {
+        fetch(`${API_URL}/api/applications/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch("http://localhost:3000/api/job-applications/user/me", {
+       fetch(`${API_URL}/api/job-applications/user/me`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -102,8 +102,7 @@ export default function MisPostulaciones() {
   const updateStatus = async (id, newStatus) => {
     try {
       const token = localStorage.getItem("token");
-      const url = `http://localhost:3000/api/applications/user/${id}/status`;
-
+      const url = `${API_URL}/api/applications/user/${id}/status`;
       console.log(`📤 Enviando actualización a ${url} con estado: ${newStatus}`);
 
       const res = await fetch(url, {

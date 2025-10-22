@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useNotification, NotificationContainer } from "../utils/notifications.jsx";
 import { LoadingSpinner } from "../components/LoadingSpinner.jsx";
 import Select from "react-select";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function PerfilCompany() {
   const [projects, setProjects] = useState([]);
@@ -126,7 +127,7 @@ function PerfilCompany() {
     const fetchProjects = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:3000/api/projects/company/me", {
+        const response = await fetch(`${API_URL}/api/projects/company/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Error al obtener proyectos");
@@ -148,7 +149,7 @@ function PerfilCompany() {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:3000/api/jobs/company/me", {
+        const response = await fetch(`${API_URL}/api/jobs/company/me`, {
         headers: { Authorization: `Bearer ${token}` },
         });
       if (!response.ok) throw new Error("Error al obtener trabajos");

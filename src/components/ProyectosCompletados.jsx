@@ -1,7 +1,7 @@
 // src/components/ProyectosCompletados.jsx
 import React, { useState, useEffect } from "react";
 import "./ProyectosCompletados.css";
-
+const API_URL = import.meta.env.VITE_API_URL;
 const ProyectosCompletados = () => {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +9,7 @@ const ProyectosCompletados = () => {
   const cargarProyectosCompletados = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/api/completed-projects/my-projects", {
+      const res = await fetch(`${API_URL}/api/completed-projects/my-projects`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

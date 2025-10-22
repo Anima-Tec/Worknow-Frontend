@@ -7,6 +7,7 @@ import { CgProfile } from "react-icons/cg";
 import { MdWorkOutline } from "react-icons/md";
 import "./HomeUser.css";
 import Footer from "../components/Footer";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function HomeUser() {
   const [jobs, setJobs] = useState([]);
@@ -49,7 +50,7 @@ export default function HomeUser() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      const res = await fetch("http://localhost:3000/api/applications/notifications/count", {
+      const res = await fetch(`${API_URL}/api/applications/notifications/count`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -68,7 +69,7 @@ export default function HomeUser() {
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      await fetch("http://localhost:3000/api/applications/notifications/user/read", {
+     await fetch(`${API_URL}/api/applications/notifications/user/read`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });

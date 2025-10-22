@@ -1,5 +1,5 @@
 // ======================= 🌐 CONFIGURACIÓN BASE ==========================
-const API_BASE = import.meta.env.VITE_API_URL ?? 
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 // ======================= 🔧 UTILIDADES DE ERROR ==========================
 class ApiError extends Error {
@@ -71,7 +71,7 @@ function redirectToLogin() {
 // ============================ 🔐 AUTH =================================
 export async function loginApi({ email, password }) {
   try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -97,7 +97,7 @@ export async function loginApi({ email, password }) {
 
 export async function registerUser(userData) {
   try {
-    const res = await fetch(`${API_BASE}/auth/register/user`, {
+    const res = await fetch(`${API_BASE}/api/auth/register/user`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
@@ -112,7 +112,7 @@ export async function registerUser(userData) {
 
 export async function registerCompany(companyData) {
   try {
-    const res = await fetch(`${API_BASE}/auth/register/company`, {
+    const res = await fetch(`${API_BASE}/api/auth/register/company`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(companyData),
@@ -133,7 +133,7 @@ export async function getProfile() {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/auth/profile`, {
+    const res = await fetch(`${API_BASE}/api/auth/profile`, {
       headers: getAuthHeaders(),
     });
 
@@ -157,7 +157,7 @@ export async function updateProfile(profileData) {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/auth/profile`, {
+    const res = await fetch(`${API_BASE}/api/auth/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -183,7 +183,7 @@ export async function searchJobs(filters) {
     console.log("🔍 Buscando trabajos con filters:", filters);
     
     // Construir URL de forma MÁS SIMPLE
-    let url = `${API_BASE}/jobs`;
+    let url = `${API_BASE}/api/jobs`;
     const params = [];
     
     if (filters.query && filters.query.trim() !== '') {
@@ -213,7 +213,7 @@ export async function searchJobs(filters) {
 
 export async function getJobs() {
   try {
-    const res = await fetch(`${API_BASE}/jobs`);
+    const res = await fetch(`${API_BASE}/api/jobs`);
     return await handleApiResponse(res);
   } catch (error) {
     console.error("❌ Error obteniendo trabajos:", error);
@@ -228,7 +228,7 @@ export async function createJob(jobData) {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/jobs`, {
+    const res = await fetch(`${API_BASE}/api/jobs`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -249,7 +249,7 @@ export async function createJob(jobData) {
 
 export async function getJobById(id) {
   try {
-    const res = await fetch(`${API_BASE}/jobs/${id}`);
+    const res = await fetch(`${API_BASE}/api/jobs/${id}`);
     return await handleApiResponse(res);
   } catch (error) {
     console.error("❌ Error obteniendo trabajo:", error);
@@ -266,7 +266,7 @@ export async function applyToJob(jobId, applicationData) {
 
     console.log("datos enviados:", applicationData);
 
-    const res = await fetch(`${API_BASE}/applications/job/${jobId}/apply`, {
+    const res = await fetch(`${API_BASE}/api/applications/job/${jobId}/apply`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -291,7 +291,7 @@ export async function searchProjects(filters) {
     console.log("🔍 Buscando proyectos con filters:", filters);
     
     // Construir URL de forma MÁS SIMPLE
-    let url = `${API_BASE}/projects`;
+    let url = `${API_BASE}/api/projects`;
     const params = [];
     
     if (filters.query && filters.query.trim() !== '') {
@@ -326,7 +326,7 @@ export async function createProject(projectData) {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/projects`, {
+    const res = await fetch(`${API_BASE}/api/projects`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -347,7 +347,7 @@ export async function createProject(projectData) {
 
 export async function getProjectById(id) {
   try {
-    const res = await fetch(`${API_BASE}/projects/${id}`);
+    const res = await fetch(`${API_BASE}/api/projects/${id}`);
     return await handleApiResponse(res);
   } catch (error) {
     console.error("❌ Error obteniendo proyecto:", error);
@@ -363,7 +363,7 @@ export async function sendApplication({ projectId, name, email }) {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/applications/project/${projectId}/apply`, {
+    const res = await fetch(`${API_BASE}/api/applications/project/${projectId}/apply`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -392,7 +392,7 @@ export async function getCompanyApplications() {
       throw new ApiError("No hay token de autenticación o ID de empresa", 401, "NO_TOKEN_OR_COMPANY");
     }
 
-    const res = await fetch(`${API_BASE}/applications/company/${companyId}`, {
+    const res = await fetch(`${API_BASE}/api/applications/company/${companyId}`, {
       headers: getAuthHeaders(),
     });
 
@@ -413,7 +413,7 @@ export async function updateApplicationStatus(id, status) {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/applications/${id}`, {
+    const res = await fetch(`${API_BASE}/api/applications/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -440,7 +440,7 @@ export async function getMyApplications() {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/applications/user/me`, {
+    const res = await fetch(`${API_BASE}/api/applications/user/me`, {
       headers: getAuthHeaders(),
     });
 
@@ -460,7 +460,7 @@ export async function getNotificationCount() {
     const token = localStorage.getItem("token");
     if (!token) return 0;
 
-    const res = await fetch(`${API_BASE}/applications/notifications/count`, {
+    const res = await fetch(`${API_BASE}/api/applications/notifications/count`, {
       headers: getAuthHeaders(),
     });
 
@@ -480,7 +480,7 @@ export async function markApplicationAsRead(applicationId) {
       throw new ApiError("No hay token de autenticación", 401, "NO_TOKEN");
     }
 
-    const res = await fetch(`${API_BASE}/applications/${applicationId}/mark-read`, {
+    const res = await fetch(`${API_BASE}/api/applications/${applicationId}/mark-read`, {
       method: "PUT",
       headers: getAuthHeaders(),
     });

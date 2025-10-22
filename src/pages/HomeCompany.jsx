@@ -10,6 +10,7 @@ import CardProyecto from "../components/CardProyecto";
 import CardTrabajo from "../components/CardTrabajo.jsx";
 import ApplicationsModal from "../components/ApplicationsModal";
 import Footer from "../components/Footer";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function HomeCompany() {
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -29,7 +30,7 @@ export default function HomeCompany() {
     async function loadNotifications() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/applications/notifications/company", {
+        const res = await fetch(`${API_URL}/api/applications/notifications/company`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) return;
@@ -50,7 +51,7 @@ export default function HomeCompany() {
     async function markAsRead() {
       try {
         const token = localStorage.getItem("token");
-        await fetch("http://localhost:3000/api/applications/notifications/company/read", {
+        await fetch(`${API_URL}/api/applications/notifications/company/read`, {
           method: "PUT",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -71,7 +72,7 @@ export default function HomeCompany() {
   async function fetchCompanyProjects() {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/api/projects/company/me", {
+      const res = await fetch(`${API_URL}/api/projects/company/me`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -103,7 +104,7 @@ export default function HomeCompany() {
     async function fetchCompanyJobs() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/jobs/company/me", {
+       const res = await fetch(`${API_URL}/api/jobs/company/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) {
@@ -150,9 +151,9 @@ const activeJobs = Array.isArray(jobs)
         if (!token || !companyId) return;
 
         const res = await fetch(
-          `http://localhost:3000/api/applications/company/${companyId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        `${API_URL}/api/applications/company/${companyId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
         if (!res.ok) return;
         const data = await res.json();
         setApplications(data);

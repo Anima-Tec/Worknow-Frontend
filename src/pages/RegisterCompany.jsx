@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './RegisterCompany.css';
 import { useNotification, NotificationContainer } from '../utils/notifications';
-
+const API_URL = import.meta.env.VITE_API_URL;
 const RegisterCompany = () => {
   const { notifications, showSuccess, showError, removeNotification } = useNotification();
   const [showPassword, setShowPassword] = useState(false);
@@ -213,7 +213,7 @@ const RegisterCompany = () => {
       try {
         console.log("Datos enviados:", companyData);
         
-        const res = await fetch("http://localhost:3000/api/auth/register/company", {
+        const res = await fetch(`${API_URL}/api/auth/register/company`,  {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(companyData),

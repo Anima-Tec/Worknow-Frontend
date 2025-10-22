@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './RegisterUser.css';
 import { useNotification, NotificationContainer } from '../utils/notifications.jsx';
 
+
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -149,11 +150,11 @@ const Register = () => {
     };
 
     try {
-      const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+      const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/";
 
       console.log("📤 Enviando datos de registro:", userData);
 
-      const res = await fetch(`${API_BASE}/auth/register/user`, {
+      const res = await fetch(`${API_BASE}/api/auth/register/user`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -170,7 +171,7 @@ const Register = () => {
         try {
           console.log("🔄 Iniciando login automático...");
           
-          const loginRes = await fetch(`${API_BASE}/auth/login`, {
+          const loginRes = await fetch(`${API_BASE}/api/auth/login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"

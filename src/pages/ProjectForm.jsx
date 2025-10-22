@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CardProyecto from "../components/CardProyecto";
 import "./ProjectForm.css";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ProjectForm({ onClose, onProjectCreated }) {
   const [formData, setFormData] = useState({
@@ -52,7 +53,7 @@ export default function ProjectForm({ onClose, onProjectCreated }) {
           remuneration: formData.remuneration,
         };
 
-      const res = await fetch("http://localhost:3000/api/projects", {
+      const res = await fetch(`${API_URL}/api/projects`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
