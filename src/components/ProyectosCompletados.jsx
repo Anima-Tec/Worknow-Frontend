@@ -1,7 +1,9 @@
 // src/components/ProyectosCompletados.jsx
 import React, { useState, useEffect } from "react";
 import "./ProyectosCompletados.css";
+
 const API_URL = import.meta.env.VITE_API_URL;
+
 const ProyectosCompletados = () => {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,15 +18,24 @@ const ProyectosCompletados = () => {
       });
 
       if (res.ok) {
-  const data = await res.json();
-  console.log("Respuesta backend:", data); // 👈 Para ver qué devuelve
-  setProyectos(Array.isArray(data) ? data : data.completedProjects || data.projects || []);
-} else {
-  console.error("Error cargando proyectos completados");
-  setProyectos([]);
-}
+        const data = await res.json();
+        console.log("✅ Respuesta backend proyectos completados:", data);
+        
+        // CORRECCIÓN: Acceder a data.data en lugar de data directamente
+        if (data.success && data.data) {
+          setProyectos(data.data);
+        } else if (Array.isArray(data)) {
+          setProyectos(data);
+        } else {
+          console.warn("⚠️ Formato de respuesta inesperado:", data);
+          setProyectos([]);
+        }
+      } else {
+        console.error("❌ Error cargando proyectos completados:", res.status);
+        setProyectos([]);
+      }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("❌ Error:", error);
       setProyectos([]);
     } finally {
       setLoading(false);
@@ -58,21 +69,26 @@ const ProyectosCompletados = () => {
           {proyectos.map((proyecto) => (
             <div key={proyecto.id} className="proyecto-item">
               <div className="proyecto-header">
-                <h3 className="proyecto-nombre">{proyecto.projectTitle}</h3>
+                {/* CORRECCIÓN: Usar proyecto.title en lugar de projectTitle */}
+                <h3 className="proyecto-nombre">{proyecto.title}</h3>
                 <span className="proyecto-fecha">
-                  {new Date(proyecto.completionDate).toLocaleDateString("es-ES")}
+                  {/* CORRECCIÓN: Usar createdAt o endDate en lugar de completionDate */}
+                  {new Date(proyecto.createdAt || proyecto.endDate).toLocaleDateString("es-ES")}
                 </span>
               </div>
               
-              <div className="proyecto-empresa">
-                <strong>Empresa:</strong> {proyecto.companyName}
-              </div>
+              {/* CORRECCIÓN: Usar proyecto.companyName si existe */}
+              {proyecto.companyName && (
+                <div className="proyecto-empresa">
+                  <strong>Empresa:</strong> {proyecto.companyName}
+                </div>
+              )}
               
               {proyecto.description && (
                 <p className="proyecto-descripcion">{proyecto.description}</p>
               )}
 
-              {/* 🆕 NUEVA INFORMACIÓN DEL PROYECTO */}
+              {/* INFORMACIÓN DEL PROYECTO - CAMPOS CORREGIDOS */}
               <div className="proyecto-detalles">
                 {proyecto.duration && proyecto.duration !== "No especificada" && (
                   <div className="proyecto-detalle">
