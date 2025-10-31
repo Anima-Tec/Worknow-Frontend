@@ -292,13 +292,14 @@ export default function ApplicationsModal({ open, onClose }) {
                         />
                       </>
                     ) : (
-                      <span
-                        className={`status-badge ${a.status.toLowerCase()}`}
-                      >
-                        {a.status === "ACEPTADO"
-                          ? "✅ Aceptado"
-                          : "❌ Rechazado"}
-                      </span>
+                     <span
+                        className={`status-badge ${a.status.toLowerCase().replace(" ", "-")}`}
+                       >
+                        {a.status === "ACEPTADO" && "✅ Aceptado"}
+                        {a.status === "RECHAZADO" && "❌ Rechazado"}
+                        {a.status === "COMPLETADO" && " Completado"}
+                        {a.status === "NO COMPLETADO" && " No completado"}
+                  </span>
                     )}
                   </td>
                 </tr>
