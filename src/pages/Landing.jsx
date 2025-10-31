@@ -180,12 +180,12 @@ export default function Landing() {
           <div className="plan-card plus popular">
             <div className="popular-badge">POPULAR</div>
             <h3 className="plan-title">Plus para usuarios</h3>
-            <p className="plan-price">$16,23 <span>USD / mes</span></p>
+            <p className="plan-price">$649 <span>UY / mes</span></p>
             <p className="plan-desc">Más visibilidad y herramientas para destacar</p>
             <ul className="plan-features">
               <li>✔ Todo del plan Gratis</li>
-              <li>✔ Aplicaciones ilimitadas</li>
-              <li>✔ Feedback de empresas</li>
+              <li>✔ Prioridad en postulaciones</li>
+              <li>✔ Ver quién visitó tu perfil</li>
               <li>✔ Métricas de rendimiento</li>
             </ul>
             <button className="btn-white" onClick={() => navigate("/choose")}>
@@ -195,17 +195,19 @@ export default function Landing() {
 
           {/* PLAN PRO */}
           <div className="plan-card pro">
-            <h3 className="plan-title">Pro para empresas</h3>
-            <p className="plan-price">$37,48 <span>USD / mes</span></p>
-            <p className="plan-desc">Para empresas y profesionales que buscan lo máximo</p>
+            <h3 className="plan-title">Premium</h3>
+            <h3 className="plan-title">para empresas</h3>
+            <p className="plan-price">$1499 <span>UY/ mes</span></p>
+            <p className="plan-desc">Encontra al mejor talento</p>
             <ul className="plan-features">
-              <li>✔ Acceso total a WorkNow</li>
-              <li>✔ Publicación de empleos y proyectos</li>
-              <li>✔ Análisis de talento con IA</li>
+              <li>✔ Todo del plan Gratis</li>
+              <li>✔ Más información sobre candidatos</li>
               <li>✔ Soporte prioritario</li>
+              <li>✔Certificado de empresa verificada</li>
+              <li>✔ Mensajería directa ilimitada</li>
             </ul>
             <button className="btn-outline-light" onClick={() => navigate("/choose")}>
-              Obtener Pro
+              Obtener Premium
             </button>
           </div>
         </div>
